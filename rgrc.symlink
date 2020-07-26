@@ -1,0 +1,5 @@
+# ignore case
+--smart-case
+
+# follow symlinks
+--follow
