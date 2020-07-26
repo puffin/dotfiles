@@ -7,6 +7,7 @@ command_exists() {
 echo "Installing dotfiles."
 
 echo "Initializing submodule(s)"
+git submodule add git@github.com:chriskempson/base16-shell.git config/base16-shell
 git submodule update --init --recursive
 
 source install/link.sh
