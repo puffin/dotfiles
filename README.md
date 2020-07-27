@@ -2,6 +2,8 @@
 
 This is a collection of vim, tmux, and zsh configurations. This setup works for me, a DevOps engineer on macOS. It might not works for you but you can steal ideas from this and if you like, contribute back to it!
 
+![A screenshot of the dotfiles setup](screenshot.png)
+
 ## Contents
 
 + [Setup and Installation](#setup-and-installation)
@@ -10,8 +12,16 @@ This is a collection of vim, tmux, and zsh configurations. This setup works for 
 + [Tmux](#tmux-configuration)
 + [Terminal](#terminal)
 + [Fonts](#fonts)
++ [Usage](#usage)
 
 ## Setup and Installation
+
+Clone the dotfiles repository to your home directory as `~/.dotfiles`. 
+
+```bash
+➜ git clone https://github.com/puffin/dotfiles.git ~/.dotfiles
+➜ cd ~/.dotfiles
+```
 
 ### Backup
 
@@ -29,11 +39,9 @@ If on OSX, you will need to install the XCode CLI tools before continuing. To do
 ➜ xcode-select --install
 ```
 
-Then, clone the dotfiles repository to your home directory as `~/.dotfiles`. 
+Then install everything. Open a terminal and type
 
 ```bash
-➜ git clone https://github.com/puffin/dotfiles.git ~/.dotfiles
-➜ cd ~/.dotfiles
 ➜ ./install.sh
 ```
 
@@ -43,7 +51,7 @@ Next, the install script will perform a check to see if it is running on an OSX 
 
 ## Terminal Capabilities
 
-In order to properly support italic fonts in and out of tmux, a couple of terminal capabilities need to be described. Run the following from the root of the project:
+In order to properly support italic fonts of tmux, a couple of terminal capabilities need to be described. Run the following from the root of the project:
 
 ```bash
 ➜ tic -x resources/xterm-256color-italic.terminfo
@@ -110,13 +118,87 @@ Tmux is a terminal multiplexor which lets you create windows and splits in the t
 
 When tmux starts up, [login-shell](bin/login-shell) will be run and if it determines you are running this on macOS, it will call reattach-to-user-namespace, to fix the system clipboard for use inside of tmux.
 
-## Terminal
+## Terminal Configuration
 
 My terminal of choice is [iTerm2](https://www.iterm2.com/). This setup works great with it but should also work with your prefered one, though not tested.
+
+You can find the default profile that use FuraCode NF font and the color scheme I use in [resources/iterm.profile.json](resources/iterm.profile.json)
 
 ## Fonts
 
 I am currently using [FuraCode NF](https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/FiraCode/Retina/complete/Fura%20Code%20Retina%20Nerd%20Font%20Complete.otf) as my default font via iTerm2's profile settings.
+
+## Usage
+
+You installed everything, now what? Your environment is now composed of iTerm2 + tmux + zsh + vim.
+
+### Increase productivity
+
+Tmux is a fantastic tool for improving productivity when working with a terminal. The prefix key has been modified to control+a instead of control+b, which is not very confortable to press with a single hand. But this can be improved even more by reconfiguring your caps lock key to control.
+
+![A screenshot of the key remapper](keyboard_caps_modifier.png)
+
+### Tmux basic control
+
+Tmux is configure with 2 plugins ([tmux-continuum](https://github.com/tmux-plugins/tmux-continuum) and [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)) to continuously save tmux environment and restore it when started. This include also your vim session so your development environment is back where you left it off.
+
+To start tmux, open your terminal and type
+
+```bash
+➜ tmux
+```
+
+Here is a basic list of commands you'll use all the time in tmux. Reminder, prefix is `control+a`
+
++ `prefix + I` : install new tmux plugins
++ `prefix + U` : update tmux plugins
++ `prefix + w` : interactive window/pane selection
++ `prefix + :` : tmux shell
++ `prefix + $` : rename session
++ `prefix + c` : create a new window
++ `prefix + ,` : rename current window
++ `prefix + &` : kill current window
++ `prefix + [1,2,3,...]` : select window
++ `prefix + -` : split new pane vertically
++ `prefix + |` : split new pane horizontally
++ `prefix + x` : kill current pane
++ `prefix + [h,j,k,l]` : move to pane
++ `prefix + z` : toggle pane fullscreen
++ `prefix + shift + [h,j,k,l]` : resize pane
+
+### Vim basic control
+
+Vim is configure with various plugins to increase productivity. You can explore [config/nvim/init.vim](config/nvim/init.vim) to find out which plugins are installed.
+
+To start tmux, open your terminal and type
+
+```bash
+➜ vim
+```
+
+Here is basic list of commands you'll use all the time in vim. Reminder, the leader key is `SPACE`
+
++ `leader + k` : toggle file system explorer
++ `leader + y` : find the current file in the file system explorer
++ `leader + st` : toggle start screen
++ `leader + b` : close buffer but keep split
++ `leader + t` : Git fuzzy finder
++ `leader + e` : General fuzzy finder
++ `leader + r` : Buffer fuzzy finder
++ `control+w + s` : Split new buffer horizontally
++ `control+w + v` : Split new buffer vertically
++ `control+w [h,j,k,l]` : move to buffer
++ `:Rg` : Recursively searches directories for a regex pattern
+
+## Troubleshooting
+
+The automated installation can encounter errors around file permissiona in case you don't have administrator access to
+the file system or you're trying to install it under a new OS user. Open a terminal and type:
+
+```bash
+➜ sudo chown -R $(whoami):admin /usr/local/
+➜ sudo chmod -R 755 /usr/local
+```
 
 ## Questions
 

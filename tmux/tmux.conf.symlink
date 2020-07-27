@@ -111,10 +111,7 @@ set -g @continuum-boot 'on'
 set -g @continuum-boot-options 'iterm,fullscreen'
 
 # install some amazing plugin
-set -g @plugin 'yardnsm/tmux-1password'
 set -g @plugin 'alexanderjeurissen/tmux-world-clock'
-
-set -g @1password-subdomain 'hatchedlabs'
 
 set -g @world_clock_tz 'US/Pacific'
 set -g @world_clock_tz 'US/Central'
