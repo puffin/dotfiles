@@ -170,7 +170,7 @@ Here is a basic list of commands you'll use all the time in tmux. Reminder, pref
 
 Vim is configure with various plugins to increase productivity. You can explore [config/nvim/init.vim](config/nvim/init.vim) to find out which plugins are installed.
 
-To start tmux, open your terminal and type
+To start vim, open your terminal and type
 
 ```bash
 ➜ vim
@@ -192,8 +192,7 @@ Here is basic list of commands you'll use all the time in vim. Reminder, the lea
 
 ## Troubleshooting
 
-The automated installation can encounter errors around file permissiona in case you don't have administrator access to
-the file system or you're trying to install it under a new OS user. Open a terminal and type:
+The automated installation can encounter errors around file permissions in case you don't have administrator access to the file system or you're trying to install it under a new OS user. Open a terminal and type:
 
 ```bash
 ➜ sudo chown -R $(whoami):admin /usr/local/

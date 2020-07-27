@@ -11,7 +11,6 @@ git submodule add git@github.com:chriskempson/base16-shell.git config/base16-she
 git submodule update --init --recursive
 
 source install/link.sh
-source install/tmux.sh
 
 # only perform macOS-specific install
 if [ "$(uname)" == "Darwin" ]; then
