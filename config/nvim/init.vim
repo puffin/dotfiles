@@ -485,3 +485,6 @@ call deoplete#custom#option({
 \ 'auto_refresh_delay': 100
 \ })
 
+" Better tabbing
+vnoremap < <gv
+vnoremap > >gv
