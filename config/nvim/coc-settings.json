@@ -18,6 +18,7 @@
         { "name": "buffer", "expand": false },
         { "name": "file", "expand": true }
     ],
+    "explorer.file.showHiddenFiles": true,
     "explorer.file.column.git.icon.added": "✚",
     "explorer.file.column.git.icon.deleted": "✖",
     "explorer.file.column.git.icon.renamed": "➜",
