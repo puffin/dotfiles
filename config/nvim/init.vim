@@ -125,7 +125,7 @@ let g:lightline = {
 \               [ 'readonly', 'filetype', 'filename' ]],
 \       'right': [ [ 'percent', 'lineinfo' ],
 \                [ 'fileformat', 'fileencoding' ],
-\                [ 'gitblame', 'linter_errors', 'linter_warnings' ] ]
+\                [ 'gitblame', 'cocstatus', 'linter_errors', 'linter_warnings' ] ]
 \   },
 \   'component_expand': {
 \   },
@@ -136,6 +136,7 @@ let g:lightline = {
 \   },
 \   'component_function': {
 \       'gitbranch': 'helpers#lightline#gitBranch',
+\       'cocstatus': 'coc#status',
 \       'filename': 'helpers#lightline#fileName',
 \       'fileencoding': 'helpers#lightline#fileEncoding',
 \       'fileformat': 'helpers#lightline#fileFormat',
@@ -298,7 +299,7 @@ function! ToggleNerdTree()
     endif
 endfunction
 " toggle nerd tree
-nmap <silent> <leader>k :call ToggleNerdTree()<cr>
+nmap <silent> <leader>n :call ToggleNerdTree()<cr>
 " find the current file in nerdtree without needing to reload the drawer
 nmap <silent> <leader>y :NERDTreeFind<cr>
 
@@ -396,6 +397,39 @@ Plug 'tpope/vim-rhubarb' " hub extension for fugitive
 Plug 'sodapopcan/vim-twiggy'
 Plug 'rbong/vim-flog'
 
+" coc {{{
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+let g:coc_global_extensions = [
+  \ 'coc-python',
+  \ 'coc-json',
+  \ 'coc-tsserver',
+  \ 'coc-git',
+  \ 'coc-sh',
+  \ 'coc-explorer',
+  \ 'coc-prettier',
+  \ 'coc-diagnostic'
+  \ ]
+
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+nmap <silent> <leader>k :CocCommand explorer<cr>
+
+" coc-prettier
+command! -nargs=0 Prettier :CocCommand prettier.formatFile
+nmap <leader>f :CocCommand prettier.formatFile<cr>
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+    if (index(['vim','help'], &filetype) >= 0)
+        execute 'h '.expand('<cword>')
+    else
+        call CocAction('doHover')
+    endif
+endfunction
+
 " ALE
 Plug 'w0rp/ale' " Asynchonous linting engine
 let g:ale_set_highlights = 0
@@ -423,14 +457,19 @@ let g:ale_fix_on_save = 0
 nmap <silent><leader>af :ALEFix<cr>
 
 " Completion
-if (has('nvim'))
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-    Plug 'Shougo/deoplete.nvim'
-    Plug 'roxma/nvim-yarp'
-    Plug 'roxma/vim-hug-neovim-rpc'
-endif
-let g:deoplete#enable_at_startup = 1
+" if (has('nvim'))
+"     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" else
+"     Plug 'Shougo/deoplete.nvim'
+"     Plug 'roxma/nvim-yarp'
+"     Plug 'roxma/vim-hug-neovim-rpc'
+" endif
+" let g:deoplete#enable_at_startup = 1
+" 
+" call deoplete#custom#option({
+" \ 'auto_complete_delay': 200,
+" \ 'auto_refresh_delay': 100
+" \ })
 
 " UltiSnips {{{
     Plug 'SirVer/ultisnips' " Snippets plugin
@@ -479,11 +518,6 @@ highlight xmlAttrib cterm=italic term=italic gui=italic
 
 " highlight Type cterm=italic term=italic gui=italic
 highlight Normal ctermbg=none
-
-call deoplete#custom#option({
-\ 'auto_complete_delay': 200,
-\ 'auto_refresh_delay': 100
-\ })
 
 " Better tabbing
 vnoremap < <gv

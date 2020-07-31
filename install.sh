@@ -31,14 +31,17 @@ if [ "$(uname)" == "Darwin" ]; then
     # after the install, install neovim python libraries
     echo -e "\\n\\nRunning Neovim Python install"
     echo "=============================="
-    pip2 install --user neovim
     pip3 install --user neovim
 
     # after the install, install pytz python libraries
     echo -e "\\n\\nRunning pytz Python install"
     echo "=============================="
-    pip2 install --user pytz
     pip3 install --user pytz
+
+    # after the install, install pytz python libraries
+    echo -e "\\n\\nRunning jedi Python install"
+    echo "=============================="
+    pip3 install --user jedi
 
     # Change the default shell to zsh
     zsh_path="$( command -v zsh )"
