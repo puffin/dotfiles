@@ -43,6 +43,12 @@ if [ "$(uname)" == "Darwin" ]; then
     echo "=============================="
     pip3 install --user jedi
 
+    # after the install, install solaegraph ruby libraries
+    echo -e "\\n\\nRunning solargraph Ruby install"
+    echo "=============================="
+    gem install solargraph
+    
+
     # Change the default shell to zsh
     zsh_path="$( command -v zsh )"
     if ! grep "$zsh_path" /etc/shells; then

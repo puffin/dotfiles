@@ -19,6 +19,10 @@ endif
 set backspace=indent,eol,start " make backspace behave in a sane manner
 set clipboard=unnamed
 
+if has('mouse')
+    set mouse=a
+endif
+
 " Searching
 set ignorecase " case insensitive searching
 set smartcase " case-sensitive if expresson contains a capital letter
@@ -40,7 +44,7 @@ set wrap " turn on line wrapping
 set wrapmargin=8 " wrap lines when coming within n characters from side
 set textwidth=0 " disable automatic hard line breaking
 set linebreak " set soft wrapping
-set showbreak=… " show ellipsis at breaking
+set showbreak=↪
 set autoindent " automatically set indent of new line
 set ttyfast " faster redrawing
 set diffopt+=vertical,iwhite,internal,algorithm:patience,hiddenoff
@@ -56,12 +60,14 @@ set cmdheight=1 " command bar height
 set title " set terminal title
 set showmatch " show matching braces
 set mat=2 " how many tenths of a second to blink
+set updatetime=300
+set signcolumn=yes
+set shortmess+=c
 set cursorline "enable cursorline highlilight
 set cursorcolumn "enable cursorcolumn highlight"
 
 " Tab control
-" set noexpandtab " insert tabs rather than spaces for <Tab>
-set expandtab " insert spaces rarther than tabs for <Tab>
+set expandtab " insert spaces rather than tabs for <Tab>
 set smarttab " tab respects 'tabstop', 'shiftwidth', and 'softtabstop'
 set tabstop=2 " the visible width of tabs
 set softtabstop=2 " edit as if the tabs are 4 characters wide
@@ -78,7 +84,6 @@ set foldlevel=1
 " toggle invisible characters
 set list
 set listchars=tab:→\ ,eol:¬,trail:⋅,extends:❯,precedes:❮
-set showbreak=↪
 
 set t_Co=256 " Explicitly tell vim that the terminal supports 256 colors
 " switch cursor to line when in insert mode, and block when not
@@ -125,7 +130,7 @@ let g:lightline = {
 \               [ 'readonly', 'filetype', 'filename' ]],
 \       'right': [ [ 'percent', 'lineinfo' ],
 \                [ 'fileformat', 'fileencoding' ],
-\                [ 'gitblame', 'cocstatus', 'linter_errors', 'linter_warnings' ] ]
+\                [ 'gitblame', 'currentfunction', 'cocstatus', 'linter_errors', 'linter_warnings' ] ]
 \   },
 \   'component_expand': {
 \   },
@@ -141,6 +146,7 @@ let g:lightline = {
 \       'fileencoding': 'helpers#lightline#fileEncoding',
 \       'fileformat': 'helpers#lightline#fileFormat',
 \       'filetype': 'helpers#lightline#fileType',
+\       'currentfunction': 'helpers#lightline#currentFunction',
 \       'gitblame': 'helpers#lightline#gitBlame'
 \   },
 \   'tabline': {
@@ -188,9 +194,6 @@ Plug 'tpope/vim-abolish'
 " search inside files using ripgrep. This plugin provides an Ack command.
 Plug 'wincent/ferret'
 
-" insert or delete brackets, parens, quotes in pair
-Plug 'jiangmiao/auto-pairs'
-
 " easy commenting motions
 Plug 'tpope/vim-commentary'
 
@@ -218,9 +221,6 @@ Plug 'editorconfig/editorconfig-vim'
 
 " single/multi line code handler: gS - split one line into multiple, gJ - combine multiple lines into one
 Plug 'AndrewRadev/splitjoin.vim'
-
-" add end, endif, etc. automatically
-Plug 'tpope/vim-endwise'
 
 " detect indent style (tabs vs. spaces)
 Plug 'tpope/vim-sleuth'
@@ -267,55 +267,16 @@ nmap <leader>st :Startify<cr>
 Plug 'moll/vim-bbye'
 nmap <leader>b :Bdelete<cr>
 
+" signify
+Plug 'mhinz/vim-signify'
+let g:signify_vcs_list = [ 'git' ]
+let g:signify_sign_add = '┃'
+let g:signify_sign_delete = '-'
+let g:signify_sign_delete_first_line = '_'
+let g:signify_sign_change = '┃'
+
 " context-aware pasting
 Plug 'sickill/vim-pasta'
-
-" NERDTree
-Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTreeFind'] }
-Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'ryanoasis/vim-devicons'
-Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
-let g:WebDevIconsOS = 'Darwin'
-let g:WebDevIconsUnicodeDecorateFolderNodes = 1
-let g:DevIconsEnableFoldersOpenClose = 1
-let g:DevIconsEnableFolderExtensionPatternMatching = 1
-let NERDTreeDirArrowExpandable = "\u00a0" " make arrows invisible
-let NERDTreeDirArrowCollapsible = "\u00a0" " make arrows invisible
-let NERDTreeNodeDelimiter = "\u263a" " smiley face
-let g:NERDTreeWinSize=30
-
-augroup nerdtree
-    autocmd!
-    autocmd FileType nerdtree setlocal nolist " turn off whitespace characters
-    autocmd FileType nerdtree setlocal nocursorline " turn off line highlighting for performance
-augroup END
-
-" Toggle NERDTree
-function! ToggleNerdTree()
-    if @% != "" && @% !~ "Startify" && (!exists("g:NERDTree") || (g:NERDTree.ExistsForTab() && !g:NERDTree.IsOpen()))
-        :NERDTreeFind
-    else
-        :NERDTreeToggle
-    endif
-endfunction
-" toggle nerd tree
-nmap <silent> <leader>n :call ToggleNerdTree()<cr>
-" find the current file in nerdtree without needing to reload the drawer
-nmap <silent> <leader>y :NERDTreeFind<cr>
-
-let NERDTreeShowHidden=1
-let g:NERDTreeIndicatorMapCustom = {
-\ "Modified"  : "✹",
-\ "Staged"    : "✚",
-\ "Untracked" : "✭",
-\ "Renamed"   : "➜",
-\ "Unmerged"  : "═",
-\ "Deleted"   : "✖",
-\ "Dirty"     : "✗",
-\ "Clean"     : "✔︎",
-\ 'Ignored'   : '☒',
-\ "Unknown"   : "?"
-\ }
 
 " FZF
 Plug '/usr/local/opt/fzf'
@@ -377,14 +338,6 @@ endfunction
 
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
-" signify
-Plug 'mhinz/vim-signify'
-let g:signify_vcs_list = [ 'git' ]
-let g:signify_sign_add = '┃'
-let g:signify_sign_delete = '-'
-let g:signify_sign_delete_first_line = '_'
-let g:signify_sign_change = '┃'
-
 " vim-fugitive
 Plug 'tpope/vim-fugitive'
 nmap <silent> <leader>gs :Gstatus<cr>
@@ -393,9 +346,57 @@ nmap <silent><leader>gr :Gread<cr>
 nmap <silent><leader>gb :Gblame<cr>
 
 Plug 'tpope/vim-rhubarb' " hub extension for fugitive
-" Plug 'junegunn/gv.vim'
 Plug 'sodapopcan/vim-twiggy'
 Plug 'rbong/vim-flog'
+
+" NERDTree {{{
+    Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTreeFind'] }
+    Plug 'Xuyuanp/nerdtree-git-plugin'
+    Plug 'ryanoasis/vim-devicons'
+    Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+    let g:WebDevIconsOS = 'Darwin'
+    let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+    let g:DevIconsEnableFoldersOpenClose = 1
+    let g:DevIconsEnableFolderExtensionPatternMatching = 1
+    let NERDTreeDirArrowExpandable = "\u00a0" " make arrows invisible
+    let NERDTreeDirArrowCollapsible = "\u00a0" " make arrows invisible
+    let NERDTreeNodeDelimiter = "\u263a" " smiley face
+
+    augroup nerdtree
+        autocmd!
+        autocmd FileType nerdtree setlocal nolist " turn off whitespace characters
+        autocmd FileType nerdtree setlocal nocursorline " turn off line highlighting for performance
+    augroup END
+
+    " Toggle NERDTree
+    function! ToggleNerdTree()
+        if @% != "" && @% !~ "Startify" && (!exists("g:NERDTree") || (g:NERDTree.ExistsForTab() && !g:NERDTree.IsOpen()))
+            :NERDTreeFind
+        else
+            :NERDTreeToggle
+        endif
+    endfunction
+    " toggle nerd tree
+    nmap <silent> <leader>n :call ToggleNerdTree()<cr>
+    " find the current file in nerdtree without needing to reload the drawer
+    nmap <silent> <leader>y :NERDTreeFind<cr>
+
+    let NERDTreeShowHidden=1
+    " let NERDTreeDirArrowExpandable = '▷'
+    " let NERDTreeDirArrowCollapsible = '▼'
+    let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+" }}}
 
 " coc {{{
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -408,7 +409,8 @@ let g:coc_global_extensions = [
   \ 'coc-sh',
   \ 'coc-explorer',
   \ 'coc-prettier',
-  \ 'coc-diagnostic'
+  \ 'coc-diagnostic',
+  \ 'coc-solargraph'
   \ ]
 
 autocmd CursorHold * silent call CocActionAsync('highlight')
@@ -429,6 +431,21 @@ function! s:show_documentation()
         call CocAction('doHover')
     endif
 endfunction
+
+"tab completion
+inoremap <silent><expr> <TAB>
+    \ pumvisible() ? "\<C-n>" :
+    \ <SID>check_back_space() ? "\<TAB>" :
+    \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+let col = col('.') - 1
+return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Ruby coc support
+let g:coc_global_extensions = ['coc-solargraph']
 
 " ALE
 Plug 'w0rp/ale' " Asynchonous linting engine
@@ -455,21 +472,6 @@ let g:ale_fixers['css'] = ['prettier']
 let g:ale_javascript_prettier_use_local_config = 1
 let g:ale_fix_on_save = 0
 nmap <silent><leader>af :ALEFix<cr>
-
-" Completion
-" if (has('nvim'))
-"     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-" else
-"     Plug 'Shougo/deoplete.nvim'
-"     Plug 'roxma/nvim-yarp'
-"     Plug 'roxma/vim-hug-neovim-rpc'
-" endif
-" let g:deoplete#enable_at_startup = 1
-" 
-" call deoplete#custom#option({
-" \ 'auto_complete_delay': 200,
-" \ 'auto_refresh_delay': 100
-" \ })
 
 " UltiSnips {{{
     Plug 'SirVer/ultisnips' " Snippets plugin

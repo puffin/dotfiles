@@ -1,6 +1,7 @@
 {
     "suggest.enablePreview": true,
     "codeLens.enable": true,
+    "solargraph.useBundler": false,
     "git.addedSign.text": "┃",
     "git.removedSign.text": "┃",
     "git.changedSign.text": "┃",
