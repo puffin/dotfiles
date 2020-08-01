@@ -27,8 +27,10 @@
     "explorer.file.column.git.icon.untracked": "?",
     "explorer.file.column.git.icon.modified": "✹",
     "explorer.file.column.git.icon.ignored": "☒",
+    "explorer.openAction.strategy": "vsplit",
     "explorer.openAction.for.directory": "expandOrCollapse",
-    "explorer.previewAction.onHover": false,
+    "explorer.previewAction.onHover": true,
+    "explorer.icon.enableVimDevicons": false,
     "explorer.keyMappings": {
         "<cr>": ["expandable?", ["expanded?", "collapse", "expand"], "open"]
     },
