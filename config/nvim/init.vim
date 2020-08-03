@@ -534,6 +534,8 @@ Plug 'ekalinin/Dockerfile.vim'
 Plug 'hashivim/vim-terraform'
 " Using vim-plug
 Plug 'elixir-editors/vim-elixir'
+" Ruby
+Plug 'vim-ruby/vim-ruby'
 
 call plug#end()
 
