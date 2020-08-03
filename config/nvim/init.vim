@@ -499,9 +499,6 @@ endif
 inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
   \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
-" Ruby coc support
-let g:coc_global_extensions = ['coc-solargraph']
-
 " ALE
 Plug 'w0rp/ale' " Asynchonous linting engine
 let g:ale_set_highlights = 0
