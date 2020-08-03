@@ -410,6 +410,7 @@ let g:coc_global_extensions = [
   \ 'coc-explorer',
   \ 'coc-prettier',
   \ 'coc-diagnostic',
+  \ 'coc-elixir',
   \ 'coc-solargraph'
   \ ]
 
@@ -421,28 +422,77 @@ nmap <silent> <leader>k :CocCommand explorer<cr>
 command! -nargs=0 Prettier :CocCommand prettier.formatFile
 nmap <leader>f :CocCommand prettier.formatFile<cr>
 
+" coc-git
+nmap [g <Plug>(coc-git-prevchunk)
+nmap ]g <Plug>(coc-git-nextchunk)
+nmap gs <Plug>(coc-git-chunkinfo)
+nmap gu :CocCommand git.chunkUndo<cr>
+
+nmap <silent> <leader>k :CocCommand explorer<cr>
+
+"remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+nmap <silent> gh <Plug>(coc-doHover)
+
+" diagnostics navigation
+nmap <silent> [c <Plug>(coc-diagnostic-prev)
+nmap <silent> ]c <Plug>(coc-diagnostic-next)
+
+" rename
+nmap <silent> <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+" organize imports
+command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
+
 " Use K to show documentation in preview window
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
-    if (index(['vim','help'], &filetype) >= 0)
-        execute 'h '.expand('<cword>')
-    else
-        call CocAction('doHover')
-    endif
+  if (index(['vim','help'], &filetype) >= 0)
+      execute 'h '.expand('<cword>')
+  else
+      call CocAction('doHover')
+  endif
 endfunction
 
 "tab completion
 inoremap <silent><expr> <TAB>
-    \ pumvisible() ? "\<C-n>" :
-    \ <SID>check_back_space() ? "\<TAB>" :
-    \ coc#refresh()
+  \ pumvisible() ? "\<C-n>" :
+  \ <SID>check_back_space() ? "\<TAB>" :
+  \ coc#refresh()
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 function! s:check_back_space() abort
-let col = col('.') - 1
-return !col || getline('.')[col - 1]  =~# '\s'
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
+
+" Use <c-space> to trigger completion.
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
+" position. Coc only does snippet and additional edit on confirm.
+" <cr> could be remapped by other vim plugin, try `:verbose imap <CR>`.
+if exists('*complete_info')
+  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+else
+  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+endif
+
+" For enhanced <CR> experience with coc-pairs checkout :h coc#on_enter()
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+  \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Ruby coc support
 let g:coc_global_extensions = ['coc-solargraph']
@@ -473,14 +523,6 @@ let g:ale_javascript_prettier_use_local_config = 1
 let g:ale_fix_on_save = 0
 nmap <silent><leader>af :ALEFix<cr>
 
-" UltiSnips {{{
-    Plug 'SirVer/ultisnips' " Snippets plugin
-    Plug 'honza/vim-snippets'
-    let g:UltiSnipsExpandTrigger="<tab>"
-    let g:UltiSnipsJumpForwardTrigger="<C-j>"
-    let g:UltiSnipsJumpBackwardTrigger="<C-k>"
-" }}}
-
 " JSON
 Plug 'elzr/vim-json', { 'for': 'json' }
 let g:vim_json_syntax_conceal = 0
@@ -488,6 +530,8 @@ let g:vim_json_syntax_conceal = 0
 " Extra Syntax Highlight
 Plug 'ekalinin/Dockerfile.vim'
 Plug 'hashivim/vim-terraform'
+" Using vim-plug
+Plug 'elixir-editors/vim-elixir'
 
 call plug#end()
 
