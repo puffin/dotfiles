@@ -112,6 +112,19 @@ vim and neovim should just work once the correct plugins are installed. To insta
 ➜ nvim +PlugInstall
 ```
 
+### LSP (Language Server Protocol)
+
+Vim is configured with [coc.nvim](https://github.com/neoclide/coc.nvim) for full LSP support for your prefered languages. It makes vim as smart as VSCode with Intellisense engine.
+
+Pre-configured suppport for python, elixir, ruby, JS and vim. Want more, just add them to `g:coc_global_extensions` and configure [coc-settings.json](config/nvim/coc-settings.json) accordingly.
+
+Autocompletion navigation is set on the `<TAB>` key. Then some of the gotos keys are remapped as:
+
++ `gd` : Jump to definition(s) of current symbol
++ `gi` : Jump to implementation(s) of current symbol
++ `gr` : Jump to references of current symbol
++ `K` : Show documentation of the current symbol
+
 ## Tmux Configuration
 
 Tmux is a terminal multiplexor which lets you create windows and splits in the terminal that you can attach and detach from. I use it to keep multiple projects open in separate windows and to create an IDE-like environment to work in where I can have my code open in vim/neovim and a shell open to run tests/scripts. Tmux is configured in [~/.tmux.conf](tmux/tmux.conf.symlink), and in [tmux/theme.sh](tmux/theme.sh), which defines the colors used, the layout of the tmux bar, and what what will be displayed, including the time and date, open windows, tmux session name, VPN status, battery indicator. If not running on macOS, this configuration should be removed.
