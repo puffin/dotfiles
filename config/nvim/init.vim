@@ -349,6 +349,13 @@ Plug 'tpope/vim-rhubarb' " hub extension for fugitive
 Plug 'sodapopcan/vim-twiggy'
 Plug 'rbong/vim-flog'
 
+" UltiSnips {{{
+    Plug 'SirVer/ultisnips' " Snippets plugin
+    let g:UltiSnipsExpandTrigger="<C-l>"
+    let g:UltiSnipsJumpForwardTrigger="<C-j>"
+    let g:UltiSnipsJumpBackwardTrigger="<C-k>"
+" }}}
+
 " NERDTree {{{
     Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTreeFind'] }
     Plug 'Xuyuanp/nerdtree-git-plugin'
@@ -411,7 +418,9 @@ let g:coc_global_extensions = [
   \ 'coc-prettier',
   \ 'coc-diagnostic',
   \ 'coc-elixir',
-  \ 'coc-solargraph'
+  \ 'coc-solargraph',
+  \ 'coc-ultisnips',
+  \ 'coc-vimlsp'
   \ ]
 
 autocmd CursorHold * silent call CocActionAsync('highlight')
