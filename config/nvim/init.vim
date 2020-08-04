@@ -420,7 +420,8 @@ let g:coc_global_extensions = [
   \ 'coc-elixir',
   \ 'coc-solargraph',
   \ 'coc-ultisnips',
-  \ 'coc-vimlsp'
+  \ 'coc-vimlsp',
+  \ 'coc-docker'
   \ ]
 
 autocmd CursorHold * silent call CocActionAsync('highlight')
@@ -528,6 +529,14 @@ nmap <silent><leader>af :ALEFix<cr>
 " JSON
 Plug 'elzr/vim-json', { 'for': 'json' }
 let g:vim_json_syntax_conceal = 0
+
+" markdown {{{
+    " Open markdown files in Marked.app - mapped to <leader>m
+    Plug 'itspriddle/vim-marked', { 'for': 'markdown', 'on': 'MarkedOpen' }
+    nmap <leader>m :MarkedOpen!<cr>
+    nmap <leader>mq :MarkedQuit<cr>
+    nmap <leader>* *<c-o>:%s///gn<cr>
+" }}}
 
 " Extra Syntax Highlight
 Plug 'ekalinin/Dockerfile.vim'
