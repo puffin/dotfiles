@@ -1,6 +1,6 @@
 # Dotfiles
 
-This is a collection of vim, tmux, and zsh configurations. This setup works for me, a DevOps engineer on macOS. It might not works for you but you can steal ideas from this and if you like, contribute back to it!
+This is a collection of vim, tmux, and zsh configurations. This setup works for me, a DevOps engineer on macOS. It mights not works for you but you can steal ideas from this and if you like, contribute back to it!
 
 ![A screenshot of the dotfiles setup](screenshot.png)
 
@@ -16,7 +16,7 @@ This is a collection of vim, tmux, and zsh configurations. This setup works for 
 
 ## Setup and Installation
 
-Clone the dotfiles repository to your home directory as `~/.dotfiles`. 
+Clone the dotfiles repository to your home directory as `~/.dotfiles`.
 
 ```bash
 ➜ git clone https://github.com/puffin/dotfiles.git ~/.dotfiles
@@ -25,21 +25,21 @@ Clone the dotfiles repository to your home directory as `~/.dotfiles`.
 
 ### Backup
 
-First, you may want to backup any existing files that exist so this doesn't overwrite your work.
+First, you may want to back up any existing files that exist so this doesn't overwrite your work.
 
-Run `install/backup.sh` to backup all symlinked files to a `~/dotfiles-backup` directory.
+Run `install/backup.sh` to back up all symlinked files to a `~/dotfiles-backup` directory.
 
-This will not delete any of these files, and the install scripts will not overwrite any existing. After the backup is complete, you can delete the files from your home directory to continue installation.
+This will not delete any of these files, and the installation scripts will not overwrite any existing. After the backup is complete, you can delete the files from your home directory to continue installation.
 
 ### Installation
 
-If on OSX, you will need to install the XCode CLI tools before continuing. To do so, open a terminal and type
+If on OSX, you will need to install the XCode CLI tools before continuing. To do so, open a terminal and type:
 
 ```bash
 ➜ xcode-select --install
 ```
 
-Then install everything. Open a terminal and type
+Then install everything. Open a terminal and type:
 
 ```bash
 ➜ ./install.sh
@@ -47,7 +47,7 @@ Then install everything. Open a terminal and type
 
 `install.sh` will start by initializing the submodules used by this repo. Then, it will install all symbolic links into your home directory. Every file with a `.symlink` extension will be symlinked to the home directory with a `.` in front of it. As an example, `vimrc.symlink` will be symlinked in the home directory as `~/.vimrc`. Then, this script will create a `~/.vim-tmp` directory in your home directory, as this is where vim is configured to place its temporary files. Additionally, all files in the `config` directory will be symlinked to the `~/.config/` directory for applications that follow the [XDG base directory specification](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html), such as neovim.
 
-Next, the install script will perform a check to see if it is running on an OSX machine. If so, it will install Homebrew if it is not currently installed and will install the homebrew packages listed in [`Brewfile`](Brewfile). Then, it will run [`osx.sh`](install/osx.sh) and change some OSX configurations.
+Next, the installation script will perform a check to see if it is running on an OSX machine. If so, it will install Homebrew if it is not currently installed and will install the homebrew packages listed in [`Brewfile`](Brewfile). Then, it will run [`osx.sh`](install/osx.sh) and change some OSX configurations.
 
 ## Terminal Capabilities
 
@@ -62,10 +62,10 @@ In order to properly support italic fonts of tmux, a couple of terminal capabili
 
 ZSH is configured in the `zshrc.symlink` file, which will be symlinked to the home directory. The following occurs in this file:
 
-* set the `EDITOR` to nvim
-* Setup zplug plugin manager for zsh plugins and installed them.
-* source a `~/.localrc` if it exists so that additional configurations can be made that won't be kept track of in this dotfiles repo. This is good for things like API keys, etc.
-* And more...
++ set the `EDITOR` to nvim
++ Setup zplug plugin manager for zsh plugins and installed them.
++ source a `~/.localrc` if it exists so that additional configurations can be made that won't be kept track of in this dotfiles repo. This is good for things like API keys, etc.
++ And more...
 
 ### Prompt
 
@@ -77,17 +77,17 @@ The git info shown on the `RPROMPT` displays the current branch name, and whethe
 
 The git info shown on the `RPROMPT` displays the current branch name, along with the following symbols.
 
--  `+` - New files were added
--  `!` - Existing files were modified
--  `?` - Untracked files exist that are not ignored
--  `»` - Current changes include file renaming
--  `✘` - An existing tracked file has been deleted
--  `$` - There are currently stashed files
--  `=` - There are unmerged files
--  `⇡` - Branch is ahead of the remote (indicating a push is needed)
--  `⇣` - Branch is behind the remote (indicating a pull is needed)
--  `⇕` - The branches have diverged (indicating history has changed and maybe a force-push is needed)
--  `✔` - The current working directory is clean
++ `+` - New files were added
++ `!` - Existing files were modified
++ `?` - Untracked files exist that are not ignored
++ `»` - Current changes include file renaming
++ `✘` - An existing tracked file has been deleted
++ `$` - There are currently stashed files
++ `=` - There are unmerged files
++ `⇡` - Branch is ahead of the remote (indicating a push is needed)
++ `⇣` - Branch is behind the remote (indicating a pull is needed)
++ `⇕` - The branches have diverged (indicating history has changed and maybe a force-push is needed)
++ `✔` - The current working directory is clean
 
 ## Vim and Neovim Setup
 
@@ -98,15 +98,15 @@ The git info shown on the `RPROMPT` displays the current branch name, along with
 | Main Configuratin File  | `~/.vimrc` | `~/.config/nvim/init.vim` |
 | Configuration directory | `~/.vim`   | `~/.config/nvim`          |
 
-### Installation
+### Setup
 
 Vim is likely already installed on your system. If using a Mac, MacVim will be installed from Homebrew. Neovim will also be installed from Homebrew by default on a Mac. For other systems, you may need to install Neovim manually. See their [web site](https://neovim.io) for more information.
 
 [`link.sh`](install/link.sh) will symlink the XDG configuration directory into your home directory and will then create symlinks for `.vimrc` and `.vim` over to the Neovim configuration so that Vim and Neovim will both be configured in the same way from the same files. The benefit of this configuration is that you only have to maintain a single vim configuration for both so you can very seamlessly transition back to vim with no big impact to your productivity.
 
-Inside of [`.zshrc`](zsh/zshrc.symlink), the `EDITOR` shell variable is set to `nvim`, defaulting to Neovim for editor tasks, such as git commit messages. Additionally, I have aliased `vim` to `nvim` in [`aliases.zsh`](zsh/aliases.zsh) You can remove this if you would rather not alias the `vim` command to `nvim`.
+Inside [`.zshrc`](zsh/zshrc.symlink), the `EDITOR` shell variable is set to `nvim`, defaulting to Neovim for editor tasks, such as git commit messages. Additionally, I have aliased `vim` to `nvim` in [`aliases.zsh`](zsh/aliases.zsh) You can remove this if you would rather not alias the `vim` command to `nvim`.
 
-vim and neovim should just work once the correct plugins are installed. To install the plugins, you will need to open Neovim in the following way:
+Vim and neovim should just work once the correct plugins are installed. To install the plugins, you will need to open Neovim in the following way:
 
 ```bash
 ➜ nvim +PlugInstall
@@ -118,7 +118,7 @@ Vim is configured with [coc.nvim](https://github.com/neoclide/coc.nvim) for full
 
 Pre-configured suppport for python, elixir, ruby, JS and vim. Want more, just add them to `g:coc_global_extensions` and configure [coc-settings.json](config/nvim/coc-settings.json) accordingly.
 
-Autocompletion navigation is set on the `<TAB>` key. Then some of the gotos keys are remapped as:
+Autocompletion navigation is set on the `<TAB>` key. Then some gotos keys are remapped as:
 
 + `gd` : Jump to definition(s) of current symbol
 + `gi` : Jump to implementation(s) of current symbol
@@ -153,7 +153,7 @@ Tmux is a fantastic tool for improving productivity when working with a terminal
 
 ### Tmux basic control
 
-Tmux is configure with 2 plugins ([tmux-continuum](https://github.com/tmux-plugins/tmux-continuum) and [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)) to continuously save tmux environment and restore it when started. This include also your vim session so your development environment is back where you left it off.
+Tmux is configured with 2 plugins ([tmux-continuum](https://github.com/tmux-plugins/tmux-continuum) and [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)) to continuously save tmux environment and restore it when started. This includes also your vim session so your development environment is back where you left it off.
 
 To start tmux, open your terminal and type
 
@@ -181,7 +181,7 @@ Here is a basic list of commands you'll use all the time in tmux. Reminder, pref
 
 ### Vim basic control
 
-Vim is configure with various plugins to increase productivity. You can explore [config/nvim/init.vim](config/nvim/init.vim) to find out which plugins are installed.
+Vim is configured with various plugins to increase productivity. You can explore [config/nvim/init.vim](config/nvim/init.vim) to find out which plugins are installed.
 
 To start vim, open your terminal and type
 
@@ -214,4 +214,4 @@ The automated installation can encounter errors around file permissions in case 
 
 ## Questions
 
-If you have questions, notice issues,  or would like to see improvements, please open an [issue](https://github.com/puffin/dotfiles/issues/new) and I'm happy to help you out!
+If you have questions, notice issues, or would like to see improvements, please open an [issue](https://github.com/puffin/dotfiles/issues/new) and I'm happy to help you out!
