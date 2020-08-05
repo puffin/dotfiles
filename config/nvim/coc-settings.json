@@ -2,6 +2,7 @@
     "suggest.enablePreview": true,
     "codeLens.enable": true,
     "solargraph.useBundler": false,
+    "solargraph.hover": true,
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.pythonPath": "python3",
