@@ -421,7 +421,9 @@ let g:coc_global_extensions = [
   \ 'coc-solargraph',
   \ 'coc-ultisnips',
   \ 'coc-vimlsp',
-  \ 'coc-docker'
+  \ 'coc-docker',
+  \ 'coc-groovy',
+  \ 'coc-markdownlint'
   \ ]
 
 autocmd CursorHold * silent call CocActionAsync('highlight')
