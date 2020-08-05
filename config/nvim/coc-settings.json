@@ -21,6 +21,8 @@
     "diagnostic.infoSign": "●",
     "diagnostic.hintSign": "○",
     "git.addGBlameToBufferVar": true,
+    "explorer.position": "left",
+    "explorer.width": 50,
     "explorer.icon.enableNerdfont": true,
     "explorer.sources": [
         { "name": "buffer", "expand": false },
@@ -36,7 +38,7 @@
     "explorer.file.column.git.icon.ignored": "☒",
     "explorer.openAction.strategy": "previousBuffer",
     "explorer.openAction.for.directory": "expandOrCollapse",
-    "explorer.previewAction.onHover": true,
+    "explorer.previewAction.onHover": false,
     "explorer.icon.enableVimDevicons": false,
     "explorer.keyMappings": {
         "<cr>": ["expandable?", ["expanded?", "collapse", "expand"], "open"]
