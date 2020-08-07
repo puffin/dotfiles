@@ -7,12 +7,14 @@ This is a collection of vim, tmux, and zsh configurations. This setup works for 
 ## Contents
 
 + [Setup and Installation](#setup-and-installation)
++ [Terminal Capabilities](#terminal-capabilities)
 + [ZSH Setup](#zsh-setup)
 + [Vim and Neovim Setup](#vim-and-neovim-setup)
 + [Tmux](#tmux-configuration)
-+ [Terminal](#terminal)
++ [Terminal](#terminal-configuration)
 + [Fonts](#fonts)
 + [Usage](#usage)
++ [Troubleshooting](#troubleshooting)
 
 ## Setup and Installation
 
@@ -171,13 +173,13 @@ Here is a basic list of commands you'll use all the time in tmux. Reminder, pref
 + `prefix + c` : create a new window
 + `prefix + ,` : rename current window
 + `prefix + &` : kill current window
-+ `prefix + [1,2,3,...]` : select window
++ `prefix + [1, 2, 3, ...]` : select window
 + `prefix + -` : split new pane vertically
 + `prefix + |` : split new pane horizontally
 + `prefix + x` : kill current pane
-+ `prefix + [h,j,k,l]` : move to pane
++ `prefix + [h, j, k, l]` : move to pane
 + `prefix + z` : toggle pane fullscreen
-+ `prefix + shift + [h,j,k,l]` : resize pane
++ `prefix + shift + [h, j, k, l]` : resize pane
 
 ### Vim basic control
 
@@ -200,7 +202,7 @@ Here is basic list of commands you'll use all the time in vim. Reminder, the lea
 + `leader + r` : Buffer fuzzy finder
 + `control+w + s` : Split new buffer horizontally
 + `control+w + v` : Split new buffer vertically
-+ `control+w [h,j,k,l]` : move to buffer
++ `control+w [h, j, k, l]` : move to buffer
 + `:Rg` : Recursively searches directories for a regex pattern
 
 ## Troubleshooting
