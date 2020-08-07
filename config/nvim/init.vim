@@ -112,6 +112,9 @@ match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 highlight ExtraWhitespace ctermbg=darkgreen guibg=darkgreen
 match ExtraWhitespace /\s\+$\|\t/
 
+" Smoother scrolling
+Plug 'psliwka/vim-smoothie'
+
 " Load colorschemes
 Plug 'chriskempson/base16-vim'
 Plug 'joshdick/onedark.vim'
@@ -421,7 +424,9 @@ let g:coc_global_extensions = [
   \ 'coc-solargraph',
   \ 'coc-ultisnips',
   \ 'coc-vimlsp',
-  \ 'coc-docker'
+  \ 'coc-docker',
+  \ 'coc-groovy',
+  \ 'coc-markdownlint'
   \ ]
 
 autocmd CursorHold * silent call CocActionAsync('highlight')
@@ -499,32 +504,6 @@ endif
 " For enhanced <CR> experience with coc-pairs checkout :h coc#on_enter()
 inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
   \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-" ALE
-Plug 'w0rp/ale' " Asynchonous linting engine
-let g:ale_set_highlights = 0
-let g:ale_change_sign_column_color = 0
-let g:ale_sign_column_always = 1
-let g:ale_fix_on_save = 1
-let g:ale_lint_delay = 1000
-let g:ale_lint_on_text_changed = 'always'
-let g:ale_sign_error = '✖'
-let g:ale_sign_warning = '⚠'
-let g:ale_echo_msg_error_str = '✖'
-let g:ale_echo_msg_warning_str = '⚠'
-let g:ale_echo_msg_format = '%severity% %s% [%linter%% code%]'
-
-let g:ale_linters = {
-\   'javascript': ['eslint'],
-\   'html': []
-\}
-let g:ale_fixers = {}
-let g:ale_fixers['javascript'] = ['prettier']
-let g:ale_fixers['json'] = ['prettier']
-let g:ale_fixers['css'] = ['prettier']
-let g:ale_javascript_prettier_use_local_config = 1
-let g:ale_fix_on_save = 0
-nmap <silent><leader>af :ALEFix<cr>
 
 " JSON
 Plug 'elzr/vim-json', { 'for': 'json' }

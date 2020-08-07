@@ -2,9 +2,16 @@
     "suggest.enablePreview": true,
     "codeLens.enable": true,
     "solargraph.useBundler": false,
+    "solargraph.hover": true,
+    "solargraph.diagnostics": true,
+    "solargraph.autoformat": true,
+    "solargraph.formatting": true,
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.pythonPath": "python3",
+    "markdownlint.config": {
+        "line-length": false
+    },
     "git.addedSign.text": "┃",
     "git.removedSign.text": "┃",
     "git.changedSign.text": "┃",
@@ -17,6 +24,8 @@
     "diagnostic.infoSign": "●",
     "diagnostic.hintSign": "○",
     "git.addGBlameToBufferVar": true,
+    "explorer.position": "left",
+    "explorer.width": 50,
     "explorer.icon.enableNerdfont": true,
     "explorer.sources": [
         { "name": "buffer", "expand": false },
@@ -32,13 +41,14 @@
     "explorer.file.column.git.icon.ignored": "☒",
     "explorer.openAction.strategy": "previousBuffer",
     "explorer.openAction.for.directory": "expandOrCollapse",
-    "explorer.previewAction.onHover": true,
+    "explorer.previewAction.onHover": false,
     "explorer.icon.enableVimDevicons": false,
     "explorer.keyMappings": {
         "<cr>": ["expandable?", ["expanded?", "collapse", "expand"], "open"]
     },
     "diagnostic-languageserver.filetypes": {
-        "sh": "shellcheck"
+        "sh": "shellcheck",
+        "markdown": ["markdownlint", "languagetool"]
     },
     "diagnostic-languageserver.linters": {
         "shellcheck": {
@@ -63,6 +73,41 @@
                 "warning": "warning"
             },
             "sourceName": "shellcheck"
+        },
+        "markdownlint": {
+            "command": "markdownlint",
+            "isStderr": true,
+            "debounce": 100,
+            "args": ["--stdin"],
+            "offsetLine": 0,
+            "offsetColumn": 0,
+            "sourceName": "markdownlint",
+            "formatLines": 1,
+            "formatPattern": [
+                "^.*?:\\s+(\\d+):\\s+(.*)(\\r|\\n)*$",
+                {
+                    "line": 1,
+                    "column": -1,
+                    "message": 2
+                }
+            ]
+        },
+        "languagetool": {
+            "command": "languagetool",
+            "debounce": 200,
+            "args": ["-"],
+            "offsetLine": 0,
+            "offsetColumn": 0,
+            "sourceName": "languagetool",
+            "formatLines": 2,
+            "formatPattern": [
+                "^\\d+?\\.\\)\\s+Line\\s+(\\d+),\\s+column\\s+(\\d+),\\s+([^\\n]+)\nMessage:\\s+(.*)(\\r|\\n)*$",
+                {
+                    "line": 1,
+                    "column": 2,
+                    "message": [4, 3]
+                }
+            ]
         }
     }
 }
