@@ -112,6 +112,9 @@ match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 highlight ExtraWhitespace ctermbg=darkgreen guibg=darkgreen
 match ExtraWhitespace /\s\+$\|\t/
 
+" Smoother scrolling
+Plug 'psliwka/vim-smoothie'
+
 " Load colorschemes
 Plug 'chriskempson/base16-vim'
 Plug 'joshdick/onedark.vim'
