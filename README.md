@@ -126,6 +126,7 @@ Autocompletion navigation is set on the `<TAB>` key. Then some gotos keys are re
 + `gi` : Jump to implementation(s) of current symbol
 + `gr` : Jump to references of current symbol
 + `K` : Show documentation of the current symbol
++ `<leader> d` : Toggle linters on/off
 
 ## Tmux Configuration
 
