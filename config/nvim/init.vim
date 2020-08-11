@@ -409,7 +409,7 @@ Plug 'rbong/vim-flog'
 " }}}
 
 " coc {{{
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'master'}
 
 let g:coc_global_extensions = [
   \ 'coc-python',
@@ -455,6 +455,9 @@ nmap <silent> gh <Plug>(coc-doHover)
 " diagnostics navigation
 nmap <silent> [c <Plug>(coc-diagnostic-prev)
 nmap <silent> ]c <Plug>(coc-diagnostic-next)
+
+" diagnostics toggle
+nmap <silent> <leader>d :call CocAction('diagnosticToggle')<cr>
 
 " rename
 nmap <silent> <leader>rn <Plug>(coc-rename)
