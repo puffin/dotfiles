@@ -137,7 +137,8 @@ fi
 export GPG_TTY=$(tty)
 
 # ADD python3 bin
-export PATH="$PATH:$HOME/Library/Python/3.7/bin"
+#export PATH="$PATH:$HOME/Library/Python/3.7/bin"
+export PATH="$PATH:$HOME/Library/Python/3.8/bin"
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"

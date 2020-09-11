@@ -19,9 +19,10 @@ endif
 set backspace=indent,eol,start " make backspace behave in a sane manner
 set clipboard=unnamed
 
-if has('mouse')
-    set mouse=a
-endif
+" if has('mouse')
+"     set mouse=a
+" endif
+set mouse=
 
 " Searching
 set ignorecase " case insensitive searching
