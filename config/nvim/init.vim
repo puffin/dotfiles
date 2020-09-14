@@ -41,7 +41,7 @@ set tm=500
 
 " Appearance
 set number " show line numbers
-set wrap " turn on line wrapping
+set wrap linebreak " turn on line wrapping
 set wrapmargin=8 " wrap lines when coming within n characters from side
 set textwidth=0 " disable automatic hard line breaking
 set linebreak " set soft wrapping
