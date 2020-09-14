@@ -48,6 +48,18 @@
     "explorer.keyMappings": {
         "<cr>": ["expandable?", ["expanded?", "collapse", "expand"], "open"]
     },
+    "languageserver": {
+        "terraform": {
+            "command": "terraform-ls",
+            "args": ["serve"],
+            "filetypes": [
+                "terraform",
+                "tf"
+            ],
+            "initializationOptions": {},
+            "settings": {}
+        }
+    },
     "diagnostic-languageserver.filetypes": {
         "sh": "shellcheck",
         "markdown": ["markdownlint"]
