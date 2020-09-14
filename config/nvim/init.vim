@@ -427,7 +427,8 @@ let g:coc_global_extensions = [
   \ 'coc-vimlsp',
   \ 'coc-docker',
   \ 'coc-groovy',
-  \ 'coc-markdownlint'
+  \ 'coc-markdownlint',
+  \ 'coc-pairs'
   \ ]
 
 autocmd CursorHold * silent call CocActionAsync('highlight')
