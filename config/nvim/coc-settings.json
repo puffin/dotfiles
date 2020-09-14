@@ -9,6 +9,8 @@
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.pythonPath": "python3",
+    "python.jediEnabled": false,
+    "elixir.pathToElixirLS": "~/.elixir-ls/release/language_server.sh",
     "markdownlint.config": {
         "line-length": false
     },
@@ -46,9 +48,21 @@
     "explorer.keyMappings": {
         "<cr>": ["expandable?", ["expanded?", "collapse", "expand"], "open"]
     },
+    "languageserver": {
+        "terraform": {
+            "command": "terraform-ls",
+            "args": ["serve"],
+            "filetypes": [
+                "terraform",
+                "tf"
+            ],
+            "initializationOptions": {},
+            "settings": {}
+        }
+    },
     "diagnostic-languageserver.filetypes": {
         "sh": "shellcheck",
-        "markdown": ["markdownlint", "languagetool"]
+        "markdown": ["markdownlint"]
     },
     "diagnostic-languageserver.linters": {
         "shellcheck": {

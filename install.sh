@@ -47,7 +47,14 @@ if [ "$(uname)" == "Darwin" ]; then
     echo -e "\\n\\nRunning solargraph Ruby install"
     echo "=============================="
     gem install solargraph
-    
+
+    if [ ! -d "$HOME/.elixir-ls" ]; then
+        echo -e "\\n\\nRunning elixir LS install"
+        echo "=============================="
+        git clone https://github.com/elixir-lsp/elixir-ls.git ~/.elixir-ls && \
+        cd ~/.elixir-ls && \
+        mix deps.get && mix compile && mix elixir_ls.release -o release
+    fi
 
     # Change the default shell to zsh
     zsh_path="$( command -v zsh )"
@@ -77,5 +84,6 @@ elif ! [[ $SHELL =~ .*zsh.* ]]; then
     echo "Configuring zsh as default shell"
     chsh -s "$(command -v zsh)"
 fi
+
 
 echo "Done. Reload your terminal."

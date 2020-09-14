@@ -19,9 +19,10 @@ endif
 set backspace=indent,eol,start " make backspace behave in a sane manner
 set clipboard=unnamed
 
-if has('mouse')
-    set mouse=a
-endif
+" if has('mouse')
+"     set mouse=a
+" endif
+set mouse=
 
 " Searching
 set ignorecase " case insensitive searching
@@ -409,7 +410,7 @@ Plug 'rbong/vim-flog'
 " }}}
 
 " coc {{{
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'master'}
 
 let g:coc_global_extensions = [
   \ 'coc-python',
@@ -455,6 +456,9 @@ nmap <silent> gh <Plug>(coc-doHover)
 " diagnostics navigation
 nmap <silent> [c <Plug>(coc-diagnostic-prev)
 nmap <silent> ]c <Plug>(coc-diagnostic-next)
+
+" diagnostics toggle
+nmap <silent> <leader>d :call CocAction('diagnosticToggle')<cr>
 
 " rename
 nmap <silent> <leader>rn <Plug>(coc-rename)
