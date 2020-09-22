@@ -348,6 +348,9 @@ nmap <silent> <leader>gs :Gstatus<cr>
 nmap <leader>ge :Gedit<cr>
 nmap <silent><leader>gr :Gread<cr>
 nmap <silent><leader>gb :Gblame<cr>
+nmap <silent><leader>gd :Gvdiffsplit!<cr>
+nmap <silent>gdh :diffget //2<cr>
+nmap <silent>gdl :diffget //3<cr>
 
 Plug 'tpope/vim-rhubarb' " hub extension for fugitive
 Plug 'sodapopcan/vim-twiggy'
