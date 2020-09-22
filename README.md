@@ -206,6 +206,16 @@ Here is basic list of commands you'll use all the time in vim. Reminder, the lea
 + `control+w [h, j, k, l]` : move to buffer
 + `:Rg` : Recursively searches directories for a regex pattern
 
+Some more advanced commands.
+
++ `leader + gs` : Display Git Status
++ `leader + gd` : Open a Git 3-way split to resolve conflict
++ `gdh` : In Git 3-way split mode, get the change from the left pane (buffer with `//2` name)
++ `gdl` : In Git 3-way split mode, get the change from the right pane (buffer with `//3` name)
++ `]c` : Jumping to the next Git conflict to fix
++ `[c` : Jumping to the previous Git conflict to fix
++ `control+w + o` : Leave only the current pane open
+
 ## Troubleshooting
 
 The automated installation can encounter errors around file permissions in case you don't have administrator access to the file system or you're trying to install it under a new OS user. Open a terminal and type:
