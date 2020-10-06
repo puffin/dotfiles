@@ -365,6 +365,8 @@ let g:DevIconsEnableFolderExtensionPatternMatching = 1
 
 " Snippets plugin
 Plug 'SirVer/ultisnips'
+" Disable the default Ultisnips tab mapping to free up coc
+let g:UltiSnipsExpandTrigger = "<nop>"
 
 Plug 'neoclide/coc.nvim', {'branch': 'master'}
 
