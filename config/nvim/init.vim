@@ -406,6 +406,10 @@ Plug 'honza/vim-snippets' " Snippets files
     \ }
 " }}}
 
+" UltiSnips {{{
+    Plug 'SirVer/ultisnips' " Snippets plugin
+" }}}
+
 " coc {{{
 Plug 'neoclide/coc.nvim', {'branch': 'master'}
 
@@ -547,6 +551,8 @@ Plug 'hashivim/vim-terraform'
 Plug 'elixir-editors/vim-elixir'
 " Ruby
 Plug 'vim-ruby/vim-ruby'
+" Solidity
+Plug 'tomlion/vim-solidity'
 
 call plug#end()
 
