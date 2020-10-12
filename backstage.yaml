@@ -5,7 +5,7 @@ metadata:
   description: This is a collection of vim, tmux, and zsh configurations. This setup works for me, a DevOps engineer on macOS. It mights not works for you but you can steal ideas from this and if you like, contribute back to it!
   annotations:
       backstage.io/techdocs-ref: dir:./
-      github.com/project-slug: puffin/dotfiles
+      github.com/project-slug: 'puffin/dotfiles'
 spec:
   type: library
   lifecycle: experimental
