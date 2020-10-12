@@ -4,7 +4,7 @@ metadata:
   name: Dotfiles
   description: This is a collection of vim, tmux, and zsh configurations. This setup works for me, a DevOps engineer on macOS. It mights not works for you but you can steal ideas from this and if you like, contribute back to it!
   annotations:
-      backstage.io/techdocs-ref: dir:./
+      backstage.io/techdocs-ref: github:https://github.com/puffin/dotfiles.git
 spec:
   type: library
   lifecycle: experimental
