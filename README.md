@@ -215,6 +215,9 @@ Some more advanced commands.
 + `]c` : Jumping to the next Git conflict to fix
 + `[c` : Jumping to the previous Git conflict to fix
 + `control+w + o` : Leave only the current pane open
++ `gd` : Goto definition
++ `gr` : Goto references
++ `do` : Automated changes or fixes for issue
 
 ## Troubleshooting
 
