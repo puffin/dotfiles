@@ -1,4 +1,12 @@
 {
+    "coc.preferences.formatOnSaveFiletypes": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ],
+    "coc.preferences.formatOnType": true,
+    "tsserver.formatOnType": true,
     "suggest.enablePreview": true,
     "codeLens.enable": true,
     "solargraph.useBundler": false,
@@ -26,6 +34,14 @@
     "diagnostic.infoSign": "●",
     "diagnostic.hintSign": "○",
     "git.addGBlameToBufferVar": true,
+    "eslint.autoFixOnSave": true,
+    "eslint.filetypes": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ],
+    "prettier.disableSuccessMessage": true,
     "explorer.position": "left",
     "explorer.width": 50,
     "explorer.icon.enableNerdfont": true,
@@ -45,7 +61,7 @@
     "explorer.openAction.for.directory": "expandOrCollapse",
     "explorer.previewAction.onHover": false,
     "explorer.icon.enableVimDevicons": false,
-    "explorer.keyMappings": {
+    "explorer.keyMappings.global": {
         "<cr>": ["expandable?", ["expanded?", "collapse", "expand"], "open"]
     },
     "languageserver": {

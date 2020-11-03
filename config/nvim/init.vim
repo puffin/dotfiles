@@ -368,7 +368,7 @@ Plug 'SirVer/ultisnips'
 " Disable the default Ultisnips tab mapping to free up coc
 let g:UltiSnipsExpandTrigger = "<nop>"
 
-Plug 'neoclide/coc.nvim', {'branch': 'master'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 let g:coc_global_extensions = [
   \ 'coc-python',
@@ -378,6 +378,8 @@ let g:coc_global_extensions = [
   \ 'coc-sh',
   \ 'coc-explorer',
   \ 'coc-prettier',
+  \ 'coc-eslint',
+  \ 'coc-lists',
   \ 'coc-diagnostic',
   \ 'coc-elixir',
   \ 'coc-solargraph',
@@ -423,6 +425,9 @@ nmap <silent> <leader>d :call CocAction('diagnosticToggle')<cr>
 
 " rename
 nmap <silent> <leader>rn <Plug>(coc-rename)
+
+" automated fix issues
+nmap <silent> do <Plug>(coc-codeaction)
 
 " organize imports
 command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
@@ -502,6 +507,17 @@ let g:vim_json_syntax_conceal = 0
     nmap <leader>* *<c-o>:%s///gn<cr>
 " }}}
 
+" Javascript {{{
+    Plug 'pangloss/vim-javascript'
+    Plug 'leafgarland/typescript-vim'
+    Plug 'peitalin/vim-jsx-typescript'
+    Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
+
+    " Force vim to rescan entire buffer when highlighting for js file
+    autocmd BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart
+    autocmd BufLeave *.{js,jsx,ts,tsx} :syntax sync clear
+" }}}
+
 " Extra Syntax Highlight
 Plug 'ekalinin/Dockerfile.vim'
 Plug 'hashivim/vim-terraform'
@@ -511,6 +527,8 @@ Plug 'elixir-editors/vim-elixir'
 Plug 'vim-ruby/vim-ruby'
 " Solidity
 Plug 'tomlion/vim-solidity'
+" GraphQL
+Plug 'jparise/vim-graphql'
 
 call plug#end()
 
