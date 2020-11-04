@@ -38,7 +38,7 @@ if [ "$(uname)" == "Darwin" ]; then
     echo "=============================="
     pip3 install --user pytz
 
-    # after the install, install pytz python libraries
+    # after the install, install jedi python libraries
     echo -e "\\n\\nRunning jedi Python install"
     echo "=============================="
     pip3 install --user jedi
