@@ -6,3 +6,4 @@ config/nvim/plugged
 config/nvim/autoload/plug.vim
 config/nvim/autoload/plug.vim.old
 config/nvim/session
+config/nvim/sessions
