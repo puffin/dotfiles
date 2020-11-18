@@ -137,12 +137,20 @@ fi
 export GPG_TTY=$(tty)
 
 # ADD python3 bin
-#export PATH="$PATH:$HOME/Library/Python/3.7/bin"
-export PATH="$PATH:$HOME/Library/Python/3.8/bin"
-
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
+#export PATH="$PATH:$HOME/Library/Python/3.8/bin"
 export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
 export PATH="/usr/local/opt/curl/bin:$PATH"
 
 . /usr/local/opt/asdf/asdf.sh
+
+# set PATH so it includes user's private bin if it exists
+if [ -d "$HOME/bin" ] ; then
+    PATH="$HOME/bin:$PATH"
+fi
+
+## cleanup path
+PATH=$(set --;IFS=:;for a in $PATH;do for b in $*;do [ "$a" = "$b" ]&&continue 2;done;set -- $* $a;done;echo "$*") 
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
