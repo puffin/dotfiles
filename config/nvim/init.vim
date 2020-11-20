@@ -546,9 +546,16 @@ endif
 syntax on
 filetype plugin indent on
 
+" make the background darker
+highlight Normal guifg=#F8F8F2 guibg=#131313
+
+" make the line column darker
+highlight LineNr guifg=#465457 guibg=#1D1F21
+highlight SignColumn guifg=#DAD085 guibg=#1D1F21
+
 " make the cursor target precise
 highlight CursorLine guibg=NONE gui=underline cterm=underline
-highlight CursorColumn guibg=#2C2C2C ctermbg=NONE gui=NONE cterm=NONE
+highlight CursorColumn guibg=#1D1F21 ctermbg=NONE gui=NONE cterm=NONE
 
 " make the highlighting of tabs and other non-text less annoying
 highlight SpecialKey ctermfg=19 guifg=#444444
@@ -558,9 +565,6 @@ highlight NonText ctermfg=19 guifg=#444444
 highlight Comment cterm=italic term=italic gui=italic
 highlight htmlArg cterm=italic term=italic gui=italic
 highlight xmlAttrib cterm=italic term=italic gui=italic
-
-" highlight Type cterm=italic term=italic gui=italic
-highlight Normal ctermbg=none
 
 " Better tabbing
 vnoremap < <gv
