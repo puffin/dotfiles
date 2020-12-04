@@ -17,7 +17,7 @@ fi
 
 # source all .zsh files inside of the zsh/ directory
 source "$ZSH/utils.zsh"
-source "$ZSH/prompt.zsh"
+#source "$ZSH/prompt.zsh"
 source "$ZSH/aliases.zsh"
 source "$ZSH/colors.zsh"
 source "$ZSH/completion.zsh"
@@ -86,6 +86,9 @@ if [ -z ${RELOAD}  ]; then
     zplug "plugins/docker", from:oh-my-zsh
     zplug "plugins/pip", from:oh-my-zsh
     zplug "plugins/brew", from:oh-my-zsh
+    zplug "mafredri/zsh-async", from:github
+    zplug "sindresorhus/pure", use:pure.zsh, from:github, as:theme
+
 
     if ! zplug check; then
         printf "Install? [y/N]: "
@@ -96,6 +99,8 @@ if [ -z ${RELOAD}  ]; then
 
     zplug load
 fi
+
+zstyle :prompt:pure:git:stash show yes
 
 # AWS2 autocomplete
 complete -C '/usr/local/bin/aws2_completer' aws2
@@ -153,4 +158,3 @@ PATH=$(set --;IFS=:;for a in $PATH;do for b in $*;do [ "$a" = "$b" ]&&continue 2
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
-
