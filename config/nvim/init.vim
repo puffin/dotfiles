@@ -286,7 +286,7 @@ Plug 'sickill/vim-pasta'
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 let g:fzf_layout = { 'down': '~25%' }
-let g:fzf_prefer_tmux = 1
+"let g:fzf_prefer_tmux = 1
 
 if isdirectory(".git")
     " if in a git project, use :GFiles
@@ -326,7 +326,7 @@ command! FZFMru call fzf#run({
 \  'down':    '40%'})
 
 command! -bang -nargs=* Find call fzf#vim#grep(
-    \ 'rg --column --line-number --no-heading --follow --color=always '.<q-args>, 1,
+    \ 'rg --column --line-number --no-heading --follow --color=always '.<q-args>.' || true', 1,
     \ <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
 command! -bang -nargs=? -complete=dir Files
     \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:50%', '?'), <bang>0)
@@ -546,9 +546,16 @@ endif
 syntax on
 filetype plugin indent on
 
+" make the background darker
+highlight Normal guifg=#F8F8F2 guibg=#131313
+
+" make the line column darker
+highlight LineNr guifg=#465457 guibg=#1D1F21
+highlight SignColumn guifg=#DAD085 guibg=#1D1F21
+
 " make the cursor target precise
 highlight CursorLine guibg=NONE gui=underline cterm=underline
-highlight CursorColumn guibg=#2C2C2C ctermbg=NONE gui=NONE cterm=NONE
+highlight CursorColumn guibg=#1D1F21 ctermbg=NONE gui=NONE cterm=NONE
 
 " make the highlighting of tabs and other non-text less annoying
 highlight SpecialKey ctermfg=19 guifg=#444444
@@ -558,9 +565,6 @@ highlight NonText ctermfg=19 guifg=#444444
 highlight Comment cterm=italic term=italic gui=italic
 highlight htmlArg cterm=italic term=italic gui=italic
 highlight xmlAttrib cterm=italic term=italic gui=italic
-
-" highlight Type cterm=italic term=italic gui=italic
-highlight Normal ctermbg=none
 
 " Better tabbing
 vnoremap < <gv
