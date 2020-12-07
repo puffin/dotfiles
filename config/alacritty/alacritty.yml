@@ -1,6 +1,11 @@
 env:
   TERM: xterm-256color
 
+draw_bold_text_with_bright_colors: true
+
+bell:
+  duration: 0
+
 # Colors
 colors:
   # Default colors
@@ -14,7 +19,7 @@ colors:
     red:     '#ff7ef3'
     green:   '#97cb9b'
     yellow:  '#ffdebe'
-    blue:    '#a5d5fe'
+    blue:    '#96cbfe'
     magenta: '#c6c5fd'
     cyan:    '#96cbfe'
     white:   '#e6e6e6'
@@ -24,14 +29,18 @@ colors:
     black:   '#000000'
     red:     '#ff7ef3'
     green:   '#a2f644'
-    yellow:  '#ffdebe'
+    yellow:  '#f7fcb6'
     blue:    '#a5d5fe'
     magenta: '#c6c5fd'
     cyan:    '#96cbfe'
     white:   '#e6e6e6'
 
 font:
+  use_thin_strokes: true
   normal:
     family: "FuraCode Nerd Font Mono"
     style: Regular
+  bold:
+    family: "FuraCode Nerd Font Mono"
+    style: Medium
   size: 12

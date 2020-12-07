@@ -43,6 +43,11 @@ if [ "$(uname)" == "Darwin" ]; then
     echo "=============================="
     pip3 install --user jedi
 
+    # after the install, install ranger
+    echo -e "\\n\\nRunning ranger Python install"
+    echo "=============================="
+    pip3 install --user ranger-fm
+
     # after the install, install solaegraph ruby libraries
     echo -e "\\n\\nRunning solargraph Ruby install"
     echo "=============================="
