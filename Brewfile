@@ -1,5 +1,9 @@
 # taps
+tap "homebrew/cask"
 tap "Yleisradio/terraforms"
+
+# applications
+brew "alacritty"
 
 # packages
 brew "bat"
