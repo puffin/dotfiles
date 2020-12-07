@@ -3,7 +3,7 @@ tap "homebrew/cask"
 tap "Yleisradio/terraforms"
 
 # applications
-brew "alacritty"
+cask "alacritty"
 
 # packages
 brew "bat"
