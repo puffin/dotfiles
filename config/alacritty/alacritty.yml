@@ -1,7 +1,17 @@
 env:
-  TERM: xterm-256color
+  TERM: screen-256color
 
 draw_bold_text_with_bright_colors: true
+custom_cursor_colors: true
+
+live_config_reload: true
+
+#window:
+#  padding:
+#    x: 2
+#    y: 2
+
+#  dynamic_padding: true
 
 bell:
   duration: 0
@@ -12,6 +22,14 @@ colors:
   primary:
     background: '#131313'
     foreground: '#cfd2d0'
+
+  cursor:
+    text: '#d8d8d8'
+    cursor: '#d8d8d8'
+
+  vi_mode_cursor:
+    text: '#d8d8d8'
+    cursor: '#d8d8d8'
 
   # Normal colors
   normal:
@@ -39,8 +57,17 @@ font:
   use_thin_strokes: true
   normal:
     family: "FuraCode Nerd Font Mono"
-    style: Regular
+    style: Light
   bold:
     family: "FuraCode Nerd Font Mono"
     style: Medium
   size: 12
+
+mouse:
+  hide_when_typing: true
+
+selection:
+  save_to_clipboard: true
+
+cursor:
+  unfocused_hollow: true

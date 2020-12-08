@@ -32,6 +32,7 @@ if [ "$(uname)" == "Darwin" ]; then
     echo -e "\\n\\nRunning Neovim Python install"
     echo "=============================="
     pip3 install --user neovim
+    pip3 install --user pynvim
 
     # after the install, install pytz python libraries
     echo -e "\\n\\nRunning pytz Python install"
