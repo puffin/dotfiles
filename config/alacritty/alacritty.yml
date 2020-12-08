@@ -2,16 +2,8 @@ env:
   TERM: screen-256color
 
 draw_bold_text_with_bright_colors: true
-custom_cursor_colors: true
 
 live_config_reload: true
-
-#window:
-#  padding:
-#    x: 2
-#    y: 2
-
-#  dynamic_padding: true
 
 bell:
   duration: 0
@@ -22,14 +14,6 @@ colors:
   primary:
     background: '#131313'
     foreground: '#cfd2d0'
-
-  cursor:
-    text: '#d8d8d8'
-    cursor: '#d8d8d8'
-
-  vi_mode_cursor:
-    text: '#d8d8d8'
-    cursor: '#d8d8d8'
 
   # Normal colors
   normal:
