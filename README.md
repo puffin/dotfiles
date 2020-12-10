@@ -136,15 +136,17 @@ When tmux starts up, [login-shell](bin/login-shell) will be run and if it determ
 
 ## Terminal Configuration
 
-My terminal of choice is [Alacritty](https://github.com/alacritty/alacritty). This setup works great with it but should also work with your prefered one, though not tested.
+My terminal of choice is [iTerm2](https://www.iterm2.com/). This setup works great with it but should also work with your prefered one, though not tested.
+
+You can find the default profile that use FuraCode NF font and the color scheme I use in [resources/iterm.profile.json](resources/iterm.profile.json)
 
 ## Fonts
 
-I am currently using [FuraCode NF](https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/FiraCode/Retina/complete/Fura%20Code%20Retina%20Nerd%20Font%20Complete.otf) as my default font via alacritty's settings.
+I am currently using [FuraCode NF](https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/FiraCode/Retina/complete/Fura%20Code%20Retina%20Nerd%20Font%20Complete.otf) as my default font via iTerm2's settings.
 
 ## Usage
 
-You installed everything, now what? Your environment is now composed of alacritty + tmux + zsh + vim.
+You installed everything, now what? Your environment is now composed of iTerm2 + tmux + zsh + vim.
 
 ### Increase productivity
 
