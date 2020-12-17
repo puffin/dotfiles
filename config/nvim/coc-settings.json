@@ -56,7 +56,7 @@
     "explorer.git.icon.status.unmerged": "═",
     "explorer.git.icon.status.untracked": "?",
     "explorer.git.icon.status.modified": "✹",
-    "explorer.git.icon.status.ignored": "☒",
+    "explorer.git.icon.status.ignored": " ",
     "explorer.openAction.strategy": "select",
     "explorer.openAction.for.directory": "expandOrCollapse",
     "explorer.previewAction.onHover": false,
