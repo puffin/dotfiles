@@ -91,5 +91,13 @@ elif ! [[ $SHELL =~ .*zsh.* ]]; then
     chsh -s "$(command -v zsh)"
 fi
 
+echo "creating gnupg configuration"
+echo "=============================="
+if [ ! -d "$HOME/.gnupg" ]; then
+    echo "Creating ~/.gnupg"
+    mkdir -m 0700 "$HOME/.gnupg"
+    echo "Configuring gpg agent with pinentry"
+    echo "pinentry-program /usr/local/bin/pinentry-mac" | tee "$HOME/.gnupg/gpg-agent.conf"
+fi
 
 echo "Done. Reload your terminal."

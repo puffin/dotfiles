@@ -139,8 +139,10 @@ export GPG_TTY=$(tty)
 # ADD python3 bin
 export PATH="$PATH:$HOME/Library/Python/3.8/bin"
 export PATH="$PATH:$HOME/Library/Python/3.9/bin"
+# ADD extra path
 export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
 export PATH="/usr/local/opt/curl/bin:$PATH"
+export PATH="/usr/local/opt/openjdk@11/bin:$PATH"
 
 . /usr/local/opt/asdf/asdf.sh
 

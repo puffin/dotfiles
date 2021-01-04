@@ -390,6 +390,7 @@ let g:coc_global_extensions = [
   \ 'coc-groovy',
   \ 'coc-markdownlint',
   \ 'coc-pairs',
+  \ 'coc-xml',
   \ 'coc-cfn-lint'
   \ ]
 
