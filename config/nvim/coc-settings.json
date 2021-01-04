@@ -35,7 +35,7 @@
     "diagnostic.hintSign": "○",
     "git.addGBlameToBufferVar": true,
     "eslint.autoFixOnSave": true,
-    "eslint.filetypes": [
+    "eslint.validate": [
         "javascript",
         "javascriptreact",
         "typescript",
