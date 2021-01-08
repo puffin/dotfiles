@@ -144,6 +144,9 @@ export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
 export PATH="/usr/local/opt/curl/bin:$PATH"
 export PATH="/usr/local/opt/openjdk@11/bin:$PATH"
 
+# ADD JAVA_HOME
+export JAVA_HOME=$(/usr/libexec/java_home -v11)
+
 . /usr/local/opt/asdf/asdf.sh
 
 # set PATH so it includes user's private bin if it exists

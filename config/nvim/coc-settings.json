@@ -64,6 +64,7 @@
     "explorer.keyMappings.global": {
         "<cr>": ["expandable?", ["expanded?", "collapse", "expand"], "open"]
     },
+    "docker.enable": false,
     "languageserver": {
         "terraform": {
             "command": "terraform-ls",
