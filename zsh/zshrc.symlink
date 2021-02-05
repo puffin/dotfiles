@@ -137,12 +137,19 @@ fi
 export GPG_TTY=$(tty)
 
 # ADD python3 bin
-export PATH="$PATH:$HOME/Library/Python/3.8/bin"
+export PATH="$PATH:/usr/local/opt/python@3.7/bin"
+export PATH="$PATH:/usr/local/opt/python@3.8/bin"
 export PATH="$PATH:$HOME/Library/Python/3.9/bin"
 # ADD extra path
 export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
 export PATH="/usr/local/opt/curl/bin:$PATH"
 export PATH="/usr/local/opt/openjdk@11/bin:$PATH"
+
+# pipx export
+export PATH="$PATH:/Users/davidmichon/.local/bin"
+
+# Terraform Helper
+export PATH="$PATH:/Users/davidmichon/.tf-helper/tfh/bin"
 
 # ADD JAVA_HOME
 export JAVA_HOME=$(/usr/libexec/java_home -v11)
@@ -160,3 +167,6 @@ PATH=$(set --;IFS=:;for a in $PATH;do for b in $*;do [ "$a" = "$b" ]&&continue 2
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi

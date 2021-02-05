@@ -62,6 +62,12 @@ if [ "$(uname)" == "Darwin" ]; then
         mix deps.get && mix compile && mix elixir_ls.release -o release
     fi
 
+    if [ ! -d "$HOME/.tf-helper" ]; then
+        echo -e "\\n\\nRunning terraform helper install"
+        echo "=============================="
+        git clone git@github.com:hashicorp-community/tf-helper.git ~/.tf-helper
+    fi
+
     # Change the default shell to zsh
     zsh_path="$( command -v zsh )"
     if ! grep "$zsh_path" /etc/shells; then
