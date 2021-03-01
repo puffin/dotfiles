@@ -74,6 +74,10 @@ bind l select-pane -R
 bind -r C-h select-window -t :-
 bind -r C-l select-window -t :+
 
+# window move current window
+bind -n C-S-Left swap-window -t -1
+bind -n C-S-Right swap-window -t +1
+
 # Resize pane shortcuts
 bind -r H resize-pane -L 10
 bind -r J resize-pane -D 10
