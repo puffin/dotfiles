@@ -38,8 +38,8 @@ export EDITOR='nvim'
 export GIT_EDITOR='nvim'
 
 # GO Setup
-export GOPATH="$(brew --prefix go@1.12)"
-export GOROOT="$(brew --prefix go@1.12)/libexec"
+export GOPATH="$(brew --prefix go)"
+export GOROOT="$(brew --prefix go)/libexec"
 export PATH="${GOPATH}/bin:${GOROOT}/bin:$PATH"
 
 # add /usr/local/sbin
