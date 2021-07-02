@@ -50,3 +50,5 @@ alias fs="stat -f \"%z bytes\""
 # Hide/show all desktop icons (useful when presenting)
 alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+
+alias genawspass="cat /dev/urandom | LC_ALL=C tr -dc 'a-zA-Z0-9\!\@\#\$\%\^\*' | fold -w "20" | grep '[a-z]'| grep '[A-Z]'| grep '[0-9]'| grep '[!@#$%^*]'| head -1"
