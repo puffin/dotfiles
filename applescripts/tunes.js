@@ -11,7 +11,7 @@ if (Application("Music").running()) {
     } else {
         symbol = "■";
     }
-    output = ` ${symbol} ${title} - ${artist}`.substr(0, 50);
+    output = ` ${symbol} ${title} - ${artist}`.substr(0, 60);
 } else if (Application("Spotify").running()) {
     const track = Application("Spotify").currentTrack;
     const artist = track.artist();
