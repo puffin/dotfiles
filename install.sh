@@ -54,6 +54,11 @@ if [ "$(uname)" == "Darwin" ]; then
     echo "=============================="
     gem install solargraph
 
+    # after the install, install perl neovim extension
+    echo -e "\\n\\nRunning perl neovim extension install"
+    echo "=============================="
+    cpanm -n Neovim::Ext
+
     if [ ! -d "$HOME/.elixir-ls" ]; then
         echo -e "\\n\\nRunning elixir LS install"
         echo "=============================="
