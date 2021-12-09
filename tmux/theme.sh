@@ -53,4 +53,5 @@ tm_wclock="#[bg=$base00,fg=$base03] #{world_clock_status}"
 tm_tunes="#[default,bg=$base00,fg=$base0B] #(osascript -l JavaScript $DOTFILES/applescripts/tunes.js)"
 
 set -g status-left "$tm_session_name"
-set -g status-right "$tm_tunes$tm_wclock$tm_vpn $tm_battery $tm_date"
+#set -g status-right "$tm_tunes$tm_wclock$tm_vpn $tm_battery $tm_date"
+set -g status-right ""

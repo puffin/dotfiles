@@ -4,6 +4,7 @@ tap "Yleisradio/terraforms"
 
 # applications
 cask "alacritty"
+cask "session-manager-plugin"
 
 # packages
 brew "brew-cask-completion"
@@ -64,6 +65,5 @@ brew "htop"
 brew "pipenv"
 brew "openblas"
 brew "lapack"
-brew "session-manager-plugin"
 brew "go"
 brew "cpanminus"

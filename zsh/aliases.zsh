@@ -52,3 +52,6 @@ alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && 
 alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
 
 alias genawspass="cat /dev/urandom | LC_ALL=C tr -dc 'a-zA-Z0-9\!\@\#\$\%\^\*' | fold -w "20" | grep '[a-z]'| grep '[A-Z]'| grep '[0-9]'| grep '[!@#$%^*]'| head -1"
+
+alias python3=/usr/local/opt/python@3.8/bin/python3
+alias pip3=/usr/local/opt/python@3.8/bin/pip3
