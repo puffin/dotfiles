@@ -3,7 +3,8 @@ call functions#PlugLoad()
 call plug#begin('~/.config/nvim/plugged')
 
 " General
-set autoread " detect when a file is changed
+
+let g:python_host_prog="/usr/bin/python"
 
 set history=1000 " change history to 1000
 
