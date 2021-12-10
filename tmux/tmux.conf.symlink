@@ -9,7 +9,7 @@ set -as terminal-overrides ',xterm*:Tc:sitm=\E[3m'
 set -g history-limit 20000
 
 # Fix itemr2 + tmux mouse wheel issue
-set -g focus-events off
+set -g focus-events on
 
 # automatically renumber tmux windows
 set -g renumber-windows on
