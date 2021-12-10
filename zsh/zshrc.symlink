@@ -78,7 +78,7 @@ if [ -z ${RELOAD}  ]; then
     zplug 'zplug/zplug', hook-build:'zplug --self-manage'
     zplug 'zsh-users/zsh-syntax-highlighting', defer:2, hook-load:"export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=239"
     zplug 'zsh-users/zsh-autosuggestions'
-    export NVM_AUTO_USE=true
+    export NVM_AUTO_USE=false
     zplug 'lukechilds/zsh-nvm'
     # Oh my zsh plugins
     zplug "plugins/git", from:oh-my-zsh
