@@ -140,7 +140,7 @@ export GPG_TTY=$(tty)
 #export PATH="$PATH:/usr/local/opt/python@3.7/bin"
 #export PATH="$PATH:/usr/local/opt/python@3.8/bin"
 export PATH="$PATH:/usr/local/opt/python@3.9/bin"
-#export PATH="$PATH:$HOME/Library/Python/3.9/bin"
+export PATH="$PATH:$HOME/Library/Python/3.9/bin"
 #export PATH="$PATH:$HOME/Library/Python/3.8/bin"
 # ADD extra path
 export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
@@ -170,6 +170,9 @@ PATH=$(set --;IFS=:;for a in $PATH;do for b in $*;do [ "$a" = "$b" ]&&continue 2
 export PATH="$PATH:$HOME/.rvm/bin"
 export PATH="$PATH:$HOME/.rvm/gems/ruby-2.6.4/bin"
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+
+# Add mysql client to path
+export PATH="/usr/local/opt/mysql-client@5.7/bin:$PATH"
 
 
 if command -v pyenv 1>/dev/null 2>&1; then

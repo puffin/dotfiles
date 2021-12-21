@@ -49,10 +49,6 @@ if [ "$(uname)" == "Darwin" ]; then
     echo "=============================="
     pip3 install --user ranger-fm
 
-    # after the install, install solaegraph ruby libraries
-    echo -e "\\n\\nRunning solargraph Ruby install"
-    echo "=============================="
-    gem install solargraph
 
     # after the install, install perl neovim extension
     echo -e "\\n\\nRunning perl neovim extension install"
@@ -110,5 +106,19 @@ if [ ! -d "$HOME/.gnupg" ]; then
     echo "Configuring gpg agent with pinentry"
     echo "pinentry-program /usr/local/bin/pinentry-mac" | tee "$HOME/.gnupg/gpg-agent.conf"
 fi
+
+echo "installing ruby management tool"
+echo "=============================="
+gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+curl -sSL https://get.rvm.io | bash
+source "$HOME/.zshrc"
+rvm install ruby-2.6.4
+rvm alias create default 2.6.4
+rvm use ruby-2.6.4
+
+# after the install, install solargraph ruby libraries
+echo -e "\\n\\nRunning solargraph Ruby install"
+echo "=============================="
+gem install solargraph
 
 echo "Done. Reload your terminal."

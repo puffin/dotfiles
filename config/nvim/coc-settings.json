@@ -9,6 +9,8 @@
     "tsserver.formatOnType": true,
     "suggest.enablePreview": true,
     "codeLens.enable": true,
+    "solargraph.transport": "stdio",
+    "solargraph.trace.server": "verbose",
     "solargraph.useBundler": false,
     "solargraph.hover": true,
     "solargraph.diagnostics": true,
