@@ -78,10 +78,10 @@ bind -r C-l select-window -t :+
 bind-key -n C-S-Left swap-window -t -1\; select-window -t -1
 bind-key -n C-S-Right swap-window -t +1\; select-window -t +1
 # Resize pane shortcuts
-bind -r H resize-pane -L 10
-bind -r J resize-pane -D 10
-bind -r K resize-pane -U 10
-bind -r L resize-pane -R 10
+bind -r H resize-pane -L 2
+bind -r J resize-pane -D 2
+bind -r K resize-pane -U 2
+bind -r L resize-pane -R 2
 
 # enable mouse support for switching panes/windows
 setw -g mouse on
@@ -112,15 +112,6 @@ set -g @resurrect-strategy-nvim 'session'
 set -g @continuum-save-interval '5'
 set -g @continuum-boot 'on'
 set -g @continuum-boot-options 'iterm,fullscreen'
-
-# install some amazing plugin
-set -g @plugin 'alexanderjeurissen/tmux-world-clock'
-
-set -g @world_clock_tz 'US/Pacific'
-set -g @world_clock_tz 'US/Central'
-set -g @world_clock_tz 'Etc/UTC'
-set -g @world_clock_fmt '#[bold]%tz#[nobold]_%H:%M'
-set -g @world_clock_separator '•'
 
 ##############################
 ### Color & Style Settings ###

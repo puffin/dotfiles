@@ -147,6 +147,9 @@ export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
 export PATH="/usr/local/opt/curl/bin:$PATH"
 export PATH="/usr/local/opt/openjdk/bin:$PATH"
 
+# Postgres client (light)
+export PATH="$PATH:/usr/local/opt/libpq/bin"
+
 # pipx export
 export PATH="$PATH:/Users/davidmichon/.local/bin"
 
