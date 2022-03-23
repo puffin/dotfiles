@@ -1,10 +1,12 @@
 # taps
 tap "homebrew/cask"
 tap "Yleisradio/terraforms"
+tap "homebrew/cask-fonts"
 
 # applications
 cask "alacritty"
 cask "session-manager-plugin"
+cask "font-sauce-code-pro-nerd-font"
 
 # packages
 brew "brew-cask-completion"

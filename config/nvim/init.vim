@@ -556,6 +556,7 @@ highlight LineNr guifg=#465457 guibg=#1D1F21
 highlight SignColumn guifg=#DAD085 guibg=#1D1F21
 
 " make the cursor target precise
+highlight Cursor guibg=white guifg=white
 highlight CursorLine guibg=NONE gui=underline cterm=underline
 highlight CursorColumn guibg=#1D1F21 ctermbg=NONE gui=NONE cterm=NONE
 
