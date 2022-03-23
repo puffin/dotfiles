@@ -44,8 +44,8 @@ font:
     style: Light
   bold:
     family: "FuraCode Nerd Font Mono"
-    style: Medium
-  size: 12
+    style: Regular
+  size: 11
 
 mouse:
   hide_when_typing: true
