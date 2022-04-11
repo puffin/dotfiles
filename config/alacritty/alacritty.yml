@@ -58,3 +58,7 @@ selection:
 
 cursor:
   unfocused_hollow: true
+
+key_bindings:
+  - { key: Left,     mods: Alt,     chars: "\x1bb"                       } # Skip word left
+  - { key: Right,    mods: Alt,     chars: "\x1bf"                       } # Skip word right

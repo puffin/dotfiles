@@ -21,6 +21,9 @@ set -g status-left-length 32
 set -g status-right-length 150
 set -g status-interval 5
 
+# selection color
+set -g mode-style bg=$base03,fg=$base07
+
 # default statusbar colors
 set-option -g status-style fg=$base02,bg=$base00
 
@@ -29,7 +32,7 @@ set -g window-status-format "#I #W "
 
 # active window title colors
 set-window-option -g window-status-current-style fg=$base0C,bg=$base00
-set-window-option -g  window-status-current-format "#[bold]#I #W "
+set-window-option -g window-status-current-format "#[bold]#I #W "
 
 # pane border colors
 set-window-option -g pane-border-style fg=$base03
