@@ -100,8 +100,6 @@ The git info shown on the `RPROMPT` displays the current branch name, along with
 | Main Configuratin File  | `~/.vimrc` | `~/.config/nvim/init.vim` |
 | Configuration directory | `~/.vim`   | `~/.config/nvim`          |
 
-### Setup
-
 Vim is likely already installed on your system. If using a Mac, MacVim will be installed from Homebrew. Neovim will also be installed from Homebrew by default on a Mac. For other systems, you may need to install Neovim manually. See their [web site](https://neovim.io) for more information.
 
 [`link.sh`](install/link.sh) will symlink the XDG configuration directory into your home directory and will then create symlinks for `.vimrc` and `.vim` over to the Neovim configuration so that Vim and Neovim will both be configured in the same way from the same files. The benefit of this configuration is that you only have to maintain a single vim configuration for both so you can very seamlessly transition back to vim with no big impact to your productivity.
@@ -136,13 +134,13 @@ When tmux starts up, [login-shell](bin/login-shell) will be run and if it determ
 
 ## Terminal Configuration
 
-My terminal of choice is [iTerm2](https://www.iterm2.com/). This setup works great with it but should also work with your prefered one, though not tested.
+My terminal of choice is [Alacritty](https://alacritty.org/). This setup works great with it but should also work with your prefered one, though not tested.
 
-You can find the default profile that use FuraCode NF font and the color scheme I use in [resources/iterm.profile.json](resources/iterm.profile.json)
+You can find the default profile that use SauceCodePro NF font and the color scheme I use in [config/alacritty/alacritty.yml](config/alacritty/alacritty.yml)
 
 ## Fonts
 
-I am currently using [FuraCode NF](https://github.com/ryanoasis/nerd-fonts/blob/master/patched-fonts/FiraCode/Retina/complete/Fura%20Code%20Retina%20Nerd%20Font%20Complete.otf) as my default font via iTerm2's settings.
+I am currently using [SauceCodePro NF](https://eng.m.fontke.com/font/28281398/), installed via homebrew, as my default font via alacritty's settings.
 
 ## Usage
 
