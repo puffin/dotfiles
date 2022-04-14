@@ -144,7 +144,7 @@ I am currently using [SauceCodePro NF](https://eng.m.fontke.com/font/28281398/),
 
 ## Usage
 
-You installed everything, now what? Your environment is now composed of iTerm2 + tmux + zsh + vim.
+You installed everything, now what? Your environment is now composed of alacritty + tmux + zsh + vim.
 
 ### Increase productivity
 
