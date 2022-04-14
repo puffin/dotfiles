@@ -372,7 +372,7 @@ let g:UltiSnipsExpandTrigger = "<nop>"
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 let g:coc_global_extensions = [
-  \ 'coc-python',
+  \ 'coc-pyright',
   \ 'coc-json',
   \ 'coc-tsserver',
   \ 'coc-git',

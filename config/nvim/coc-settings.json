@@ -19,7 +19,6 @@
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.pythonPath": "~/.pyenv/shims/python",
-    "python.jediEnabled": false,
     "elixir.pathToElixirLS": "~/.elixir-ls/release/language_server.sh",
     "markdownlint.config": {
         "line-length": false
