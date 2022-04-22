@@ -400,8 +400,8 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 nmap <silent> <leader>k :CocCommand explorer<cr>
 
 " coc-prettier
-command! -nargs=0 Prettier :CocCommand prettier.formatFile
-nmap <leader>f :CocCommand prettier.formatFile<cr>
+command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
+nmap <leader>f :CocCommand prettier.forceFormatDocument<cr>
 
 " coc-git
 nmap [g <Plug>(coc-git-prevchunk)
