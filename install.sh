@@ -122,4 +122,8 @@ echo -e "\\n\\nRunning solargraph Ruby install"
 echo "=============================="
 gem install solargraph
 
+
+# Install tmux-256color profile
+/usr/bin/tic -xe alacritty-direct,tmux-256color resources/terminfo.src
+
 echo "Done. Reload your terminal."

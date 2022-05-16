@@ -59,9 +59,9 @@ fi
 export RIPGREP_CONFIG_PATH="$HOME/.rgrc"
 
 if [ -z "$TMUX" ]; then
-    export TERM=xterm-256color-italic
+    export TERM=screen-256color
 else
-    export TERM=xterm-256color-italic
+    export TERM=tmux-256color
 fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
