@@ -112,6 +112,7 @@ echo "=============================="
 gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
 curl -sSL https://get.rvm.io | bash
 source "$HOME/.zshrc"
+curl -sSL https://cache.ruby-lang.org/pub/ruby/2.7/ruby-2.7.5.tar.bz2 -o ~/.rvm/archives/ruby-2.7.5.tar.bz2
 rvm install ruby-2.7.5
 rvm alias create default 2.7.5
 rvm use ruby-2.7.5

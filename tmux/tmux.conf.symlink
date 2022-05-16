@@ -4,7 +4,7 @@ set-option -g default-shell /bin/zsh
 
 # tmux display things in 256 colors
 set -g default-terminal "xterm-256color-italic"
-#set -as terminal-overrides ',xterm*:Tc:sitm=\E[3m'
+set -as terminal-overrides ',xterm*:Tc'
 
 set -g history-limit 20000
 

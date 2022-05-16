@@ -47,7 +47,7 @@ font:
     style: "Medium"
   italic:
     family: "SauceCodePro Nerd Font"
-    style: "Medium Italic"
+    style: "Italic"
   size: 11
 
 mouse:

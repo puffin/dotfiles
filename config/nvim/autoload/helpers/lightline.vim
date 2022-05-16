@@ -23,7 +23,7 @@ function! helpers#lightline#fileType()
 endfunction
 
 function! helpers#lightline#gitBranch()
-    return "\uE725 " . fugitive#head()
+    return "\uE725 " . FugitiveHead()
 endfunction
 
 function! helpers#lightline#currentFunction()

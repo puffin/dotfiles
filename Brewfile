@@ -9,6 +9,7 @@ cask "session-manager-plugin"
 cask "font-sauce-code-pro-nerd-font"
 
 # packages
+brew "autoconf"
 brew "brew-cask-completion"
 brew "bat"
 brew "diff-so-fancy"
