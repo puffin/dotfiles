@@ -284,7 +284,8 @@ let g:signify_sign_change = '┃'
 Plug 'sickill/vim-pasta'
 
 " FZF
-Plug '/usr/local/opt/fzf'
+Plug '$(brew --prefix)/opt/fzf'
+Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 let g:fzf_layout = { 'down': '~25%' }
 "let g:fzf_prefer_tmux = 1
@@ -359,7 +360,7 @@ Plug 'rbong/vim-flog'
 Plug 'honza/vim-snippets' " Snippets files
 
 Plug 'ryanoasis/vim-devicons'
-let g:WebDevIconsOS = 'Darwin'
+" let g:WebDevIconsOS = 'Darwin'
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let g:DevIconsEnableFoldersOpenClose = 1
 let g:DevIconsEnableFolderExtensionPatternMatching = 1

@@ -13,7 +13,7 @@ git submodule update --init --recursive
 source install/link.sh
 
 # only perform macOS-specific install
-if [ "$(uname)" == "Darwin" ]; then
+# if [ "$(uname)" == "Darwin" ]; then
     echo -e "\\n\\nRunning on macOS"
 
     if test ! "$( command -v brew )"; then
@@ -26,7 +26,7 @@ if [ "$(uname)" == "Darwin" ]; then
     # After the install, setup fzf
     echo -e "\\n\\nRunning fzf install script..."
     echo "=============================="
-    /usr/local/opt/fzf/install --all --no-bash --no-fish
+    $(brew --prefix)/opt/fzf/install --all --no-bash --no-fish
 
     # after the install, install neovim python libraries
     echo -e "\\n\\nRunning Neovim Python install"
@@ -82,7 +82,7 @@ if [ "$(uname)" == "Darwin" ]; then
     fi
 
     source install/osx.sh
-fi
+# fi
 
 echo "creating vim directories"
 mkdir -p ~/.vim-tmp
