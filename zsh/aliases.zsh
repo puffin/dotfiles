@@ -55,3 +55,5 @@ alias genawspass="cat /dev/urandom | LC_ALL=C tr -dc 'a-zA-Z0-9\!\@\#\$\%\^\*' |
 
 #alias python3=/usr/local/opt/python@3/bin/python3
 #alias pip3=/usr/local/opt/python@3/bin/pip3
+
+alias p81="/opt/Perimeter81/perimeter81 -disable-seccomp-filter-sandbox"

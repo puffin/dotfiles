@@ -18,7 +18,7 @@ if (has('nvim'))
 endif
 
 set backspace=indent,eol,start " make backspace behave in a sane manner
-set clipboard=unnamed
+set clipboard=unnamedplus
 
 " if has('mouse')
 "     set mouse=a
