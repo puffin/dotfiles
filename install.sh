@@ -26,7 +26,7 @@ if [ "$(uname)" == "Darwin" ]; then
     # After the install, setup fzf
     echo -e "\\n\\nRunning fzf install script..."
     echo "=============================="
-    /usr/local/opt/fzf/install --all --no-bash --no-fish
+    $(brew --prefix)/opt/fzf/install --all --no-bash --no-fish
 
     # after the install, install neovim python libraries
     echo -e "\\n\\nRunning Neovim Python install"
