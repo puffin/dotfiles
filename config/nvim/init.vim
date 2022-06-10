@@ -18,7 +18,7 @@ if (has('nvim'))
 endif
 
 set backspace=indent,eol,start " make backspace behave in a sane manner
-set clipboard=unnamed
+set clipboard=unnamedplus
 
 " if has('mouse')
 "     set mouse=a
@@ -285,6 +285,7 @@ Plug 'sickill/vim-pasta'
 
 " FZF
 Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 let g:fzf_layout = { 'down': '~25%' }
 "let g:fzf_prefer_tmux = 1
