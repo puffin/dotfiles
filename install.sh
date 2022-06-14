@@ -122,6 +122,15 @@ echo -e "\\n\\nRunning solargraph Ruby install"
 echo "=============================="
 gem install solargraph
 
+# install graphql lsp
+echo -e "\\n\\nRunning graphql lsp install"
+echo "=============================="
+npm i -g graphql-language-service-cli
+
+# install graphql lsp
+echo -e "\\n\\nRunning bash lsp install"
+echo "=============================="
+npm i -g bash-language-server
 
 # Install tmux-256color profile
 /usr/bin/tic -xe alacritty-direct,tmux-256color resources/terminfo.src

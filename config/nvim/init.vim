@@ -393,7 +393,7 @@ let g:coc_global_extensions = [
   \ 'coc-markdownlint',
   \ 'coc-pairs',
   \ 'coc-xml',
-  \ 'coc-cfn-lint'
+  \ 'coc-lightbulb'
   \ ]
 
 autocmd CursorHold * silent call CocActionAsync('highlight')

@@ -9,7 +9,7 @@
     "tsserver.formatOnType": true,
     "suggest.enablePreview": true,
     "codeLens.enable": true,
-    "solargraph.transport": "stdio",
+    "solargraph.transport": "socket",
     "solargraph.trace.server": "verbose",
     "solargraph.useBundler": false,
     "solargraph.hover": true,
@@ -73,6 +73,12 @@
             "filetypes": ["terraform", "tf"],
             "initializationOptions": {},
             "settings": {}
+        },
+        "bash": {
+            "command": "bash-language-server",
+            "args": ["start"],
+            "filetypes": ["sh"],
+            "ignoredRootPaths": ["~"]
         }
     },
     "diagnostic-languageserver.linters": {
