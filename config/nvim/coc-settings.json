@@ -66,6 +66,7 @@
         "<cr>": ["expandable?", ["expanded?", "collapse", "expand"], "open"]
     },
     "docker.enable": true,
+    "sh.enable": true,
     "languageserver": {
         "terraform": {
             "command": "terraform-ls",
@@ -74,30 +75,52 @@
             "initializationOptions": {},
             "settings": {}
         },
-        "bash": {
-            "command": "bash-language-server",
-            "args": ["start"],
-            "filetypes": ["sh"],
-            "ignoredRootPaths": ["~"]
-        }
-    },
-    "diagnostic-languageserver.linters": {
-        "languagetool": {
-            "command": "languagetool",
-            "debounce": 200,
-            "args": ["-"],
-            "offsetLine": 0,
-            "offsetColumn": 0,
-            "sourceName": "languagetool",
-            "formatLines": 2,
-            "formatPattern": [
-                "^\\d+?\\.\\)\\s+Line\\s+(\\d+),\\s+column\\s+(\\d+),\\s+([^\\n]+)\nMessage:\\s+(.*)(\\r|\\n)*$",
-                {
-                    "line": 1,
-                    "column": 2,
-                    "message": [4, 3]
+        "dls": {
+            "command": "diagnostic-languageserver",
+            "args": ["--stdio"],
+            "filetypes": [ "markdown" ],
+            "initializationOptions": {
+                "linters": {
+                    "languagetool": {
+                        "command": "languagetool",
+                        "debounce": 200,
+                        "args": ["-"],
+                        "offsetLine": 0,
+                        "offsetColumn": 0,
+                        "sourceName": "languagetool",
+                        "formatLines": 2,
+                        "formatPattern": [
+                            "^\\d+?\\.\\)\\s+Line\\s+(\\d+),\\s+column\\s+(\\d+),\\s+([^\\n]+)\nMessage:\\s+(.*)$",
+                            {
+                                "line": 1,
+                                "column": 2,
+                                "message": [4, 3]
+                            }
+                        ]
+                    },
+                    "markdownlint": {
+                        "command": "markdownlint",
+                        "isstderr": true,
+                        "debounce": 100,
+                        "args": [ "--stdin" ],
+                        "offsetline": 0,
+                        "offsetcolumn": 0,
+                        "sourcename": "markdownlint",
+                        "formatlines": 1,
+                        "formatpattern": [
+                            "^.*?:\\s?(\\d+)(:(\\d+)?)?\\s(md\\d{3}\\/[a-za-z0-9-/]+)\\s(.*)$",
+                            {
+                                "line": 1,
+                                "column": 3,
+                                "message": [4]
+                            }
+                        ]
+                    }
+                },
+                "filetypes": {
+                    "markdown": ["languagetool", "markdownlint"]
                 }
-            ]
+            }
         }
     }
 }

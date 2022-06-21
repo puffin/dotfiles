@@ -127,10 +127,20 @@ echo -e "\\n\\nRunning graphql lsp install"
 echo "=============================="
 npm i -g graphql-language-service-cli
 
-# install graphql lsp
+# install diagnostic lsp
+echo -e "\\n\\nRunning diagnostic lsp install"
+echo "=============================="
+npm i -g diagnostic-languageserver
+
+# install bash lsp
 echo -e "\\n\\nRunning bash lsp install"
 echo "=============================="
 npm i -g bash-language-server
+
+# install markdown linter
+echo -e "\\n\\nRunning markdown linter install"
+echo "=============================="
+npm i -g markdownlint-cli
 
 # Install tmux-256color profile
 /usr/bin/tic -xe alacritty-direct,tmux-256color resources/terminfo.src

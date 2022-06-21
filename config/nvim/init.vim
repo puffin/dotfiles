@@ -377,7 +377,6 @@ let g:coc_global_extensions = [
   \ 'coc-json',
   \ 'coc-tsserver',
   \ 'coc-git',
-  \ 'coc-sh',
   \ 'coc-explorer',
   \ 'coc-prettier',
   \ 'coc-eslint',
@@ -392,8 +391,7 @@ let g:coc_global_extensions = [
   \ 'coc-groovy',
   \ 'coc-markdownlint',
   \ 'coc-pairs',
-  \ 'coc-xml',
-  \ 'coc-lightbulb'
+  \ 'coc-xml'
   \ ]
 
 autocmd CursorHold * silent call CocActionAsync('highlight')
