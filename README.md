@@ -27,7 +27,7 @@ Clone the dotfiles repository to your home directory as `~/.dotfiles`.
 
 ### Backup
 
-First, you may want to back up any existing files that exist so this doesn't overwrite your work.
+First, you may want to back up any existing files that exist, so this doesn't overwrite your work.
 
 Run `install/backup.sh` to back up all symlinked files to a `~/dotfiles-backup` directory.
 
@@ -102,7 +102,7 @@ The git info shown on the `RPROMPT` displays the current branch name, along with
 
 Vim is likely already installed on your system. If using a Mac, MacVim will be installed from Homebrew. Neovim will also be installed from Homebrew by default on a Mac. For other systems, you may need to install Neovim manually. See their [web site](https://neovim.io) for more information.
 
-[`link.sh`](install/link.sh) will symlink the XDG configuration directory into your home directory and will then create symlinks for `.vimrc` and `.vim` over to the Neovim configuration so that Vim and Neovim will both be configured in the same way from the same files. The benefit of this configuration is that you only have to maintain a single vim configuration for both so you can very seamlessly transition back to vim with no big impact to your productivity.
+[`link.sh`](install/link.sh) will symlink the XDG configuration directory into your home directory and will then create symlinks for `.vimrc` and `.vim` over to the Neovim configuration, so that Vim and Neovim will both be configured in the same way from the same files. The benefit of this configuration is that you only have to maintain a single vim configuration for both, so you can very seamlessly transition back to vim with no big impact to your productivity.
 
 Inside [`.zshrc`](zsh/zshrc.symlink), the `EDITOR` shell variable is set to `nvim`, defaulting to Neovim for editor tasks, such as git commit messages. Additionally, I have aliased `vim` to `nvim` in [`aliases.zsh`](zsh/aliases.zsh) You can remove this if you would rather not alias the `vim` command to `nvim`.
 
