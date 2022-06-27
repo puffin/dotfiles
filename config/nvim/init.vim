@@ -344,6 +344,13 @@ endfunction
 
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
+" git diff view
+Plug 'nvim-lua/plenary.nvim'
+Plug 'sindrets/diffview.nvim'
+nmap <silent> <leader>dvh :DiffviewFileHistory<cr>
+nmap <silent> <leader>dvo :DiffviewOpen<cr>
+nmap <silent> <leader>dvc :DiffviewClose<cr>
+
 " vim-fugitive
 Plug 'tpope/vim-fugitive'
 nmap <silent> <leader>gs :Gstatus<cr>
@@ -360,6 +367,7 @@ Plug 'rbong/vim-flog'
 Plug 'honza/vim-snippets' " Snippets files
 
 Plug 'ryanoasis/vim-devicons'
+Plug 'kyazdani42/nvim-web-devicons'
 let g:WebDevIconsOS = 'Darwin'
 let g:WebDevIconsUnicodeDecorateFolderNodes = 1
 let g:DevIconsEnableFoldersOpenClose = 1
