@@ -20,9 +20,11 @@ setopt HIST_IGNORE_ALL_DUPS
 setopt COMPLETE_ALIASES
 
 # make terminal command navigation sane again
-bindkey '^[^[[D' backward-word
-bindkey '^[^[[C' forward-word
-bindkey '^[[5D' beginning-of-line
-bindkey '^[[5C' end-of-line
-bindkey '^[[3~' delete-char
-bindkey '^?' backward-delete-char
+bindkey '^[f' forward-word              # ALT + arrow right
+bindkey '^[b' backward-word             # ALT + arrow left
+bindkey '^[[1~' beginning-of-line       # CMD + arrow left
+bindkey '^[[4~' end-of-line             # CMD + arrow right
+bindkey '^[[1;3B' delete-char           # ALT + arrow down
+bindkey '^[[1;3A' backward-delete-char  # ALT + arrow up
+bindkey '^[^?' backward-kill-word       # ALT + BACKSPACE
+bindkey '^[d' kill-word                 # ALT + D

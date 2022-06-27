@@ -112,9 +112,9 @@ eval "$(direnv hook zsh)"
 eval $(gdircolors)
 
 # move to next word with ctrl-F
-bindkey -M viins "^F" vi-forward-word
+# bindkey -M viins "^F" vi-forward-word
 # Move to end of line with ctrl-E
-bindkey -M viins "^E" vi-add-eol
+# bindkey -M viins "^E" vi-add-eol
 
 # add color to man pages
 export MANROFFOPT='-c'

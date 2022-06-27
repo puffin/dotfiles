@@ -155,7 +155,6 @@ Tmux is a fantastic tool for improving productivity when working with a terminal
 ### Tmux basic control
 
 Tmux is configured with 2 plugins ([tmux-continuum](https://github.com/tmux-plugins/tmux-continuum) and [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)) to continuously save tmux environment and restore it when started. This includes also your vim session so your development environment is back where you left it off.
-
 To start tmux, open your terminal and type
 
 ```bash
@@ -179,6 +178,22 @@ Here is a basic list of commands you'll use all the time in tmux. Reminder, pref
 + `prefix + [h, j, k, l]` : move to pane
 + `prefix + z` : toggle pane fullscreen
 + `prefix + shift + [h, j, k, l]` : resize pane
+
+### Zsh basic control
+
+Here is a basic list of commands you'll use all the time in zsh.
+
++ `ALT + arrow right` : move one word forward
++ `ALT + arrow left` : move one word backward
++ `CMD + arrow right` : move to the end of the line
++ `CMD + arrow left` : move to the beginning of the line
++ `ALT + arrow down` : clear the characters on the line after the current cursor position
++ `ALT + arrow up` : clear the characters on the line before the current cursor position
++ `ALT + D` : delete the word after the cursor
++ `ALT + BACKSPACE` : delete the word before the cursor
++ `CTRL + U` : clear the entire line
++ `CTRL + R` : list commands history
++ `CTRL + T` : list files history
 
 ### Vim basic control
 

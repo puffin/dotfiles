@@ -25,7 +25,7 @@ colors:
 
   # Bright colors
   bright:
-    black:   '#000000'
+
     red:     '#ff7ef3'
     green:   '#a2f644'
     yellow:  '#f7fcb6'
@@ -59,3 +59,8 @@ cursor:
 key_bindings:
   - { key: Left,     mods: Alt,     chars: "\x1bb"                       } # Skip word left
   - { key: Right,    mods: Alt,     chars: "\x1bf"                       } # Skip word right
+  - { key: Left,     mods: Command, chars: "\x1bOH",   mode: AppCursor   } # Home
+  - { key: Right,    mods: Command, chars: "\x1bOF",   mode: AppCursor   } # End
+  - { key: Back,     mods: Command, chars: "\x15"                        } # Delete line
+  - { key: Back,     mods: Alt,     chars: "\x1b\x7f"                    } # Delete word
+  - { key: D,        mods: Alt,     chars: "\x1bd"                       }
