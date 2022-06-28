@@ -231,6 +231,9 @@ Some more advanced commands.
 + `gd` : Goto definition
 + `gr` : Goto references
 + `do` : Automated changes or fixes for issue
++ `leader + gdo` : Open Diffview
++ `leader + gdc` : Close Diffview
++ `leader + gdh` : Open Diffview file history
 
 ## Troubleshooting
 
