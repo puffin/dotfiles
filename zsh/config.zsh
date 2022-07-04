@@ -6,7 +6,8 @@ setopt LOCAL_TRAPS
 #setopt IGNORE_EOF
 setopt PROMPT_SUBST
 
-HISTFILE=~/.zsh_history
+# icloud location to share between devices
+HISTFILE=~/Documents/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 

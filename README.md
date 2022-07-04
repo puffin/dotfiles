@@ -1,6 +1,6 @@
 # Dotfiles
 
-This is a collection of vim, tmux, and zsh configurations. This setup works for me, a DevOps engineer on macOS. It mights not works for you but you can steal ideas from this and if you like, contribute back to it!
+This is a collection of vim, tmux, and zsh configurations. This setup works for me, a DevOps engineer on macOS. It mights not works for you, but you can steal ideas from this and if you like, contribute back to it!
 
 ![A screenshot of the dotfiles setup](screenshot.png)
 
@@ -154,7 +154,7 @@ Tmux is a fantastic tool for improving productivity when working with a terminal
 
 ### Tmux basic control
 
-Tmux is configured with 2 plugins ([tmux-continuum](https://github.com/tmux-plugins/tmux-continuum) and [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)) to continuously save tmux environment and restore it when started. This includes also your vim session so your development environment is back where you left it off.
+Tmux is configured with 2 plugins ([tmux-continuum](https://github.com/tmux-plugins/tmux-continuum) and [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)) to continuously save tmux environment and restore it when started. This includes also your vim session, so your development environment is back where you left it off.
 To start tmux, open your terminal and type
 
 ```bash
@@ -237,7 +237,7 @@ Some more advanced commands.
 
 ## Troubleshooting
 
-The automated installation can encounter errors around file permissions in case you don't have administrator access to the file system or you're trying to install it under a new OS user. Open a terminal and type:
+The automated installation can encounter errors around file permissions in case you don't have administrator access to the file system, or you're trying to install it under a new OS user. Open a terminal and type:
 
 ```bash
 ➜ sudo chown -R $(whoami):admin /usr/local/
