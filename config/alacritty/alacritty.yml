@@ -25,7 +25,6 @@ colors:
 
   # Bright colors
   bright:
-
     red:     '#ff7ef3'
     green:   '#a2f644'
     yellow:  '#f7fcb6'
@@ -46,6 +45,9 @@ font:
     family: "SauceCodePro Nerd Font"
     style: "Italic"
   size: 11
+  offset:
+   x: 0 # letter spacing
+   y: 0 # line spacing
 
 mouse:
   hide_when_typing: true
