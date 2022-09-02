@@ -353,10 +353,13 @@ nmap <silent> <leader>dvc :DiffviewClose<cr>
 
 " vim-fugitive
 Plug 'tpope/vim-fugitive'
-nmap <silent> <leader>gs :Gstatus<cr>
-nmap <leader>ge :Gedit<cr>
-nmap <silent><leader>gr :Gread<cr>
-nmap <silent><leader>gb :Gblame<cr>
+nmap <silent> <leader>gs :G status<cr>
+nmap <silent> <leader>gw :Gwrite<cr>
+nmap <silent> <leader>gd :Gdiff<cr>
+nmap <silent><leader>ga :G add .<cr>
+nmap <silent><leader>gc :G commit<cr>
+nmap <silent><leader>gb :G blame<cr>
+nmap <silent><leader>gbr :GBrowse<cr>
 nmap <silent><leader>gd :Gvdiffsplit!<cr>
 nmap <silent>gdh :diffget //2<cr>
 nmap <silent>gdl :diffget //3<cr>
