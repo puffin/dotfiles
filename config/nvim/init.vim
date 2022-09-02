@@ -355,10 +355,9 @@ nmap <silent> <leader>dvc :DiffviewClose<cr>
 Plug 'tpope/vim-fugitive'
 
 function! PushToCurrentBranch()
-  exe ':Gwrite'
-  exe ':G commit'
+  exe ":G commit"
   let branch = FugitiveHead()
-  exe ':Git push origin ' . branch
+  exe ":Git push origin " . branch
 endfunction
 
 nmap <silent> <leader>gs :G status<cr>
