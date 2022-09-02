@@ -354,6 +354,7 @@ nmap <silent> <leader>dvc :DiffviewClose<cr>
 " vim-fugitive
 Plug 'tpope/vim-fugitive'
 
+" Git shortcuts
 nmap <silent> <leader>gs :G status<cr>
 nmap <silent> <leader>gw :Gwrite<cr>
 nmap <silent> <leader>gd :Gdiff<cr>
