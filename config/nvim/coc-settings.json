@@ -6,6 +6,9 @@
         "typescriptreact"
     ],
     "coc.preferences.formatOnType": true,
+    "suggest.floatConfig": {
+        "border": true
+    },
     "tsserver.formatOnType": true,
     "suggest.enablePreview": true,
     "codeLens.enable": true,

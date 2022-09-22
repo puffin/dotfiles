@@ -581,6 +581,10 @@ highlight Comment cterm=italic term=italic gui=italic
 highlight htmlArg cterm=italic term=italic gui=italic
 highlight xmlAttrib cterm=italic term=italic gui=italic
 
+" make the coc autocompletion smarter
+highlight CocFloating guifg=#EEEEEE guibg=#1D1F21
+highlight CocMenuSel guifg=#DAD085 guibg=#444444
+
 " Better tabbing
 vnoremap < <gv
 vnoremap > >gv
