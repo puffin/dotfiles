@@ -7,7 +7,14 @@
     ],
     "coc.preferences.formatOnType": true,
     "suggest.floatConfig": {
-        "border": true
+        "border": true,
+        "winblend": 0,
+        "borderhighlight": "FloatBorder"
+    },
+    "diagnostic.floatConfig": {
+        "border": true,
+        "winblend": 0,
+        "borderhighlight": "FloatBorder"
     },
     "tsserver.formatOnType": true,
     "suggest.enablePreview": true,
