@@ -3,7 +3,7 @@
 base00=default   # - Default
 base01='#151515' # - Lighter Background (Used for status bars)
 base02='#202020' # - Selection Background
-base03='#909090' # - Comments, Invisibles, Line Highlighting
+base03='#ABB2BF' # - Comments, Invisibles, Line Highlighting
 base04='#505050' # - Dark Foreground (Used for status bars)
 base05='#D0D0D0' # - Default Foreground, Caret, Delimiters, Operators
 base06='#E0E0E0' # - Light Foreground (Not often used)
@@ -12,9 +12,9 @@ base08='#AC4142' # - Variables, XML Tags, Markup Link Text, Markup Lists, Diff D
 base09='#D28445' # - Integers, Boolean, Constants, XML Attributes, Markup Link Url
 base0A='#F4BF75' # - Classes, Markup Bold, Search Text Background
 base0B='#90A959' # - Strings, Inherited Class, Markup Code, Diff Inserted
-base0C='#75B5AA' # - Support, Regular Expressions, Escape Characters, Markup Quotes
+base0C='#56B6C2' # - Support, Regular Expressions, Escape Characters, Markup Quotes
 base0D='#6A9FB5' # - Functions, Methods, Attribute IDs, Headings
-base0E='#AA759F' # - Keywords, Storage, Selector, Markup Italic, Diff Changed
+base0E='#C678DD' # - Keywords, Storage, Selector, Markup Italic, Diff Changed
 base0F='#8F5536' # - Deprecated, Opening/Closing Embedded Language Tags, e.g. <? php ?>
 
 set -g status-left-length 32
@@ -22,7 +22,7 @@ set -g status-right-length 150
 set -g status-interval 5
 
 # selection color
-set -g mode-style bg=$base03,fg=$base07
+set -g mode-style bg=$base00,fg=$base07
 
 # default statusbar colors
 set-option -g status-style fg=$base02,bg=$base00

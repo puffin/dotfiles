@@ -121,6 +121,7 @@ Plug 'psliwka/vim-smoothie'
 Plug 'chriskempson/base16-vim'
 Plug 'joshdick/onedark.vim'
 Plug 'gosukiwi/vim-atom-dark'
+Plug 'sheerun/vim-polyglot'
 
 " LightLine
 Plug 'itchyny/lightline.vim'
@@ -128,7 +129,7 @@ Plug 'nicknisi/vim-base16-lightline'
 
 " Custom theme and project relative path
 let g:lightline = {
-\   'colorscheme': 'base16',
+\   'colorscheme': 'onedark',
 \   'active': {
 \       'left': [ [ 'mode', 'paste' ],
 \               [ 'gitbranch' ],
@@ -553,9 +554,9 @@ if filereadable(expand("~/.vimrc_background"))
     let base16colorspace=256
     source ~/.vimrc_background
 else
-    let g:onedark_termcolors=16
+    let g:onedark_termcolors=256
     let g:onedark_terminal_italics=1
-    colorscheme atom-dark
+    colorscheme onedark
 endif
 syntax on
 filetype plugin indent on
