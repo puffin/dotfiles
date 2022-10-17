@@ -6,32 +6,59 @@ bell:
   duration: 0
 
 # Colors
-colors:
-  # Default colors
-  primary:
-    background: '#131313'
-    foreground: '#cfd2d0'
+schemes:
+  gruvbox_dark: &gruvbox_dark
+    primary:
+      background: '0x1d2021'
+      foreground: '0xf9f5d7'
 
-  # Normal colors
-  normal:
-    black:   '#000000'
-    red:     '#ff7ef3'
-    green:   '#97cb9b'
-    yellow:  '#ffdebe'
-    blue:    '#96cbfe'
-    magenta: '#c6c5fd'
-    cyan:    '#96cbfe'
-    white:   '#e6e6e6'
+    normal:
+      black:   '0x665c54'
+      red:     '0xea6962'
+      green:   '0xa9b665'
+      yellow:  '0xe78a4e'
+      blue:    '0x7daea3'
+      magenta: '0xd3869b'
+      cyan:    '0x89b482'
+      white:   '0xdfbf8e'
 
-  # Bright colors
-  bright:
-    red:     '#ff7ef3'
-    green:   '#a2f644'
-    yellow:  '#f7fcb6'
-    blue:    '#a5d5fe'
-    magenta: '#c6c5fd'
-    cyan:    '#96cbfe'
-    white:   '#e6e6e6'
+    bright:
+      black:   '0x928374'
+      red:     '0xea6962'
+      green:   '0xa9b665'
+      yellow:  '0xe3a84e'
+      blue:    '0x7daea3'
+      magenta: '0xd3869b'
+      cyan:    '0x89b482'
+      white:   '0xdfbf8e'
+
+
+  gruvbox_light: &gruvbox_light
+    primary:
+      background: '0xf9f5d7'
+      foreground: '0x1d2021'
+
+    normal:
+      black:   '0xbdae93'
+      red:     '0xcc241d'
+      green:   '0x98971a'
+      yellow:  '0xd79921'
+      blue:    '0x458588'
+      magenta: '0xb16286'
+      cyan:    '0x689d6a'
+      white:   '0xdfbf8e'
+
+    bright:
+      black:   '0x7c6f64'
+      red:     '0xfb4934'
+      green:   '0xb8bb26'
+      yellow:  '0xfabd2f'
+      blue:    '0x83a598'
+      magenta: '0xd3869b'
+      cyan:    '0x8ec07c'
+      white:   '0xdfbf8e'
+
+colors: *gruvbox_dark
 
 font:
   use_thin_strokes: true

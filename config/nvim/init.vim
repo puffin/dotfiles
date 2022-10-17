@@ -118,9 +118,7 @@ match ExtraWhitespace /\s\+$\|\t/
 Plug 'psliwka/vim-smoothie'
 
 " Load colorschemes
-Plug 'chriskempson/base16-vim'
-Plug 'joshdick/onedark.vim'
-Plug 'gosukiwi/vim-atom-dark'
+Plug 'morhetz/gruvbox'
 
 " LightLine
 Plug 'itchyny/lightline.vim'
@@ -128,7 +126,7 @@ Plug 'nicknisi/vim-base16-lightline'
 
 " Custom theme and project relative path
 let g:lightline = {
-\   'colorscheme': 'base16',
+\   'colorscheme': 'gruvbox',
 \   'active': {
 \       'left': [ [ 'mode', 'paste' ],
 \               [ 'gitbranch' ],
@@ -189,6 +187,8 @@ augroup configgroup
     " when there are multiple windows open
     autocmd FileType qf wincmd J
     autocmd FileType qf nmap <buffer> q :q<cr>
+
+    autocmd vimenter * ++nested colorscheme gruvbox
 augroup END
 
 " General Functionality
@@ -553,28 +553,22 @@ if filereadable(expand("~/.vimrc_background"))
     let base16colorspace=256
     source ~/.vimrc_background
 else
-    let g:onedark_termcolors=16
-    let g:onedark_terminal_italics=1
-    colorscheme atom-dark
+    set background=dark
+    let g:gruvbox_contrast_dark='hard'
+    let g:gruvbox_contrast_light='hard'
+    colorscheme gruvbox
 endif
 syntax on
 filetype plugin indent on
 
-" make the background darker
-highlight Normal guifg=#F8F8F2 guibg=#131313
-
-" make the line column darker
-highlight LineNr guifg=#465457 guibg=#1D1F21
-highlight SignColumn guifg=#DAD085 guibg=#1D1F21
-
 " make the cursor target precise
-highlight Cursor guibg=white guifg=white
-highlight CursorLine guibg=NONE gui=underline cterm=underline
-highlight CursorColumn guibg=#1D1F21 ctermbg=NONE gui=NONE cterm=NONE
+" highlight Cursor guibg=white guifg=white
+" highlight CursorLine guibg=NONE gui=underline cterm=underline
+" highlight CursorColumn guibg=#1D1F21 ctermbg=NONE gui=NONE cterm=NONE
 
 " make the highlighting of tabs and other non-text less annoying
-highlight SpecialKey ctermfg=19 guifg=#444444
-highlight NonText ctermfg=19 guifg=#444444
+" highlight SpecialKey ctermfg=19 guifg=#444444
+" highlight NonText ctermfg=19 guifg=#444444
 
 " make comments and HTML attributes italic
 highlight Comment cterm=italic term=italic gui=italic
@@ -582,8 +576,8 @@ highlight htmlArg cterm=italic term=italic gui=italic
 highlight xmlAttrib cterm=italic term=italic gui=italic
 
 " make the coc autocompletion smarter
-highlight CocFloating guifg=#EEEEEE guibg=#1D1F21
-highlight CocMenuSel guifg=#DAD085 guibg=#444444
+highlight CocFloating guifg=GruvboxFg0 guibg=GruvboxBg0
+highlight CocMenuSel guifg=GruvboxFg0 guibg=gray
 
 " Better tabbing
 vnoremap < <gv
