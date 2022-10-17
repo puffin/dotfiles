@@ -22,7 +22,7 @@ set -g status-right-length 150
 set -g status-interval 5
 
 # selection color
-set -g mode-style bg=$base00,fg=$base07
+set -g mode-style bg=$base03,fg=$base07
 
 # default statusbar colors
 set-option -g status-style fg=$base02,bg=$base00
