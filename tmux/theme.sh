@@ -49,12 +49,5 @@ set-option -g display-panes-colour $base01
 set-window-option -g clock-mode-colour $base0C
 
 tm_session_name="#[default,bg=$base00,fg=$base0E] #S "
-tm_battery="#[fg=$base0F,bg=$base00] ♥ #(battery)"
-tm_vpn=" #(~/.dotfiles/bin/vpn_indicator.sh)"
-tm_date="#[default,bg=$base00,fg=$base0C] %R"
-tm_wclock="#[bg=$base00,fg=$base03] #{world_clock_status}"
-tm_tunes="#[default,bg=$base00,fg=$base0B] #(osascript -l JavaScript $DOTFILES/applescripts/tunes.js)"
-
 set -g status-left "$tm_session_name"
-#set -g status-right "$tm_tunes$tm_wclock$tm_vpn $tm_battery $tm_date"
 set -g status-right ""
