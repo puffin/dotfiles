@@ -66,7 +66,7 @@ set updatetime=300
 set signcolumn=yes
 set shortmess+=c
 set cursorline " enable cursorline highlilight
-set cursorcolumn " enable cursorcolumn highlight"
+" set cursorcolumn " enable cursorcolumn highlight"
 
 " Tab control
 set expandtab " insert spaces rather than tabs for <Tab>
