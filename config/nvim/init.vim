@@ -118,7 +118,7 @@ match ExtraWhitespace /\s\+$\|\t/
 Plug 'psliwka/vim-smoothie'
 
 " Load colorschemes
-Plug 'morhetz/gruvbox'
+Plug 'gruvbox-community/gruvbox'
 
 " LightLine
 Plug 'itchyny/lightline.vim'
@@ -557,6 +557,7 @@ else
     let g:gruvbox_contrast_dark='hard'
     let g:gruvbox_contrast_light='hard'
     colorscheme gruvbox
+    let $BAT_THEME='gruvbox'
 endif
 syntax on
 filetype plugin indent on
