@@ -58,7 +58,7 @@ schemes:
       cyan:    '0x8ec07c'
       white:   '0xdfbf8e'
 
-colors: *gruvbox_dark
+colors: *gruvbox_light
 
 font:
   use_thin_strokes: true

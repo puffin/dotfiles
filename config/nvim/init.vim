@@ -553,7 +553,7 @@ if filereadable(expand("~/.vimrc_background"))
     let base16colorspace=256
     source ~/.vimrc_background
 else
-    set background=dark
+    set background=light
     let g:gruvbox_contrast_dark='hard'
     let g:gruvbox_contrast_light='hard'
     colorscheme gruvbox
@@ -564,7 +564,7 @@ filetype plugin indent on
 " make the cursor target precise
 " highlight Cursor guibg=white guifg=white
 " highlight CursorLine guibg=NONE gui=underline cterm=underline
-" highlight CursorColumn guibg=#1D1F21 ctermbg=NONE gui=NONE cterm=NONE
+" highlight CursorColumn guibg=NONE ctermbg=NONE gui=NONE cterm=NONE
 
 " make the highlighting of tabs and other non-text less annoying
 " highlight SpecialKey ctermfg=19 guifg=#444444
