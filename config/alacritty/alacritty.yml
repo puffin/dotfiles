@@ -34,7 +34,7 @@ colors:
     white:   '#abb2bf'
 
 font:
-  use_thin_strokes: true
+  AppleFontSmoothing: 0
   normal:
     family: "SauceCodePro Nerd Font"
     style: "Regular"
