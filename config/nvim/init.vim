@@ -290,23 +290,36 @@ Plug 'sickill/vim-pasta'
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
-" let g:fzf_layout = { 'down': '~25%' }
 let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
-let $FZF_DEFAULT_OPTS="--preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
+let g:fzf_preview_window = ['right,60%']
 let $FZF_DEFAULT_COMMAND = 'rg --files --ignore-case --hidden -g "!{.git,node_modules,vendor}/*"'
+
+" handling setting and unsetting BAT_THEME for fzf.vim
+augroup update_bat_theme
+    autocmd!
+    autocmd colorscheme * call ToggleBatEnvVar()
+augroup end
+function ToggleBatEnvVar()
+    if (&background == "light")
+        let $BAT_THEME='OneHalfLight'
+    else
+        let $BAT_THEME='OneHalfDark'
+    endif
+endfunction
 
 if isdirectory(".git")
     " if in a git project, use :GFiles
-    nmap <silent> <leader>t :GitFiles --cached --others --exclude-standard<cr>
+    nmap <silent> <leader>t :GFiles<cr>
 else
     " otherwise, use :FZF
-    nmap <silent> <leader>t :FZF<cr>
+    nmap <silent> <leader>t :Files<cr>
 endif
 
 nmap <silent> <leader>s :GFiles?<cr>
 
 nmap <silent> <leader>r :Buffers<cr>
-nmap <silent> <leader>e :FZF<cr>
+nmap <silent> <leader>e :Files<cr>
+nmap <silent> <leader>c :Colors<cr>
 nmap <leader><tab> <plug>(fzf-maps-n)
 xmap <leader><tab> <plug>(fzf-maps-x)
 omap <leader><tab> <plug>(fzf-maps-o)
@@ -316,34 +329,6 @@ imap <c-x><c-k> <plug>(fzf-complete-word)
 imap <c-x><c-f> <plug>(fzf-compljte-path)
 imap <c-x><c-j> <plug>(fzf-complete-file-ag)
 imap <c-x><c-l> <plug>(fzf-complete-line)
-
-command! LS call fzf#run(fzf#wrap({'source': 'ls'}))
-
-command! -bang -nargs=? Buffers
-\ call fzf#vim#buffers(<q-args>, fzf#vim#with_preview(), <bang>0)
-
-" nnoremap <silent> <Leader>C :call fzf#run({
-" \   'source':
-" \     map(split(globpath(&rtp, "colors/*.vim"), "\n"),
-" \         "substitute(fnamemodify(v:val, ':t'), '\\..\\{-}$', '', '')"),
-" \   'sink':    'colo',
-" \   'options': '+m',
-" \   'left':    30
-" \ })<CR>
-
-" command! FZFMru call fzf#run({
-" \  'source':  v:oldfiles,
-" \  'sink':    'e',
-" \  'options': '-m -x +s',
-" \  'down':    '40%'})
-
-" command! -bang -nargs=* Find call fzf#vim#grep(
-"     \ 'rg --column --line-number --no-heading --follow --color=always '.<q-args>.' || true', 1,
-"     \ <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
-" command! -bang -nargs=? -complete=dir Files
-"     \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
-command! -bang -nargs=? -complete=dir GitFiles
-    \ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview(), <bang>0)
 
 " git diff view
 Plug 'nvim-lua/plenary.nvim'
