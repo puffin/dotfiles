@@ -7,43 +7,43 @@ bell:
 
 # Colors
 schemes:
-  gruvbox_dark: &gruvbox_dark
+  one_dark: &one_dark
     primary:
-      background: '0x1d2021'
-      foreground: '0xf9f5d7'
+      background: '0x1e2127'
+      foreground: '0xabb2bf'
 
     normal:
-      black:   '0x665c54'
-      red:     '0xea6962'
-      green:   '0xa9b665'
-      yellow:  '0xe78a4e'
-      blue:    '0x7daea3'
-      magenta: '0xd3869b'
-      cyan:    '0x89b482'
-      white:   '0xdfbf8e'
+      black:   '0x1e2127'
+      red:     '0xe06c75'
+      green:   '0x98c379'
+      yellow:  '0xd19a66'
+      blue:    '0x61afef'
+      magenta: '0xc678dd'
+      cyan:    '0x56b6c2'
+      white:   '0xabb2bf'
 
     bright:
-      black:   '0x928374'
-      red:     '0xea6962'
-      green:   '0xa9b665'
-      yellow:  '0xe3a84e'
-      blue:    '0x7daea3'
-      magenta: '0xd3869b'
-      cyan:    '0x89b482'
-      white:   '0xdfbf8e'
+      black:   '0x5c6370'
+      red:     '0xe06c75'
+      green:   '0x98c379'
+      yellow:  '0xd19a66'
+      blue:    '0x61afef'
+      magenta: '0xc678dd'
+      cyan:    '0x56b6c2'
+      white:   '0xffffff'
 
 
-  gruvbox_light: &gruvbox_light
+  one_light: &one_light
     primary:
-      background: '0xfbf1c7'
-      foreground: '0x282828'
+      background: '0xf8f8f8'
+      foreground: '0x2a2b33'
 
     normal:
-      black:   '0xbdae93'
-      red:     '0xcc241d'
-      green:   '0x98971a'
-      yellow:  '0xd79921'
-      blue:    '0x458588'
+      black:   '0x000000'
+      red:     '0xde3d35'
+      green:   '0x3e953a'
+      yellow:  '0xd2b67b'
+      blue:    '0x2f5af3'
       magenta: '0xb16286'
       cyan:    '0x689d6a'
       white:   '0xdfbf8e'
@@ -56,9 +56,8 @@ schemes:
       blue:    '0x83a598'
       magenta: '0xd3869b'
       cyan:    '0x8ec07c'
-      white:   '0xdfbf8e'
 
-colors: *gruvbox_light
+colors: *one_light
 
 font:
   AppleFontSmoothing: 0

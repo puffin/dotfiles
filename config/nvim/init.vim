@@ -120,6 +120,8 @@ Plug 'psliwka/vim-smoothie'
 " Load colorschemes
 Plug 'gruvbox-community/gruvbox'
 Plug 'sheerun/vim-polyglot'
+Plug 'rakr/vim-one'
+Plug 'NLKNguyen/papercolor-theme'
 
 " LightLine
 Plug 'itchyny/lightline.vim'
@@ -127,7 +129,7 @@ Plug 'nicknisi/vim-base16-lightline'
 
 " Custom theme and project relative path
 let g:lightline = {
-\   'colorscheme': 'gruvbox',
+\   'colorscheme': 'one',
 \   'active': {
 \       'left': [ [ 'mode', 'paste' ],
 \               [ 'gitbranch' ],
@@ -189,7 +191,7 @@ augroup configgroup
     autocmd FileType qf wincmd J
     autocmd FileType qf nmap <buffer> q :q<cr>
 
-    autocmd vimenter * ++nested colorscheme gruvbox
+    autocmd vimenter * ++nested colorscheme one
 augroup END
 
 " General Functionality
@@ -288,9 +290,10 @@ Plug 'sickill/vim-pasta'
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
-let g:fzf_layout = { 'down': '~25%' }
-"let g:fzf_prefer_tmux = 1
-let g:fzf_colors = { 'preview-fg': 'light'}
+" let g:fzf_layout = { 'down': '~25%' }
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.9 } }
+let $FZF_DEFAULT_OPTS="--preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
+let $FZF_DEFAULT_COMMAND = 'rg --files --ignore-case --hidden -g "!{.git,node_modules,vendor}/*"'
 
 if isdirectory(".git")
     " if in a git project, use :GFiles
@@ -314,37 +317,33 @@ imap <c-x><c-f> <plug>(fzf-compljte-path)
 imap <c-x><c-j> <plug>(fzf-complete-file-ag)
 imap <c-x><c-l> <plug>(fzf-complete-line)
 
-nnoremap <silent> <Leader>C :call fzf#run({
-\   'source':
-\     map(split(globpath(&rtp, "colors/*.vim"), "\n"),
-\         "substitute(fnamemodify(v:val, ':t'), '\\..\\{-}$', '', '')"),
-\   'sink':    'colo',
-\   'options': '+m',
-\   'left':    30
-\ })<CR>
+command! LS call fzf#run(fzf#wrap({'source': 'ls'}))
 
-command! FZFMru call fzf#run({
-\  'source':  v:oldfiles,
-\  'sink':    'e',
-\  'options': '-m -x +s',
-\  'down':    '40%'})
+command! -bang -nargs=? Buffers
+\ call fzf#vim#buffers(<q-args>, fzf#vim#with_preview(), <bang>0)
 
-command! -bang -nargs=* Find call fzf#vim#grep(
-    \ 'rg --column --line-number --no-heading --follow --color=always '.<q-args>.' || true', 1,
-    \ <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
-command! -bang -nargs=? -complete=dir Files
-    \ call fzf#vim#files(<q-args>, fzf#vim#with_preview('right:50%', '?'), <bang>0)
+" nnoremap <silent> <Leader>C :call fzf#run({
+" \   'source':
+" \     map(split(globpath(&rtp, "colors/*.vim"), "\n"),
+" \         "substitute(fnamemodify(v:val, ':t'), '\\..\\{-}$', '', '')"),
+" \   'sink':    'colo',
+" \   'options': '+m',
+" \   'left':    30
+" \ })<CR>
+
+" command! FZFMru call fzf#run({
+" \  'source':  v:oldfiles,
+" \  'sink':    'e',
+" \  'options': '-m -x +s',
+" \  'down':    '40%'})
+
+" command! -bang -nargs=* Find call fzf#vim#grep(
+"     \ 'rg --column --line-number --no-heading --follow --color=always '.<q-args>.' || true', 1,
+"     \ <bang>0 ? fzf#vim#with_preview('up:60%') : fzf#vim#with_preview('right:50%:hidden', '?'), <bang>0)
+" command! -bang -nargs=? -complete=dir Files
+"     \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
 command! -bang -nargs=? -complete=dir GitFiles
-    \ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview('right:50%', '?'), <bang>0)
-function! RipgrepFzf(query, fullscreen)
-    let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
-    let initial_command = printf(command_fmt, shellescape(a:query))
-    let reload_command = printf(command_fmt, '{q}')
-    let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
-    call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
-endfunction
-
-command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+    \ call fzf#vim#gitfiles(<q-args>, fzf#vim#with_preview(), <bang>0)
 
 " git diff view
 Plug 'nvim-lua/plenary.nvim'
@@ -556,10 +555,7 @@ if filereadable(expand("~/.vimrc_background"))
     source ~/.vimrc_background
 else
     set background=light
-    let g:gruvbox_contrast_dark='normal'
-    let g:gruvbox_contrast_light='normal'
-    colorscheme gruvbox
-    let $BAT_THEME='gruvbox'
+    colorscheme one
 endif
 syntax on
 filetype plugin indent on
@@ -579,8 +575,8 @@ highlight htmlArg cterm=italic term=italic gui=italic
 highlight xmlAttrib cterm=italic term=italic gui=italic
 
 " make the coc autocompletion smarter
-highlight CocFloating guifg=GruvboxFg0 guibg=GruvboxBg0
-highlight CocMenuSel guifg=GruvboxFg0 guibg=gray
+" highlight CocFloating guifg=GruvboxFg0 guibg=GruvboxBg0
+" highlight CocMenuSel guifg=GruvboxFg0 guibg=gray
 
 " Better tabbing
 vnoremap < <gv
