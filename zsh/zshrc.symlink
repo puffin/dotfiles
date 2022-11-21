@@ -76,7 +76,8 @@ if [ -z ${RELOAD}  ]; then
     export ZPLUG_HOME=$(brew --prefix)/opt/zplug
     source $ZPLUG_HOME/init.zsh
     zplug 'zplug/zplug', hook-build:'zplug --self-manage'
-    zplug 'zsh-users/zsh-syntax-highlighting', defer:2, hook-load:"export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=239"
+    # zplug 'zsh-users/zsh-syntax-highlighting', defer:2, hook-load:"export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=239" # one dark theme
+    zplug 'zsh-users/zsh-syntax-highlighting', defer:2, hook-load:"export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=250" # one light theme
     zplug 'zsh-users/zsh-autosuggestions'
     export NVM_AUTO_USE=false
     zplug 'lukechilds/zsh-nvm'
