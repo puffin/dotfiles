@@ -290,6 +290,7 @@ Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 let g:fzf_layout = { 'down': '~25%' }
 "let g:fzf_prefer_tmux = 1
+let g:fzf_colors = { 'preview-fg': 'light'}
 
 if isdirectory(".git")
     " if in a git project, use :GFiles
@@ -555,8 +556,8 @@ if filereadable(expand("~/.vimrc_background"))
     source ~/.vimrc_background
 else
     set background=light
-    let g:gruvbox_contrast_dark='hard'
-    let g:gruvbox_contrast_light='hard'
+    let g:gruvbox_contrast_dark='normal'
+    let g:gruvbox_contrast_light='normal'
     colorscheme gruvbox
     let $BAT_THEME='gruvbox'
 endif
