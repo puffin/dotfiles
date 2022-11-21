@@ -118,10 +118,7 @@ match ExtraWhitespace /\s\+$\|\t/
 Plug 'psliwka/vim-smoothie'
 
 " Load colorschemes
-Plug 'gruvbox-community/gruvbox'
-Plug 'sheerun/vim-polyglot'
 Plug 'rakr/vim-one'
-Plug 'NLKNguyen/papercolor-theme'
 
 " LightLine
 Plug 'itchyny/lightline.vim'
@@ -221,8 +218,8 @@ Plug 'benmills/vimux'
 Plug 'tpope/vim-repeat'
 
 " continuously updated vim sessions
-Plug 'tpope/vim-obsession'
-Plug 'dhruvasagar/vim-prosession'
+" Plug 'tpope/vim-obsession'
+" Plug 'dhruvasagar/vim-prosession'
 
 " .editorconfig support
 Plug 'editorconfig/editorconfig-vim'
