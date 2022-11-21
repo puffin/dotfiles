@@ -61,7 +61,7 @@ schemes:
 colors: *gruvbox_light
 
 font:
-  use_thin_strokes: true
+  AppleFontSmoothing: 0
   normal:
     family: "SauceCodePro Nerd Font"
     style: "Regular"

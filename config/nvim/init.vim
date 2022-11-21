@@ -119,6 +119,7 @@ Plug 'psliwka/vim-smoothie'
 
 " Load colorschemes
 Plug 'gruvbox-community/gruvbox'
+Plug 'sheerun/vim-polyglot'
 
 " LightLine
 Plug 'itchyny/lightline.vim'

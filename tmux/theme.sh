@@ -46,5 +46,3 @@ set-option -g status-right ""
 
 set-window-option -g window-status-current-format "#[bg=default,fg=colour132,bold] #I #W "
 set-window-option -g window-status-format "#[bg=default,fg=colour243] #I #W "
-
-# vim: set ft=tmux tw=0 nowrap:
