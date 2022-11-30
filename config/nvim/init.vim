@@ -299,8 +299,10 @@ augroup end
 function ToggleBatEnvVar()
     if (&background == "light")
         let $BAT_THEME='OneHalfLight'
+        let $FZF_DEFAULT_OPTS = '--color=light'
     else
         let $BAT_THEME='OneHalfDark'
+        let $FZF_DEFAULT_OPTS = '--color=dark'
     endif
 endfunction
 

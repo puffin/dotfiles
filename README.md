@@ -13,6 +13,7 @@ This is a collection of vim, tmux, and zsh configurations. This setup works for 
 + [Tmux](#tmux-configuration)
 + [Terminal](#terminal-configuration)
 + [Fonts](#fonts)
++ [Color Scheme](#color-scheme)
 + [Usage](#usage)
 + [Troubleshooting](#troubleshooting)
 
@@ -148,7 +149,7 @@ Dark mode is pre-configured and can be enabled by changing these configurations:
 
 + Alacritty (config/alacritty/alacritty.yml): `colors: *one_dark`
 + Vim (config/nvim/init.vim): `set background=dark`
-+ ZSH (zsh/zshrc.symlink): `zplug 'zsh-users/zsh-syntax-highlighting', defer:2, hook-load:"export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=239"`
++ ZSH (zsh/zshrc.symlink): `THEME_ONE_BG=dark`
 
 ## Usage
 

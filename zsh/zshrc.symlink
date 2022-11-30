@@ -4,6 +4,8 @@ export ZSH=$DOTFILES/zsh
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
+THEME_ONE_BG=light
+
 # display how long all tasks over 10 seconds take
 export REPORTTIME=10
 
@@ -65,16 +67,25 @@ else
 fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*" 2> /dev/null'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_CTRL_T_OPTS='--preview "bat --style=numbers --color=always --line-range :500 {}"'
 
+if [ $THEME_ONE_BG = "light" ] ; then
+    export BAT_THEME="OneHalfLight"
+    export FZF_DEFAULT_OPTS='--color=light'
+else
+    export BAT_THEME="OneHalfDark"
+    export FZF_DEFAULT_OPTS='--color=dark'
+fi
 
 if [ -z ${RELOAD}  ]; then
     export ZPLUG_HOME=$(brew --prefix)/opt/zplug
     source $ZPLUG_HOME/init.zsh
     zplug 'zplug/zplug', hook-build:'zplug --self-manage'
-    # zplug 'zsh-users/zsh-syntax-highlighting', defer:2, hook-load:"export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=239" # one dark theme
-    zplug 'zsh-users/zsh-syntax-highlighting', defer:2, hook-load:"export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=250" # one light theme
+    if [ $THEME_ONE_BG = "light" ] ; then
+        zplug 'zsh-users/zsh-syntax-highlighting', defer:2, hook-load:"export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=250" # one light theme
+    else
+        zplug 'zsh-users/zsh-syntax-highlighting', defer:2, hook-load:"export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=239" # one dark theme
+    fi
     zplug 'zsh-users/zsh-autosuggestions'
     export NVM_AUTO_USE=false
     zplug 'lukechilds/zsh-nvm'
