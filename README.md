@@ -2,7 +2,7 @@
 
 This is a collection of vim, tmux, and zsh configurations. This setup works for me, a DevOps engineer on macOS. It mights not works for you, but you can steal ideas from this and if you like, contribute back to it!
 
-![A screenshot of the dotfiles setup](screenshot.png)
+![light theme](resources/theme_light.png)
 
 ## Contents
 
@@ -150,6 +150,10 @@ Dark mode is pre-configured and can be enabled by changing these configurations:
 + Alacritty (config/alacritty/alacritty.yml): `colors: *one_dark`
 + Vim (config/nvim/init.vim): `set background=dark`
 + ZSH (zsh/zshrc.symlink): `THEME_ONE_BG=dark`
+
+### Dark Theme
+
+![dark theme](resources/theme_dark.png)
 
 ## Usage
 
