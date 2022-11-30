@@ -68,9 +68,6 @@ fi
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*" 2> /dev/null'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-# Base16 shell setup
-BASE16_SHELL=$HOME/.config/base16-shell/
-[ -n "$PS1" ] && [ -s $BASE16_SHELL/profile_helper.sh ] && eval "$($BASE16_SHELL/profile_helper.sh)"
 
 if [ -z ${RELOAD}  ]; then
     export ZPLUG_HOME=$(brew --prefix)/opt/zplug
@@ -112,11 +109,6 @@ eval "$(direnv hook zsh)"
 # colors like linux
 eval $(gdircolors)
 
-# move to next word with ctrl-F
-# bindkey -M viins "^F" vi-forward-word
-# Move to end of line with ctrl-E
-# bindkey -M viins "^E" vi-add-eol
-
 # add color to man pages
 export MANROFFOPT='-c'
 export LESS_TERMCAP_mb=$(tput bold; tput setaf 2)
@@ -150,7 +142,7 @@ export PATH="$PATH:$(brew --prefix)/opt/libpq/bin"
 export PATH="$PATH:/Users/davidmichon/.tf-helper/tfh/bin"
 
 # ADD JAVA_HOME
-export JAVA_HOME=$(/usr/libexec/java_home -v13) 
+export JAVA_HOME=$(/usr/libexec/java_home -v13)
 
 . $(brew --prefix)/opt/asdf/asdf.sh
 
