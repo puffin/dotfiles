@@ -150,7 +150,7 @@ export PATH="$PATH:/Users/davidmichon/.tf-helper/tfh/bin"
 # ADD JAVA_HOME
 export JAVA_HOME=$(/usr/libexec/java_home -v13)
 
-. $(brew --prefix)/opt/asdf/asdf.sh
+. $(brew --prefix)/opt/asdf/libexec/asdf.sh
 
 # set PATH so it includes user's private bin if it exists
 if [ -d "$HOME/bin" ] ; then
