@@ -218,8 +218,8 @@ Plug 'benmills/vimux'
 Plug 'tpope/vim-repeat'
 
 " continuously updated vim sessions
-" Plug 'tpope/vim-obsession'
-" Plug 'dhruvasagar/vim-prosession'
+Plug 'tpope/vim-obsession'
+Plug 'dhruvasagar/vim-prosession'
 
 " .editorconfig support
 Plug 'editorconfig/editorconfig-vim'
