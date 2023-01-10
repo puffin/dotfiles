@@ -8,7 +8,6 @@ tap "adoptopenjdk/openjdk"
 cask "session-manager-plugin"
 cask "font-sauce-code-pro-nerd-font"
 cask "adoptopenjdk13"
-:ask "alt-tab"
 
 # packages
 brew "autoconf"

@@ -42,6 +42,8 @@ If on OSX, you will need to install the XCode CLI tools before continuing. To do
 ➜ xcode-select --install
 ```
 
+You'll also need to install howebrew following instruction on this page https://brew.sh/.
+
 Then install everything. Open a terminal and type:
 
 ```bash
