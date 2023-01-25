@@ -113,6 +113,8 @@ rvm install ruby-2.7.5
 rvm alias create default 2.7.5
 rvm use ruby-2.7.5
 
+gem install neovim
+
 # after the install, install solargraph ruby libraries
 echo -e "\\n\\nRunning solargraph Ruby install"
 echo "=============================="
