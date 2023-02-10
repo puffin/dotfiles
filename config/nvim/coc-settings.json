@@ -53,6 +53,14 @@
         "typescript",
         "typescriptreact"
     ],
+    "eslint.probe": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact",
+        "html",
+        "vue"
+    ],
     "explorer.position": "left",
     "explorer.width": 50,
     "explorer.sources": [
