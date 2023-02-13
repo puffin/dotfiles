@@ -35,3 +35,26 @@ function unidecode() {
     perl -e "binmode(STDOUT, ':utf8'); print \"$@\""
     echo # newline
 }
+function zscaler-off () {
+  UIDLIST=$(/bin/ps -axo uid,args | \
+           /usr/bin/grep '/Applications/Zscaler/Zscaler.app/Contents/MacOS/Zscaler' | \
+           /usr/bin/grep -v grep | \
+           /usr/bin/cut -f1 -d\/)
+
+  for ZUID in $UIDLIST; do
+     echo "Unload Zscaler from tray for UID $ZUID"
+     /bin/launchctl asuser $ZUID /bin/launchctl unload /Library/LaunchAgents/com.zscaler.tray.plist
+  done
+
+
+  # Need to run pkill twice.  Once for /Applications/Zscaler/Zscaler.app/Contents/PlugIns/ZscalerTunnel and once for /Applications/Zscaler/Zscaler.app/Contents/PlugIns/ZscalerService and once for /Applications/Zscaler/Zscaler.app/Contents/MacOS/Zscaler
+  sudo pkill Zscaler
+  sudo pkill Zscaler
+
+  echo "ZScaler is now disabled"
+}
+
+function zscaler-on () {
+  sh /Applications/Zscaler/Zscaler.app/Contents/Resources/load_all_trays.sh
+  echo "ZScaler is now enabled"
+}
