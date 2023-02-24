@@ -188,7 +188,7 @@ augroup configgroup
     autocmd FileType qf wincmd J
     autocmd FileType qf nmap <buffer> q :q<cr>
 
-    autocmd vimenter * ++nested colorscheme one
+    " autocmd vimenter * ++nested colorscheme one
 augroup END
 
 " General Functionality
@@ -544,24 +544,18 @@ endif
 syntax on
 filetype plugin indent on
 
-" make the cursor target precise
-" highlight Cursor guibg=white guifg=white
-" highlight CursorLine guibg=NONE gui=underline cterm=underline
-" highlight CursorColumn guibg=NONE ctermbg=NONE gui=NONE cterm=NONE
-
-" make the highlighting of tabs and other non-text less annoying
-" highlight SpecialKey ctermfg=19 guifg=#444444
-" highlight NonText ctermfg=19 guifg=#444444
-
 " make comments and HTML attributes italic
 highlight Comment cterm=italic term=italic gui=italic
 highlight htmlArg cterm=italic term=italic gui=italic
 highlight xmlAttrib cterm=italic term=italic gui=italic
 
-" make the coc autocompletion smarter
-" highlight CocFloating guifg=GruvboxFg0 guibg=GruvboxBg0
-" highlight CocMenuSel guifg=GruvboxFg0 guibg=gray
+" make floating menu nice again
+highlight DiagnosticInfo ctermfg=4 guifg=Blue
+highlight DiagnosticHint ctermfg=7 guifg=Grey
 
 " Better tabbing
 vnoremap < <gv
 vnoremap > >gv
+
+" Better yank/paste that keep register
+xmap p pgvy`]
