@@ -104,6 +104,9 @@ fi
 # AWS2 autocomplete
 complete -C '$(brew --prefix)/bin/aws2_completer' aws2
 
+# Azure autocomplete
+[ -f $(brew --prefix)/etc/bash_completion.d/az ] && source "$(brew --prefix)/etc/bash_completion.d/az"
+
 # alias git to hub
 if type hub > /dev/null 2>&1; then
     eval "$(hub alias -s)"
