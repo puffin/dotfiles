@@ -141,7 +141,6 @@ export GPG_TTY=$(tty)
 export PATH="$HOME/.local/bin:$PATH"
 # ADD extra path
 export PATH="$(brew --prefix)/opt/mysql@5.7/bin:$PATH"
-export PATH="$(brew --prefix)/opt/curl/bin:$PATH"
 export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
 
 # Postgres client (light)
