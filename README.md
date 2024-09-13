@@ -232,10 +232,11 @@ Here is basic list of commands you'll use all the time in vim. Reminder, the lea
 + `control+w + s` : Split new buffer horizontally
 + `control+w + v` : Split new buffer vertically
 + `control+w [h, j, k, l]` : move to buffer
-+ `:Rg` : Recursively searches directories for a regex pattern
 
 Some more advanced commands.
 
++ `:Rg` : Recursively searches directories for a regex pattern. Use ALT + TAB to select and add to quickfix list
++ `:cope` : to enter the quickfix window. `dd` is remapped to remove a line from the quickfix list
 + `leader + gs` : Display Git Status
 + `leader + gd` : Open a Git 3-way split to resolve conflict
 + `gdh` : In Git 3-way split mode, get the change from the left pane (buffer with `//2` name)
