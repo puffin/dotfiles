@@ -404,7 +404,6 @@ require("lazy").setup({
     {
         "coder/claudecode.nvim",
         dependencies = { "folke/snacks.nvim" },
-        lazy = false,
         opts = {},
         keys = {
             { "<leader>ac", ":ClaudeCode<cr>",      silent = true, desc = "Toggle Claude Code" },
