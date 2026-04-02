@@ -318,49 +318,11 @@ require("lazy").setup({
         end,
     },
 
-    ---------------------------------------------------------------------------
-    -- LSP & Completion (plugin declarations only; config in lsp.lua etc.)
-    ---------------------------------------------------------------------------
-
-    -- LSP server management
-    {
-        "williamboman/mason.nvim",
-        lazy = false,
-        dependencies = {
-            "williamboman/mason-lspconfig.nvim",
-            "neovim/nvim-lspconfig",
-        },
-    },
-
-    -- Autocompletion engine + sources
-    {
-        "hrsh7th/nvim-cmp",
-        event = "InsertEnter",
-        dependencies = {
-            "hrsh7th/cmp-nvim-lsp",          -- LSP completions
-            "hrsh7th/cmp-buffer",            -- Buffer word completions
-            "hrsh7th/cmp-path",              -- File path completions
-            "saadparwaiz1/cmp_luasnip",      -- Snippet completions
-            {
-                "L3MON4D3/LuaSnip",         -- Snippet engine
-                build = "make install_jsregexp",
-                dependencies = { "rafamadriz/friendly-snippets" },
-            },
-        },
-    },
-
     -- Auto-pairs (brackets, quotes)
     {
         "windwp/nvim-autopairs",
         event = "InsertEnter",
         config = function() require("nvim-autopairs").setup() end,
-    },
-
-    -- Code formatting (prettier etc.)
-    {
-        "stevearc/conform.nvim",
-        event = "BufWritePre",
-        cmd = "ConformInfo",
     },
 
     ---------------------------------------------------------------------------
