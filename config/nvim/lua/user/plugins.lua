@@ -41,57 +41,53 @@ require("lazy").setup({
     -- Smoother scrolling
     { "psliwka/vim-smoothie", event = "VeryLazy" },
 
-    -- LightLine
+    -- Lualine (statusline)
     {
-        "itchyny/lightline.vim",
+        "nvim-lualine/lualine.nvim",
         lazy = false,
-        dependencies = { "nicknisi/vim-base16-lightline" },
-        init = function()
-            vim.g.lightline = {
-                colorscheme = "one",
-                active = {
-                    left = {
-                        { "mode", "paste" },
-                        { "gitbranch" },
-                        { "readonly", "filetype", "filename" },
+        dependencies = { "kyazdani42/nvim-web-devicons" },
+        config = function()
+            local function git_blame()
+                if vim.fn.winwidth(0) <= 100 then return "" end
+                local blame = vim.b.gitsigns_blame_line or ""
+                blame = blame:gsub("[()]", "")
+                return blame:sub(1, 50)
+            end
+
+            require("lualine").setup({
+                options = {
+                    theme = "auto",
+                    section_separators = { left = "", right = "" },
+                    component_separators = { left = "", right = "" },
+                },
+                sections = {
+                    lualine_a = { "mode" },
+                    lualine_b = { "branch" },
+                    lualine_c = {
+                        { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+                        { "filename", path = 1 },
                     },
-                    right = {
-                        { "percent", "lineinfo" },
-                        { "fileformat", "fileencoding" },
-                        { "gitblame", "linter_errors", "linter_warnings" },
+                    lualine_x = {
+                        { git_blame },
+                        "diagnostics",
                     },
+                    lualine_y = { "encoding", "fileformat" },
+                    lualine_z = { "progress", "location" },
                 },
-                component_expand = vim.empty_dict(),
-                component_type = {
-                    readonly = "error",
-                    linter_warnings = "warning",
-                    linter_errors = "error",
-                },
-                component_function = {
-                    gitbranch = "helpers#lightline#gitbranch",
-                    filename = "helpers#lightline#fileName",
-                    fileencoding = "helpers#lightline#fileEncoding",
-                    fileformat = "helpers#lightline#fileFormat",
-                    filetype = "helpers#lightline#fileType",
-                    gitblame = "helpers#lightline#gitBlame",
-                },
-                tabline = {
-                    left = { { "tabs" } },
-                    right = { { "close" } },
-                },
-                tab = {
-                    active = { "filename", "modified" },
-                    inactive = { "filename", "modified" },
-                },
-                separator = { left = "", right = "" },
-                subseparator = { left = "", right = "" },
-            }
+                tabline = {},
+            })
         end,
     },
 
     -- Tpope essentials
     { "tpope/vim-abolish", event = "VeryLazy" },
-    { "tpope/vim-commentary", event = "VeryLazy" },
+    {
+        "numToStr/Comment.nvim",
+        event = "VeryLazy",
+        config = function()
+            require("Comment").setup()
+        end,
+    },
     { "tpope/vim-unimpaired", event = "VeryLazy" },
     { "tpope/vim-ragtag", event = "VeryLazy" },
     { "tpope/vim-surround", event = "VeryLazy" },
@@ -184,8 +180,7 @@ require("lazy").setup({
                     topdelete = { text = "_" },
                     changedelete = { text = "┃" },
                 },
-                current_line_blame = true,
-                current_line_blame_opts = { delay = 300 },
+                current_line_blame = false,
                 on_attach = function(bufnr)
                     local gs = package.loaded.gitsigns
                     local map = function(mode, l, r, desc)
@@ -289,13 +284,7 @@ require("lazy").setup({
     { "sodapopcan/vim-twiggy", cmd = "Twiggy" },
     { "rbong/vim-flog", cmd = { "Flog", "Flogsplit" } },
 
-    -- Icons
-    { "ryanoasis/vim-devicons", lazy = false, init = function()
-        vim.g.WebDevIconsOS = "Darwin"
-        vim.g.WebDevIconsUnicodeDecorateFolderNodes = 1
-        vim.g.DevIconsEnableFoldersOpenClose = 1
-        vim.g.DevIconsEnableFolderExtensionPatternMatching = 1
-    end },
+    -- Icons (Lua only, used by lualine, nvim-tree, etc.)
     { "kyazdani42/nvim-web-devicons", lazy = false },
 
     -- LSP
@@ -362,16 +351,40 @@ require("lazy").setup({
         end,
     },
 
-    -- JSON
+    -- Treesitter (replaces all individual syntax plugins)
     {
-        "elzr/vim-json",
-        ft = "json",
-        init = function()
+        "nvim-treesitter/nvim-treesitter",
+        build = ":TSUpdate",
+        event = { "BufReadPost", "BufNewFile" },
+        config = function()
+            -- Install parsers
+            local ensure_installed = {
+                "javascript", "typescript", "tsx", "json",
+                "python", "ruby", "elixir",
+                "terraform", "hcl",
+                "dockerfile",
+                "graphql",
+                "solidity",
+                "html", "css",
+                "markdown", "markdown_inline",
+                "lua", "vim", "vimdoc",
+                "bash", "yaml", "toml",
+                "gitcommit", "diff",
+            }
+            for _, lang in ipairs(ensure_installed) do
+                pcall(function() vim.cmd("TSInstall! " .. lang) end)
+            end
+
+            -- Enable treesitter highlighting and indentation
+            vim.treesitter.language.register("tsx", "typescriptreact")
+            vim.treesitter.language.register("tsx", "javascriptreact")
+
+            -- Disable JSON conceal (matching old vim-json setting)
             vim.g.vim_json_syntax_conceal = 0
         end,
     },
 
-    -- Markdown
+    -- Markdown (open in Marked.app)
     {
         "itspriddle/vim-marked",
         ft = "markdown",
@@ -381,33 +394,6 @@ require("lazy").setup({
             { "<leader>mq", ":MarkedQuit<cr>", desc = "Quit Marked" },
         },
     },
-
-    -- Javascript / Typescript
-    {
-        "pangloss/vim-javascript",
-        ft = { "javascript", "javascriptreact" },
-    },
-    {
-        "leafgarland/typescript-vim",
-        ft = { "typescript", "typescriptreact" },
-    },
-    {
-        "peitalin/vim-jsx-typescript",
-        ft = { "javascriptreact", "typescriptreact" },
-    },
-    {
-        "styled-components/vim-styled-components",
-        branch = "main",
-        ft = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
-    },
-
-    -- Extra syntax
-    { "ekalinin/Dockerfile.vim", ft = "dockerfile" },
-    { "hashivim/vim-terraform", ft = { "terraform", "hcl" } },
-    { "elixir-editors/vim-elixir", ft = "elixir" },
-    { "vim-ruby/vim-ruby", ft = "ruby" },
-    { "tomlion/vim-solidity", ft = "solidity" },
-    { "jparise/vim-graphql", ft = "graphql" },
 
 }, {
     -- lazy.nvim options
@@ -421,15 +407,3 @@ require("lazy").setup({
     },
 })
 
--- JS/TS syntax sync (needs to run regardless of lazy loading)
-local js_augroup = vim.api.nvim_create_augroup("js_syntax_sync", { clear = true })
-vim.api.nvim_create_autocmd("BufEnter", {
-    group = js_augroup,
-    pattern = { "*.js", "*.jsx", "*.ts", "*.tsx" },
-    command = "syntax sync fromstart",
-})
-vim.api.nvim_create_autocmd("BufLeave", {
-    group = js_augroup,
-    pattern = { "*.js", "*.jsx", "*.ts", "*.tsx" },
-    command = "syntax sync clear",
-})
