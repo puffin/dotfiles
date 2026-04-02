@@ -1,3 +1,7 @@
+# ===========================================================================
+# Core
+# ===========================================================================
+
 export DOTFILES=$HOME/.dotfiles
 export ZSH=$DOTFILES/zsh
 export BREW_PREFIX="$(brew --prefix)"
@@ -5,20 +9,19 @@ export BREW_PREFIX="$(brew --prefix)"
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
-THEME_ONE_BG=light
+export EDITOR='nvim'
+export GIT_EDITOR='nvim'
 
-# display how long all tasks over 10 seconds take
+# Display how long all tasks over 10 seconds take
 export REPORTTIME=10
 
-[[ -e ~/.terminfo ]] && export TERMINFO_DIRS=~/.terminfo:/usr/share/terminfo
+# Code directory for the `c` autocomplete
+[[ -d ~/Dev ]] && export CODE_DIR=~/Dev
 
-# define the code directory
-# This is where my code exists and where I want the `c` autocomplete to work from exclusively
-if [[ -d ~/Dev ]]; then
-    export CODE_DIR=~/Dev
-fi
+# ===========================================================================
+# ZSH modules
+# ===========================================================================
 
-# source all .zsh files inside of the zsh/ directory
 source "$ZSH/utils.zsh"
 source "$ZSH/prompt.zsh"
 source "$ZSH/aliases.zsh"
@@ -29,11 +32,14 @@ source "$ZSH/functions.zsh"
 source "$ZSH/tmux.zsh"
 source "$ZSH/z.zsh"
 
-if [[ -a ~/.localrc ]]; then
-    source ~/.localrc
-fi
+# Machine-specific overrides (not tracked in git)
+[[ -a ~/.localrc ]] && source ~/.localrc
 
-# initialize autocomplete (regenerate dump once per day)
+# ===========================================================================
+# Completion
+# ===========================================================================
+
+# Regenerate completion dump once per day
 autoload -U compinit add-zsh-hook
 if [[ -f ~/.zcompdump && $(date +'%j') == $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]]; then
     compinit -C
@@ -41,43 +47,18 @@ else
     compinit
 fi
 
-export EDITOR='nvim'
-export GIT_EDITOR='nvim'
+autoload -U bashcompinit && bashcompinit
 
-# GO Setup
-export GOPATH="$BREW_PREFIX/opt/go"
-export GOROOT="$BREW_PREFIX/opt/go/libexec"
-export PATH="${GOPATH}/bin:${GOROOT}/bin:$PATH"
+# AWS CLI
+complete -C "$BREW_PREFIX/bin/aws_completer" aws
 
-# add /usr/local/sbin
-if [[ -d /usr/local/sbin ]]; then
-    export PATH=/usr/local/sbin:$PATH
-fi
+# Azure CLI
+[[ -f $BREW_PREFIX/etc/bash_completion.d/az ]] && source "$BREW_PREFIX/etc/bash_completion.d/az"
 
-# adding path directory for custom scripts
-export PATH=$DOTFILES/bin:$PATH
+# ===========================================================================
+# Zinit plugins
+# ===========================================================================
 
-# add a config file for ripgrep
-export RIPGREP_CONFIG_PATH="$HOME/.rgrc"
-
-if [ -z "$TMUX" ]; then
-    export TERM=screen-256color
-else
-    export TERM=tmux-256color
-fi
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_CTRL_T_OPTS='--preview "bat --style=numbers --color=always --line-range :500 {}"'
-
-if [ $THEME_ONE_BG = "light" ] ; then
-    export BAT_THEME="OneHalfLight"
-    export FZF_DEFAULT_OPTS='--color=light'
-else
-    export BAT_THEME="OneHalfDark"
-    export FZF_DEFAULT_OPTS='--color=dark'
-fi
-
-# Zinit plugin manager
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [[ ! -d $ZINIT_HOME ]]; then
     mkdir -p "$(dirname $ZINIT_HOME)"
@@ -85,60 +66,36 @@ if [[ ! -d $ZINIT_HOME ]]; then
 fi
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Plugins (turbo mode — loaded after prompt)
-if [ $THEME_ONE_BG = "light" ] ; then
-    export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=250
-else
-    export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=239
-fi
 zinit wait lucid for \
     atinit"ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay" \
         zdharma-continuum/fast-syntax-highlighting \
     atload"!_zsh_autosuggest_start" \
         zsh-users/zsh-autosuggestions
 
-# Oh-my-zsh git aliases (lib/git.zsh provides git_current_branch used by aliases)
+# Oh-my-zsh git aliases
 zinit snippet OMZL::async_prompt.zsh
 zinit snippet OMZL::git.zsh
 zinit snippet OMZP::git
 
-# Lazy-load nvm
-export NVM_DIR="$HOME/.nvm"
-lazy_load_nvm() {
-    unset -f nvm node npm npx
-    [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
-}
-for cmd in nvm node npm npx; do
-    eval "function $cmd() { lazy_load_nvm; $cmd \$@; }"
-done
+# ===========================================================================
+# Theme & colors
+# ===========================================================================
 
-# AWS2 autocomplete
-autoload -U bashcompinit && bashcompinit
-complete -C '$BREW_PREFIX/bin/aws2_completer' aws2
+THEME_ONE_BG=light
 
-# Azure autocomplete
-[ -f $BREW_PREFIX/etc/bash_completion.d/az ] && source "$BREW_PREFIX/etc/bash_completion.d/az"
-
-# alias git to hub
-if type hub > /dev/null 2>&1; then
-    alias git=hub
+if [[ $THEME_ONE_BG == "light" ]]; then
+    export BAT_THEME="OneHalfLight"
+    export FZF_DEFAULT_OPTS='--color=light'
+    export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=250
+else
+    export BAT_THEME="OneHalfDark"
+    export FZF_DEFAULT_OPTS='--color=dark'
+    export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=239
 fi
 
-# direnv hook for zsh (inlined to avoid subprocess)
-_direnv_hook() {
-    trap -- '' SIGINT
-    eval "$("direnv" export zsh)"
-    trap - SIGINT
-}
-typeset -ag precmd_functions
-if (( ! ${precmd_functions[(I)_direnv_hook]} )); then
-    precmd_functions=(_direnv_hook $precmd_functions)
-fi
-
-# colors like linux (gdircolors output is just LS_COLORS=''; export LS_COLORS)
 export LS_COLORS=''
 
-# add color to man pages (inlined ANSI escapes to avoid tput subshells)
+# Colored man pages
 export MANROFFOPT='-c'
 export LESS_TERMCAP_mb=$'\e[1;32m'
 export LESS_TERMCAP_md=$'\e[1;36m'
@@ -150,26 +107,91 @@ export LESS_TERMCAP_ue=$'\e[24m\e[0m'
 export LESS_TERMCAP_mr=$'\e[7m'
 export LESS_TERMCAP_mh=$'\e[2m'
 
-# Add change terraform
-if [[ -f $BREW_PREFIX/share/chtf/chtf.sh ]]; then
-    source "$BREW_PREFIX/share/chtf/chtf.sh"
+# ===========================================================================
+# Terminal
+# ===========================================================================
+
+[[ -e ~/.terminfo ]] && export TERMINFO_DIRS=~/.terminfo:/usr/share/terminfo
+
+if [[ -z "$TMUX" ]]; then
+    export TERM=screen-256color
+else
+    export TERM=tmux-256color
 fi
 
-# Set GPG tty
+# ===========================================================================
+# FZF
+# ===========================================================================
+
+[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+export FZF_CTRL_T_OPTS='--preview "bat --style=numbers --color=always --line-range :500 {}"'
+
+# ===========================================================================
+# Language version managers (lazy-loaded)
+# ===========================================================================
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+lazy_load_nvm() {
+    unset -f nvm node npm npx
+    [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+}
+for cmd in nvm node npm npx; do
+    eval "function $cmd() { lazy_load_nvm; $cmd \$@; }"
+done
+
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+lazy_load_pyenv() {
+    unset -f pyenv
+    eval "$(command pyenv init --path)"
+    eval "$(command pyenv init -)"
+    eval "$(command pyenv virtualenv-init -)"
+}
+function pyenv() { lazy_load_pyenv; pyenv "$@"; }
+
+# asdf
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+
+# ===========================================================================
+# Tools
+# ===========================================================================
+
+# direnv
+_direnv_hook() {
+    trap -- '' SIGINT
+    eval "$("direnv" export zsh)"
+    trap - SIGINT
+}
+typeset -ag precmd_functions
+if (( ! ${precmd_functions[(I)_direnv_hook]} )); then
+    precmd_functions=(_direnv_hook $precmd_functions)
+fi
+
+# Terraform version manager
+[[ -f $BREW_PREFIX/share/chtf/chtf.sh ]] && source "$BREW_PREFIX/share/chtf/chtf.sh"
+
+# Docker (Colima)
+export DOCKER_HOST="unix://$HOME/.colima/docker.sock"
+
+# GPG
 export GPG_TTY=$(tty)
 
-export PATH="$HOME/.local/bin:$PATH"
-# ADD extra path
-export PATH="$BREW_PREFIX/opt/mysql@8.0/bin:$PATH"
-export PATH="$BREW_PREFIX/opt/openjdk/bin:$PATH"
+# Zscaler certificate
+export NODE_EXTRA_CA_CERTS="$HOME/ca_certs/zscaler-root.pem"
 
-# Postgres client (light)
-export PATH="$PATH:$BREW_PREFIX/opt/libpq/bin"
+# Ripgrep config
+export RIPGREP_CONFIG_PATH="$HOME/.rgrc"
 
-# Terraform Helper
-export PATH="$PATH:/Users/davidmichon/.tf-helper/tfh/bin"
+# ===========================================================================
+# PATH
+# ===========================================================================
 
-# ADD JAVA_HOME (cached to avoid slow subprocess on every shell)
+# Go
+export GOPATH="$BREW_PREFIX/opt/go"
+export GOROOT="$BREW_PREFIX/opt/go/libexec"
+
+# Java (cached to avoid slow subprocess on every shell)
 _JAVA_HOME_CACHE="$HOME/.cache/java_home"
 if [[ -f $_JAVA_HOME_CACHE && -d "$(< $_JAVA_HOME_CACHE)" ]]; then
     export JAVA_HOME="$(< $_JAVA_HOME_CACHE)"
@@ -179,47 +201,19 @@ else
     echo "$JAVA_HOME" > "$_JAVA_HOME_CACHE"
 fi
 
-# . $(brew --prefix)/opt/asdf/libexec/asdf.sh
+export PATH="\
+$HOME/bin:\
+$HOME/.local/bin:\
+$DOTFILES/bin:\
+$PYENV_ROOT/bin:$PYENV_ROOT/shims:\
+${GOPATH}/bin:${GOROOT}/bin:\
+$BREW_PREFIX/opt/mysql@8.0/bin:\
+$BREW_PREFIX/opt/openjdk/bin:\
+$BREW_PREFIX/opt/libpq/bin:\
+$HOME/.tf-helper/tfh/bin:\
+$PATH"
 
-export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+[[ -d /usr/local/sbin ]] && export PATH="/usr/local/sbin:$PATH"
 
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
-    PATH="$HOME/bin:$PATH"
-fi
-
-# Add mysql client to path
-export PATH="$BREW_PREFIX/opt/mysql-client@5.7/bin:$PATH"
-
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
-# Lazy-load pyenv
-lazy_load_pyenv() {
-    unset -f pyenv
-    eval "$(command pyenv init --path)"
-    eval "$(command pyenv init -)"
-    eval "$(command pyenv virtualenv-init -)"
-}
-function pyenv() { lazy_load_pyenv; pyenv "$@"; }
-
-# Add specific version of autoconf
-export PATH="$BREW_PREFIX/opt/autoconf@2.69/bin:$PATH"
-
-# Colima docker host
-export DOCKER_HOST="unix://$HOME/.colima/docker.sock"
-
-# Zscaler certificate
-export NODE_EXTRA_CA_CERTS="$HOME/ca_certs/zscaler-root.pem"
-
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$HOME/.rvm/bin:$HOME/.rvm/gems/ruby-2.7.5/bin:$PATH"
-# Lazy-load rvm
-lazy_load_rvm() {
-    unset -f rvm ruby gem bundle rake
-    [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
-}
-for cmd in rvm ruby gem bundle rake; do
-    eval "function $cmd() { lazy_load_rvm; $cmd \$@; }"
-done
-## cleanup path
-PATH=$(set --;IFS=:;for a in $PATH;do for b in $*;do [ "$a" = "$b" ]&&continue 2;done;set -- $* $a;done;echo "$*") 
+# Deduplicate PATH entries
+PATH=$(printf '%s' "$PATH" | awk -v RS=: -v ORS=: '!seen[$0]++' | sed 's/:$//')

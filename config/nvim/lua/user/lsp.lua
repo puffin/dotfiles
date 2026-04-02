@@ -16,6 +16,7 @@ require("mason-lspconfig").setup({
         "jsonls",        -- JSON
         "pyright",       -- Python (completions, type checking, hover)
         "ruff",          -- Python (linting, formatting)
+        "lua_ls",        -- Lua
     },
 })
 
@@ -139,6 +140,22 @@ vim.lsp.config("ruff", {
 })
 
 -------------------------------------------------------------------------------
+-- Lua
+-------------------------------------------------------------------------------
+vim.lsp.config("lua_ls", {
+    capabilities = capabilities,
+    settings = {
+        Lua = {
+            runtime = { version = "LuaJIT" },
+            workspace = {
+                checkThirdParty = false,
+                library = { vim.env.VIMRUNTIME },
+            },
+        },
+    },
+})
+
+-------------------------------------------------------------------------------
 -- Enable servers
 -------------------------------------------------------------------------------
-vim.lsp.enable({ "terraformls", "yamlls", "jsonls", "pyright", "ruff" })
+vim.lsp.enable({ "terraformls", "yamlls", "jsonls", "pyright", "ruff", "lua_ls" })
