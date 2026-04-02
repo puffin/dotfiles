@@ -332,6 +332,9 @@ require("lazy").setup({
         },
     },
 
+    -- JSON/YAML schema catalog
+    { "b0o/SchemaStore.nvim", lazy = true },
+
     -- Autocompletion (blink.cmp)
     {
         "saghen/blink.cmp",

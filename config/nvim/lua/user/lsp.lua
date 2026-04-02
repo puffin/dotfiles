@@ -12,7 +12,30 @@ require("mason").setup()
 require("mason-lspconfig").setup({
     ensure_installed = {
         "terraformls",   -- Terraform
+        "yamlls",        -- YAML
+        "jsonls",        -- JSON
     },
+})
+
+-------------------------------------------------------------------------------
+-- Diagnostics
+-------------------------------------------------------------------------------
+vim.diagnostic.config({
+    virtual_text     = true,           -- Inline error text at end of line
+    signs            = true,           -- Signs in the gutter
+    underline        = true,           -- Underline the problematic code
+    update_in_insert = false,
+    float            = {
+        border = "rounded",
+        source = true,                 -- Show which LSP produced the diagnostic
+    },
+})
+
+-- Show diagnostics in a float when holding the cursor on a line
+vim.api.nvim_create_autocmd("CursorHold", {
+    callback = function()
+        vim.diagnostic.open_float(nil, { focusable = false })
+    end,
 })
 
 -------------------------------------------------------------------------------
@@ -54,6 +77,39 @@ vim.lsp.config("terraformls", {
 })
 
 -------------------------------------------------------------------------------
+-- YAML
+-------------------------------------------------------------------------------
+vim.lsp.config("yamlls", {
+    capabilities = capabilities,
+    settings = {
+        yaml = {
+            schemaStore = {
+                -- Disable built-in schemaStore, use SchemaStore.nvim instead
+                enable = false,
+                url = "",
+            },
+            schemas = require("schemastore").yaml.schemas(),
+            validate = true,
+            completion = true,
+            hover = true,
+        },
+    },
+})
+
+-------------------------------------------------------------------------------
+-- JSON
+-------------------------------------------------------------------------------
+vim.lsp.config("jsonls", {
+    capabilities = capabilities,
+    settings = {
+        json = {
+            schemas = require("schemastore").json.schemas(),
+            validate = { enable = true },
+        },
+    },
+})
+
+-------------------------------------------------------------------------------
 -- Enable servers
 -------------------------------------------------------------------------------
-vim.lsp.enable({ "terraformls" })
+vim.lsp.enable({ "terraformls", "yamlls", "jsonls" })
