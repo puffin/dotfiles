@@ -1,33 +1,39 @@
-local augroup = vim.api.nvim_create_augroup("configgroup", { clear = true })
+--[[
+  Autocommands
+  ============
+  Automatic behaviors triggered by editor events.
+]]
+
+local augroup = vim.api.nvim_create_augroup("user_config", { clear = true })
 local autocmd = vim.api.nvim_create_autocmd
 
--- Automatically resize panes on window resize
+-- Equalize splits when the window is resized
 autocmd("VimResized", {
     group = augroup,
     command = "wincmd =",
 })
 
--- Reload config on save
+-- Reload config when saved
 autocmd("BufWritePost", {
     group = augroup,
     pattern = { ".vimrc", ".vimrc.local", "init.vim" },
     command = "source %",
 })
 
--- Save all files on focus lost
+-- Auto-save all buffers when focus is lost
 autocmd("FocusLost", {
     group = augroup,
     command = "silent! wa",
 })
 
--- Make quickfix windows take the full lower section
+-- Quickfix: always full-width at the bottom
 autocmd("FileType", {
     group = augroup,
     pattern = "qf",
     command = "wincmd J",
 })
 
--- Map q to close quickfix
+-- Quickfix: press q to close
 autocmd("FileType", {
     group = augroup,
     pattern = "qf",

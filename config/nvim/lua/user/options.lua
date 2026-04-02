@@ -1,92 +1,120 @@
+--[[
+  Editor Options
+  ==============
+  General settings, appearance, search behavior, tabs, folding, and colors.
+]]
+
 local opt = vim.opt
-local g = vim.g
 
--- Python host
-g.python_host_prog = "/usr/bin/python"
-
+-------------------------------------------------------------------------------
 -- General
-opt.history = 1000
-opt.backupdir = { "~/.vim-tmp", "~/.tmp", "~/tmp", "/var/tmp", "/tmp" }
-opt.directory = { "~/.vim-tmp", "~/.tmp", "~/tmp", "/var/tmp", "/tmp" }
-opt.inccommand = "nosplit"
-opt.backspace = { "indent", "eol", "start" }
-opt.clipboard = "unnamedplus"
-opt.mouse = ""
+-------------------------------------------------------------------------------
+vim.g.python_host_prog = "/usr/bin/python"
 
--- Searching
-opt.ignorecase = true
-opt.smartcase = true
-opt.hlsearch = true
-opt.incsearch = true
+opt.history     = 1000
+opt.backupdir   = { "~/.vim-tmp", "~/.tmp", "~/tmp", "/var/tmp", "/tmp" }
+opt.directory   = { "~/.vim-tmp", "~/.tmp", "~/tmp", "/var/tmp", "/tmp" }
+opt.inccommand  = "nosplit"          -- Live preview of :substitute
+opt.backspace   = { "indent", "eol", "start" }
+opt.clipboard   = "unnamedplus"      -- Use system clipboard
+opt.mouse       = ""                 -- Disable mouse
+
+-------------------------------------------------------------------------------
+-- Search
+-------------------------------------------------------------------------------
+opt.ignorecase = true                -- Case-insensitive search...
+opt.smartcase  = true                -- ...unless the query has uppercase
+opt.hlsearch   = true                -- Highlight matches
+opt.incsearch  = true                -- Incremental search
 opt.lazyredraw = false
-opt.magic = true
+opt.magic      = true                -- Enable regex special chars
 
--- Error bells
+-------------------------------------------------------------------------------
+-- UI / Appearance
+-------------------------------------------------------------------------------
+opt.number      = true               -- Show line numbers
+opt.wrap        = true               -- Wrap long lines
+opt.linebreak   = true               -- Wrap at word boundaries
+opt.wrapmargin  = 0
+opt.textwidth   = 0                  -- No hard line breaks
+opt.showbreak   = "↪"                -- Indicator for wrapped lines
+opt.autoindent  = true
+opt.ttyfast     = true
+opt.laststatus  = 2                  -- Always show statusline
+opt.scrolloff   = 7                  -- Keep 7 lines visible around cursor
+opt.wildmenu    = true               -- Enhanced command-line completion
+opt.hidden      = true               -- Allow unsaved background buffers
+opt.showcmd     = true               -- Show partial commands
+opt.showmode    = false              -- Hidden (shown by statusline plugin)
+opt.wildmode    = "list:longest"
+opt.shell       = vim.env.SHELL
+opt.cmdheight   = 1
+opt.title       = true               -- Set terminal title
+opt.showmatch   = true               -- Highlight matching brackets
+opt.matchtime   = 2                  -- Tenths of a second to show match
+opt.updatetime  = 300                -- Faster CursorHold events
+opt.signcolumn  = "yes"              -- Always show sign column
+opt.cursorline  = true               -- Highlight current line
+
+opt.shortmess:append("c")           -- Don't show completion messages
+opt.diffopt:append({ "vertical", "iwhite", "internal", "algorithm:patience", "hiddenoff" })
+
+-- Disable error bells
 opt.errorbells = false
 opt.visualbell = true
 opt.timeoutlen = 500
 
--- Appearance
-opt.number = true
-opt.wrap = true
-opt.linebreak = true
-opt.wrapmargin = 0
-opt.textwidth = 0
-opt.showbreak = "↪"
-opt.autoindent = true
-opt.ttyfast = true
-opt.diffopt:append({ "vertical", "iwhite", "internal", "algorithm:patience", "hiddenoff" })
-opt.laststatus = 2
-opt.scrolloff = 7
-opt.wildmenu = true
-opt.hidden = true
-opt.showcmd = true
-opt.showmode = false
-opt.wildmode = "list:longest"
-opt.shell = vim.env.SHELL
-opt.cmdheight = 1
-opt.title = true
-opt.showmatch = true
-opt.matchtime = 2
-opt.updatetime = 300
-opt.signcolumn = "yes"
-opt.shortmess:append("c")
-opt.cursorline = true
-
--- Tab control
-opt.expandtab = true
-opt.smarttab = true
-opt.tabstop = 2
+-------------------------------------------------------------------------------
+-- Tabs & Indentation
+-------------------------------------------------------------------------------
+opt.expandtab   = true               -- Spaces instead of tabs
+opt.smarttab    = true
+opt.tabstop     = 2
 opt.softtabstop = 2
-opt.shiftwidth = 2
-opt.shiftround = true
+opt.shiftwidth  = 2
+opt.shiftround  = true               -- Round indent to multiple of shiftwidth
 
--- Code folding
-opt.foldmethod = "syntax"
-opt.foldlevelstart = 99
-opt.foldnestmax = 10
-opt.foldenable = false
-opt.foldlevel = 1
+-------------------------------------------------------------------------------
+-- Code Folding
+-------------------------------------------------------------------------------
+opt.foldmethod     = "syntax"
+opt.foldlevelstart = 99              -- Start with all folds open
+opt.foldnestmax    = 10
+opt.foldenable     = false            -- Don't fold by default
+opt.foldlevel      = 1
 
--- Invisible characters
+-------------------------------------------------------------------------------
+-- Whitespace Characters
+-------------------------------------------------------------------------------
 opt.list = true
 opt.listchars = {
-    tab = "→ ",
-    eol = "¬",
-    trail = "⋅",
-    extends = "❯",
+    tab      = "→ ",
+    eol      = "¬",
+    trail    = "⋅",
+    extends  = "❯",
     precedes = "❮",
 }
 
--- Colors
+-------------------------------------------------------------------------------
+-- Colors & Cursor
+-------------------------------------------------------------------------------
 opt.termguicolors = true
-opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
-    .. ",a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor"
-    .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
+opt.guicursor = table.concat({
+    "n-v-c:block",
+    "i-ci-ve:ver25",
+    "r-cr:hor20",
+    "o:hor50",
+    "a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor",
+    "sm:block-blinkwait175-blinkoff150-blinkon175",
+}, ",")
 
--- Highlight conflicts
+-------------------------------------------------------------------------------
+-- Highlights
+-------------------------------------------------------------------------------
+
+-- Mark git conflict markers as errors
 vim.cmd([[match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$']])
 
 -- Highlight trailing whitespace
-vim.cmd([[highlight ExtraWhitespace ctermbg=darkgreen guibg=darkgreen]])
+vim.api.nvim_set_hl(0, "ExtraWhitespace", { bg = "darkgreen", ctermbg = "darkgreen" })
 vim.cmd([[match ExtraWhitespace /\s\+$\|\t/]])
