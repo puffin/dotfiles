@@ -8,6 +8,7 @@
     lua/user/keymaps.lua    - General key mappings
     lua/user/autocmds.lua   - Autocommands
     lua/user/plugins.lua    - Plugin declarations (lazy.nvim)
+    lua/user/lsp.lua        - Language servers (mason + native LSP)
 ]]
 
 -- Core
@@ -17,3 +18,6 @@ require("user.autocmds")
 
 -- Plugins
 require("user.plugins")
+
+-- LSP
+require("user.lsp")
