@@ -51,14 +51,20 @@ require("lazy").setup({
         lazy = false,
         priority = 1000,
         config = function()
-            -- Use base16 if available, otherwise default to One Light
-            if vim.fn.filereadable(vim.fn.expand("~/.vimrc_background")) == 1 then
-                vim.g.base16colorspace = 256
-                vim.cmd("source ~/.vimrc_background")
-            else
-                vim.opt.background = "light"
-                vim.cmd.colorscheme("one")
+            -- Detect background from Alacritty config (source of truth)
+            local bg = "light"
+            local alacritty_conf = vim.fn.expand("~/.config/alacritty/alacritty.toml")
+            if vim.fn.filereadable(alacritty_conf) == 1 then
+                local content = vim.fn.readfile(alacritty_conf)
+                for _, line in ipairs(content) do
+                    if line:find("one%-dark") then
+                        bg = "dark"
+                        break
+                    end
+                end
             end
+            vim.opt.background = bg
+            vim.cmd.colorscheme("one")
 
             vim.api.nvim_create_autocmd("ColorScheme", {
                 callback = apply_custom_highlights,
