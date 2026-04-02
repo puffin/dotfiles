@@ -224,7 +224,7 @@ Leader key is `Space`.
 
 | Key              | Action                      |
 |------------------|-----------------------------|
-| `<leader>k`      | Toggle file explorer        |
+| `<leader>k`      | Toggle file explorer (see [explorer keymaps](#file-explorer-keymaps)) |
 | `<leader>st`     | Start screen                |
 | `<leader>b`      | Close buffer (keep split)   |
 | `<leader>t`      | Git file finder             |
@@ -242,6 +242,26 @@ Leader key is `Space`.
 | `gs`             | Preview git hunk            |
 | `gu`             | Reset git hunk              |
 | `gc` / `gcc`     | Comment toggle              |
+
+### File Explorer Keymaps
+
+The file explorer (nvim-tree) uses coc-explorer-style keybindings. Confirmations (y/n) are single-keypress — no Enter needed.
+
+| Key    | Action                                  |
+|--------|-----------------------------------------|
+| `yy`   | Copy file/directory (toggle, visual mode supported) |
+| `dd`   | Cut file/directory (toggle, visual mode supported)  |
+| `p`    | Paste from clipboard                    |
+| `df`   | Delete file/directory (trash)           |
+| `dF`   | Delete permanently                      |
+| `yp`   | Copy absolute path to system clipboard  |
+| `yn`   | Copy filename to system clipboard       |
+| `A`    | Create new directory                    |
+| `a`    | Create new file                         |
+| `E`    | Open in vertical split                  |
+| `V`    | Visual select (then `yy`/`dd`/`df` for multi-file operations) |
+
+Copied files are highlighted in green, cut files in red with strikethrough.
 
 ### Zsh Shortcuts
 
