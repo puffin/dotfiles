@@ -5,7 +5,7 @@
   "diffview.nvim": { "branch": "main", "commit": "4516612fe98ff56ae0415a259ff6361a89419b0a" },
   "editorconfig-vim": { "branch": "master", "commit": "c0227885a06b155d5aa5465e08b9800e8c939f70" },
   "ferret": { "branch": "main", "commit": "80a1c6f2f6e18952fa6eb85000446650216987fd" },
-  "fzf": { "branch": "master", "commit": "cc16a97a40a16efecbed5bd7fb322010c033e503" },
+  "fzf": { "branch": "master", "commit": "0f0751b3b6e2bd6e3120a11e9c8f8652e93ae0a5" },
   "fzf.vim": { "branch": "master", "commit": "34a564c81f36047f50e593c1656f4580ff75ccca" },
   "gitsigns.nvim": { "branch": "main", "commit": "e1b90b60fb7aa9c0ada8e983b460764b35a05e2e" },
   "lazy.nvim": { "branch": "main", "commit": "306a05526ada86a7b30af95c5cc81ffba93fef97" },
