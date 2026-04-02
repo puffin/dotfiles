@@ -41,7 +41,7 @@ key = "U"
 mods = "Alt"
 
 [general]
-import = ["~/.config/alacritty/themes/one-light.toml"]
+import = ["~/.config/alacritty/themes/one-dark.toml"]
 live_config_reload = true
 
 [bell]
@@ -54,7 +54,7 @@ draw_bold_text_with_bright_colors = true
 unfocused_hollow = true
 
 [font]
-size = 13
+size = 14
 
 [font.bold]
 family = "SauceCodePro Nerd Font"
@@ -70,7 +70,7 @@ style = "Regular"
 
 [font.offset]
 x = 0
-y = 0
+y = 2
 
 [mouse]
 hide_when_typing = true
