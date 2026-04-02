@@ -422,6 +422,20 @@ require("lazy").setup({
             { "<leader>k", ":NvimTreeToggle<cr>", silent = true, desc = "Toggle explorer" },
         },
         config = function()
+            -- Single-keypress y/n prompts (no Enter needed)
+            local original_input = vim.ui.input
+            vim.ui.input = function(opts, on_confirm)
+                if opts and opts.prompt and opts.prompt:match("[yYnN]/[yYnN]") then
+                    vim.api.nvim_echo({{ opts.prompt }}, false, {})
+                    local c = vim.fn.getchar()
+                    local ch = type(c) == "number" and vim.fn.nr2char(c) or c
+                    vim.cmd("redraw")
+                    on_confirm(ch)
+                else
+                    original_input(opts, on_confirm)
+                end
+            end
+
             local api = require("nvim-tree.api")
             require("nvim-tree").setup({
                 disable_netrw = false,           -- Keep :Explore working
@@ -429,6 +443,42 @@ require("lazy").setup({
                 view = { width = 50, side = "left" },
                 on_attach = function(bufnr)
                     api.config.mappings.default_on_attach(bufnr)
+
+                    -- Remove defaults that conflict with coc-explorer-style bindings
+                    vim.keymap.del("n", "y", { buffer = bufnr })  -- default: copy name
+                    vim.keymap.del("n", "d", { buffer = bufnr })  -- default: delete
+                    vim.keymap.del("n", "x", { buffer = bufnr })  -- default: cut
+
+                    -- Clipboard: yy=copy, dd=cut, p=paste
+                    -- Single file: yy toggles in/out of copy clipboard
+                    -- Multi-file: V to visual select, then yy/dd
+                    vim.keymap.set("n", "yy", api.fs.copy.node, { buffer = bufnr, desc = "Copy file/directory" })
+                    vim.keymap.set("v", "yy", api.fs.copy.node, { buffer = bufnr, desc = "Copy selected files" })
+                    vim.keymap.set("n", "dd", api.fs.cut, { buffer = bufnr, desc = "Cut file/directory" })
+                    vim.keymap.set("v", "dd", api.fs.cut, { buffer = bufnr, desc = "Cut selected files" })
+                    -- p (paste) is already the default
+
+                    -- Delete: df=trash, dF=permanent delete
+                    vim.keymap.set("n", "df", api.fs.remove, { buffer = bufnr, desc = "Delete (trash)" })
+                    vim.keymap.set("v", "df", api.fs.remove, { buffer = bufnr, desc = "Delete selected (trash)" })
+                    vim.keymap.set("n", "dF", api.fs.remove, { buffer = bufnr, desc = "Delete permanently" })
+
+                    -- Yank paths: yp=full path, yn=filename
+                    vim.keymap.set("n", "yp", api.fs.copy.absolute_path, { buffer = bufnr, desc = "Copy absolute path" })
+                    vim.keymap.set("n", "yn", api.fs.copy.filename, { buffer = bufnr, desc = "Copy filename" })
+
+                    -- A: create a new directory
+                    vim.keymap.set("n", "A", function()
+                        local node = api.tree.get_node_under_cursor()
+                        local parent = node and (node.type == "directory" and node.absolute_path or vim.fn.fnamemodify(node.absolute_path, ":h")) or vim.fn.getcwd()
+                        vim.ui.input({ prompt = "New directory: ", default = parent .. "/" }, function(dir)
+                            if dir and dir ~= "" then
+                                vim.fn.mkdir(dir, "p")
+                                api.tree.reload()
+                            end
+                        end)
+                    end, { buffer = bufnr, desc = "Create directory" })
+
                     -- E: open file in a new vertical split
                     vim.keymap.set("n", "E", function()
                         local node = api.tree.get_node_under_cursor()
@@ -439,11 +489,21 @@ require("lazy").setup({
                     end, { buffer = bufnr, desc = "Open in vsplit" })
                 end,
                 renderer = {
-                    icons = { show = { git = true, folder = true, file = true } },
+                    highlight_clipboard = "all",
+                    icons = {
+                        show = { git = true, folder = true, file = true, bookmarks = true },
+                        glyphs = {
+                            bookmark = "󰆤",
+                        },
+                    },
                 },
                 filters = { dotfiles = false },
                 git = { enable = true },
             })
+
+            -- Clipboard highlights: green for copied, red+strikethrough for cut
+            vim.api.nvim_set_hl(0, "NvimTreeCopiedHL", { fg = "#5faf5f", bold = true })
+            vim.api.nvim_set_hl(0, "NvimTreeCutHL", { fg = "#f38ba8", bold = true, strikethrough = true })
         end,
     },
 
