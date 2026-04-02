@@ -98,6 +98,7 @@ zinit wait lucid for \
         zsh-users/zsh-autosuggestions
 
 # Oh-my-zsh git aliases (lib/git.zsh provides git_current_branch used by aliases)
+zinit snippet OMZL::async_prompt.zsh
 zinit snippet OMZL::git.zsh
 zinit snippet OMZP::git
 
