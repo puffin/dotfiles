@@ -191,11 +191,15 @@ Terminal of choice is [Alacritty](https://alacritty.org/). Configuration is in `
 
 [vim-one](https://github.com/rakr/vim-one) in light mode. Comments are displayed in light grey italic.
 
-Dark mode can be enabled by changing:
+### Toggle Light/Dark
 
-+ Alacritty: `colors: *one_dark`
-+ Neovim: `vim.opt.background = "dark"` in `plugins.lua`
-+ ZSH: `THEME_ONE_BG=dark`
+Press `Ctrl+x Ctrl+t` to toggle between light and dark themes. This works in both **neovim** and the **shell**, and switches all three simultaneously:
+
++ Neovim colorscheme (vim-one light/dark)
++ Alacritty terminal colors
++ Tmux status bar
+
+You can also run `toggle-theme` from the command line, optionally with `light` or `dark` as an argument.
 
 ### Dark Theme
 

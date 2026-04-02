@@ -121,7 +121,7 @@ set -g @continuum-save-interval '5'
 ##############################
 ### Color & Style Settings ###
 ##############################
-source $HOME/.dotfiles/tmux/theme.sh
+source $HOME/.dotfiles/tmux/theme-current.sh
 
 # install tpm and plugins automatically when tmux is started
 if "test ! -d ~/.tmux/plugins/tpm" \

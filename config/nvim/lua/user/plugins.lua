@@ -40,17 +40,29 @@ require("lazy").setup({
                 vim.cmd.colorscheme("one")
             end
 
-            vim.cmd("syntax on")
-            vim.cmd("filetype plugin indent on")
+            -- Apply theme customizations on every colorscheme change
+            vim.api.nvim_create_autocmd("ColorScheme", {
+                callback = function()
+                    vim.api.nvim_set_hl(0, "Comment",    { fg = "#a0a0a0", italic = true })
+                    vim.api.nvim_set_hl(0, "htmlArg",    { italic = true })
+                    vim.api.nvim_set_hl(0, "xmlAttrib",  { italic = true })
+                    vim.api.nvim_set_hl(0, "DiagnosticInfo", { fg = "Blue" })
+                    vim.api.nvim_set_hl(0, "DiagnosticHint", { fg = "Grey" })
+                end,
+            })
 
-            -- Italic comments and HTML attributes
-            vim.api.nvim_set_hl(0, "Comment",    { fg = "#a0a0a0", italic = true })
-            vim.api.nvim_set_hl(0, "htmlArg",    { italic = true })
-            vim.api.nvim_set_hl(0, "xmlAttrib",  { italic = true })
+            -- Toggle light/dark with <leader>th (neovim + alacritty + tmux)
+            vim.keymap.set("n", "<C-x><C-t>", function()
+                local is_light = vim.o.background == "light"
+                local mode = is_light and "dark" or "light"
 
-            -- Diagnostic float colors
-            vim.api.nvim_set_hl(0, "DiagnosticInfo", { fg = "Blue" })
-            vim.api.nvim_set_hl(0, "DiagnosticHint", { fg = "Grey" })
+                -- Neovim
+                vim.opt.background = mode
+                vim.cmd.colorscheme("one")
+
+                -- Alacritty + Tmux: toggle via shell script
+                vim.fn.jobstart({ vim.fn.expand("~/.dotfiles/bin/toggle-theme"), mode }, { detach = true })
+            end, { desc = "Toggle light/dark theme" })
         end,
     },
 

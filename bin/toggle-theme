@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Toggle alacritty, tmux, and neovim between one-light and one-dark
+# Usage: toggle-theme [light|dark]
+#   If no argument given, toggles based on current alacritty theme.
+
+DOTFILES="$HOME/.dotfiles"
+ALACRITTY_CONF="$HOME/.config/alacritty/alacritty.toml"
+
+# Auto-detect current mode if no argument given
+if [ -z "$1" ]; then
+    if grep -q 'one-light' "$ALACRITTY_CONF"; then
+        MODE="dark"
+    else
+        MODE="light"
+    fi
+else
+    MODE="$1"
+fi
+
+# Alacritty: swap the theme import
+if [ "$MODE" = "dark" ]; then
+    sed -i '' 's/one-light/one-dark/' "$ALACRITTY_CONF"
+else
+    sed -i '' 's/one-dark/one-light/' "$ALACRITTY_CONF"
+fi
+
+# Tmux: swap theme and reload
+cp "$DOTFILES/tmux/theme-$MODE.sh" "$DOTFILES/tmux/theme-current.sh"
+tmux source-file ~/.tmux.conf 2>/dev/null
+
+# Neovim: switch all running instances
+for sock in $(find /var/folders /tmp -path '*/nvim.*/nvim.*.0' -type s 2>/dev/null); do
+    nvim --server "$sock" --remote-expr \
+        "execute('set background=$MODE | colorscheme one')" 2>/dev/null &
+done
+wait
