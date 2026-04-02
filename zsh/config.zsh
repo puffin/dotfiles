@@ -29,3 +29,8 @@ bindkey '^[[1;3B' delete-char           # ALT + arrow down
 bindkey '^[[1;3A' backward-delete-char  # ALT + arrow up
 bindkey '^[^?' backward-kill-word       # ALT + BACKSPACE
 bindkey '^[d' kill-word                 # ALT + D
+
+# Theme toggle (CTRL+X CTRL+T)
+toggle-theme-widget() { toggle-theme; zle reset-prompt; }
+zle -N toggle-theme-widget
+bindkey '^x^t' toggle-theme-widget
