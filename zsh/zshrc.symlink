@@ -81,7 +81,11 @@ zinit snippet OMZP::git
 # Theme & colors
 # ===========================================================================
 
-THEME_ONE_BG=light
+if grep -q 'one-dark' "$HOME/.config/alacritty/alacritty.toml" 2>/dev/null; then
+    THEME_ONE_BG=dark
+else
+    THEME_ONE_BG=light
+fi
 
 if [[ $THEME_ONE_BG == "light" ]]; then
     export BAT_THEME="OneHalfLight"
@@ -90,7 +94,7 @@ if [[ $THEME_ONE_BG == "light" ]]; then
 else
     export BAT_THEME="OneHalfDark"
     export FZF_DEFAULT_OPTS='--color=dark'
-    export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=fg=239
+    export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#808080"
 fi
 
 export LS_COLORS=''
