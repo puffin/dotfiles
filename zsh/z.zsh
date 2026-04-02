@@ -1,3 +1,3 @@
-if hash brew 3>/dev/null; then
-    source `brew --prefix`/etc/profile.d/z.sh
+if [[ -f $BREW_PREFIX/etc/profile.d/z.sh ]]; then
+    source $BREW_PREFIX/etc/profile.d/z.sh
 fi

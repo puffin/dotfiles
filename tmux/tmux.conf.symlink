@@ -1,5 +1,7 @@
 #set -g default-command "${SHELL}"
-set-option -g default-shell /bin/zsh
+#set-option -g default-shell /bin/zsh
+set-option -g default-command $SHELL
+set-option -g default-shell $SHELL
 
 
 # tmux display things in 256 colors
