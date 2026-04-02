@@ -24,41 +24,6 @@ if [ "$(uname)" == "Darwin" ]; then
     echo "=============================="
     $(brew --prefix)/opt/fzf/install --all --no-bash --no-fish
 
-    # after the install, install neovim python libraries
-    echo -e "\\n\\nRunning Neovim Python install"
-    echo "=============================="
-    pip3 install --user neovim
-    pip3 install --user pynvim
-
-    # after the install, install pytz python libraries
-    echo -e "\\n\\nRunning pytz Python install"
-    echo "=============================="
-    pip3 install --user pytz
-
-    # after the install, install jedi python libraries
-    echo -e "\\n\\nRunning jedi Python install"
-    echo "=============================="
-    pip3 install --user jedi
-
-    # after the install, install ranger
-    echo -e "\\n\\nRunning ranger Python install"
-    echo "=============================="
-    pip3 install --user ranger-fm
-
-
-    # after the install, install perl neovim extension
-    echo -e "\\n\\nRunning perl neovim extension install"
-    echo "=============================="
-    cpanm -n Neovim::Ext
-
-    if [ ! -d "$HOME/.elixir-ls" ]; then
-        echo -e "\\n\\nRunning elixir LS install"
-        echo "=============================="
-        git clone https://github.com/elixir-lsp/elixir-ls.git ~/.elixir-ls && \
-        cd ~/.elixir-ls && \
-        mix deps.get && mix compile && mix elixir_ls.release -o release
-    fi
-
     if [ ! -d "$HOME/.tf-helper" ]; then
         echo -e "\\n\\nRunning terraform helper install"
         echo "=============================="
@@ -102,43 +67,6 @@ if [ ! -d "$HOME/.gnupg" ]; then
     echo "Configuring gpg agent with pinentry"
     echo "pinentry-program $(brew --prefix)/bin/pinentry-mac" | tee "$HOME/.gnupg/gpg-agent.conf"
 fi
-
-echo "installing ruby management tool"
-echo "=============================="
-gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
-curl -sSL https://get.rvm.io | bash
-source "$HOME/.zshrc"
-curl -sSL https://cache.ruby-lang.org/pub/ruby/2.7/ruby-2.7.5.tar.bz2 -o ~/.rvm/archives/ruby-2.7.5.tar.bz2
-rvm install ruby-2.7.5
-rvm alias create default 2.7.5
-rvm use ruby-2.7.5
-
-gem install neovim
-
-# after the install, install solargraph ruby libraries
-echo -e "\\n\\nRunning solargraph Ruby install"
-echo "=============================="
-gem install solargraph
-
-# install graphql lsp
-echo -e "\\n\\nRunning graphql lsp install"
-echo "=============================="
-npm i -g graphql-language-service-cli
-
-# install diagnostic lsp
-echo -e "\\n\\nRunning diagnostic lsp install"
-echo "=============================="
-npm i -g diagnostic-languageserver
-
-# install bash lsp
-echo -e "\\n\\nRunning bash lsp install"
-echo "=============================="
-npm i -g bash-language-server
-
-# install markdown linter
-echo -e "\\n\\nRunning markdown linter install"
-echo "=============================="
-npm i -g markdownlint-cli
 
 # Install tmux-256color profile
 /usr/bin/tic -xe alacritty-direct,tmux-256color resources/terminfo.src
