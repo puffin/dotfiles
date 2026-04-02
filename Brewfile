@@ -6,6 +6,7 @@ tap "homebrew/cask-fonts"
 # applications
 cask "session-manager-plugin"
 cask "font-sauce-code-pro-nerd-font"
+cask "claude-code"
 
 # packages
 brew "autoconf"

@@ -15,6 +15,7 @@ A collection of neovim, tmux, and zsh configurations for macOS. Built for DevOps
 + [Fonts](#fonts)
 + [Color Scheme](#color-scheme)
 + [Usage](#usage)
++ [Claude Code](#claude-code)
 + [Troubleshooting](#troubleshooting)
 
 ## Setup and Installation
@@ -199,6 +200,21 @@ Dark mode can be enabled by changing:
 ### Dark Theme
 
 ![dark theme](resources/theme_dark.png)
+
+## Claude Code
+
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is integrated into Neovim via the [claudecode.nvim](https://github.com/coder/claudecode.nvim) plugin, providing an in-editor AI assistant panel.
+
+### Claude Code Keymaps
+
+Leader key is `Space`.
+
+| Key              | Action                      |
+|------------------|-----------------------------|
+| `<leader>ac`     | Toggle Claude Code panel    |
+| `<leader>as`     | Send selection to Claude    |
+| `<leader>aa`     | Add current file to Claude  |
+| `<C-w>`          | Navigate away from terminal (e.g. Claude panel) |
 
 ## Usage
 

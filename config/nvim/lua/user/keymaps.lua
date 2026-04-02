@@ -19,3 +19,10 @@ map("v", ">", ">gv")
 
 -- Paste without overwriting register
 map("x", "p", "pgvy`]")
+
+-------------------------------------------------------------------------------
+-- Terminal Mode
+-------------------------------------------------------------------------------
+
+-- Use <C-w> to navigate windows from terminal mode (e.g. Claude Code panel)
+map("t", "<C-w>", "<C-\\><C-n><C-w>", { desc = "Window navigation from terminal" })
