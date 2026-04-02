@@ -19,6 +19,26 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -------------------------------------------------------------------------------
+-- Custom highlight overrides (applied on every colorscheme change
+-- AND after nvim-tree lazy-loads, since hi def link would reset them)
+-------------------------------------------------------------------------------
+local custom_highlights = {
+    Comment           = { fg = "#a0a0a0", italic = true },
+    htmlArg           = { italic = true },
+    xmlAttrib         = { italic = true },
+    DiagnosticInfo    = { fg = "Blue" },
+    DiagnosticHint    = { fg = "Grey" },
+    NvimTreeCopiedHL  = { fg = "#5faf5f", bold = true },
+    NvimTreeCutHL     = { fg = "#f38ba8", bold = true, strikethrough = true },
+}
+
+local function apply_custom_highlights()
+    for group, opts in pairs(custom_highlights) do
+        vim.api.nvim_set_hl(0, group, opts)
+    end
+end
+
+-------------------------------------------------------------------------------
 -- Plugin specs
 -------------------------------------------------------------------------------
 require("lazy").setup({
@@ -40,15 +60,8 @@ require("lazy").setup({
                 vim.cmd.colorscheme("one")
             end
 
-            -- Apply theme customizations on every colorscheme change
             vim.api.nvim_create_autocmd("ColorScheme", {
-                callback = function()
-                    vim.api.nvim_set_hl(0, "Comment",    { fg = "#a0a0a0", italic = true })
-                    vim.api.nvim_set_hl(0, "htmlArg",    { italic = true })
-                    vim.api.nvim_set_hl(0, "xmlAttrib",  { italic = true })
-                    vim.api.nvim_set_hl(0, "DiagnosticInfo", { fg = "Blue" })
-                    vim.api.nvim_set_hl(0, "DiagnosticHint", { fg = "Grey" })
-                end,
+                callback = apply_custom_highlights,
             })
 
             -- Toggle light/dark with <leader>th (neovim + alacritty + tmux)
@@ -513,9 +526,8 @@ require("lazy").setup({
                 git = { enable = true },
             })
 
-            -- Clipboard highlights: green for copied, red+strikethrough for cut
-            vim.api.nvim_set_hl(0, "NvimTreeCopiedHL", { fg = "#5faf5f", bold = true })
-            vim.api.nvim_set_hl(0, "NvimTreeCutHL", { fg = "#f38ba8", bold = true, strikethrough = true })
+            -- Re-apply custom highlights after nvim-tree's setup overrides them
+            apply_custom_highlights()
         end,
     },
 
