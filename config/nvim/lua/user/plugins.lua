@@ -349,7 +349,13 @@ require("lazy").setup({
                     -- Default mappings
                     api.config.mappings.default_on_attach(bufnr)
                     -- E opens file in a new vertical split (like coc-explorer)
-                    vim.keymap.set("n", "E", api.node.open.vertical, { buffer = bufnr, desc = "Open in vsplit" })
+                    vim.keymap.set("n", "E", function()
+                        local node = api.tree.get_node_under_cursor()
+                        if node then
+                            vim.cmd("wincmd l")
+                            vim.cmd("vsplit " .. vim.fn.fnameescape(node.absolute_path))
+                        end
+                    end, { buffer = bufnr, desc = "Open in new vsplit" })
                 end,
                 renderer = {
                     icons = { show = { git = true, folder = true, file = true } },
