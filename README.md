@@ -1,6 +1,6 @@
 # Dotfiles
 
-This is a collection of vim, tmux, and zsh configurations. This setup works for me, a DevOps engineer on macOS. It mights not works for you, but you can steal ideas from this and if you like, contribute back to it!
+A collection of neovim, tmux, and zsh configurations for macOS. Built for DevOps workflows with Terraform, Python, YAML, and JSON.
 
 ![light theme](resources/theme_light.png)
 
@@ -9,7 +9,7 @@ This is a collection of vim, tmux, and zsh configurations. This setup works for 
 + [Setup and Installation](#setup-and-installation)
 + [Terminal Capabilities](#terminal-capabilities)
 + [ZSH Setup](#zsh-setup)
-+ [Vim and Neovim Setup](#vim-and-neovim-setup)
++ [Neovim Setup](#neovim-setup)
 + [Tmux](#tmux-configuration)
 + [Terminal](#terminal-configuration)
 + [Fonts](#fonts)
@@ -22,136 +22,179 @@ This is a collection of vim, tmux, and zsh configurations. This setup works for 
 Clone the dotfiles repository to your home directory as `~/.dotfiles`.
 
 ```bash
-➜ git clone https://github.com/puffin/dotfiles.git ~/.dotfiles
-➜ cd ~/.dotfiles
+git clone https://github.com/puffin/dotfiles.git ~/.dotfiles
+cd ~/.dotfiles
 ```
 
 ### Backup
 
-First, you may want to back up any existing files that exist, so this doesn't overwrite your work.
-
-Run `install/backup.sh` to back up all symlinked files to a `~/dotfiles-backup` directory.
-
-This will not delete any of these files, and the installation scripts will not overwrite any existing. After the backup is complete, you can delete the files from your home directory to continue installation.
+Run `install/backup.sh` to back up any existing symlinked files to `~/dotfiles-backup`. The installation scripts will not overwrite existing files.
 
 ### Installation
 
-If on OSX, you will need to install the XCode CLI tools before continuing. To do so, open a terminal and type:
+Install XCode CLI tools and Homebrew first:
 
 ```bash
-➜ xcode-select --install
+xcode-select --install
 ```
 
-You'll also need to install howebrew following instruction on this page https://brew.sh/.
-
-Then install everything. Open a terminal and type:
+Follow instructions at https://brew.sh/ to install Homebrew, then:
 
 ```bash
-➜ ./install.sh
+./install.sh
 ```
 
-`install.sh` will start by initializing the submodules used by this repo. Then, it will install all symbolic links into your home directory. Every file with a `.symlink` extension will be symlinked to the home directory with a `.` in front of it. As an example, `vimrc.symlink` will be symlinked in the home directory as `~/.vimrc`. Then, this script will create a `~/.vim-tmp` directory in your home directory, as this is where vim is configured to place its temporary files. Additionally, all files in the `config` directory will be symlinked to the `~/.config/` directory for applications that follow the [XDG base directory specification](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html), such as neovim.
-
-Next, the installation script will perform a check to see if it is running on an OSX machine. If so, it will install Homebrew if it is not currently installed and will install the homebrew packages listed in [`Brewfile`](Brewfile). Then, it will run [`osx.sh`](install/osx.sh) and change some OSX configurations.
+This will:
+- Initialize git submodules
+- Symlink all `*.symlink` files to your home directory (e.g. `zshrc.symlink` becomes `~/.zshrc`)
+- Symlink the `config` directory contents to `~/.config/`
+- Install Homebrew packages from `Brewfile`
+- Run macOS-specific configurations via `install/osx.sh`
 
 ## Terminal Capabilities
 
-In order to properly support italic fonts of tmux, a couple of terminal capabilities need to be described. Run the following from the root of the project:
+To support italic fonts in tmux:
 
 ```bash
-➜ tic -x resources/xterm-256color-italic.terminfo
-➜ tic -x resources/tmux.terminfo
+tic -x resources/xterm-256color-italic.terminfo
+tic -x resources/tmux.terminfo
 ```
 
 ## ZSH Setup
 
-ZSH is configured in the `zshrc.symlink` file, which will be symlinked to the home directory. The following occurs in this file:
+ZSH is configured in `zshrc.symlink`. Key features:
 
-+ set the `EDITOR` to nvim
-+ Setup zplug plugin manager for zsh plugins and installed them.
-+ source a `~/.localrc` if it exists so that additional configurations can be made that won't be kept track of in this dotfiles repo. This is good for things like API keys, etc.
-+ And more...
++ `EDITOR` set to `nvim`
++ Zinit plugin manager for zsh plugins
++ Sources `~/.localrc` for machine-specific config (API keys, etc.)
++ Custom prompt with git status on `RPROMPT`
 
-### Prompt
+### Git Prompt Symbols
 
-The prompt is meant to be simple while still providing a lot of information to the user, particularly about the status of the git project, if the PWD is a git project. This prompt sets `precmd`, `PROMPT` and `RPROMPT`.
++ `+` New files added
++ `!` Existing files modified
++ `?` Untracked files
++ `>>` Files renamed
++ `✘` Tracked file deleted
++ `$` Stashed files
++ `=` Unmerged files
++ `⇡` Branch ahead of remote
++ `⇣` Branch behind remote
++ `⇕` Branches diverged
++ `✔` Working directory clean
 
-The git info shown on the `RPROMPT` displays the current branch name, and whether it is clean or dirty.
+## Neovim Setup
 
-#### Git Prompt
+Neovim is configured entirely in Lua with the following structure:
 
-The git info shown on the `RPROMPT` displays the current branch name, along with the following symbols.
-
-+ `+` - New files were added
-+ `!` - Existing files were modified
-+ `?` - Untracked files exist that are not ignored
-+ `»` - Current changes include file renaming
-+ `✘` - An existing tracked file has been deleted
-+ `$` - There are currently stashed files
-+ `=` - There are unmerged files
-+ `⇡` - Branch is ahead of the remote (indicating a push is needed)
-+ `⇣` - Branch is behind the remote (indicating a pull is needed)
-+ `⇕` - The branches have diverged (indicating history has changed and maybe a force-push is needed)
-+ `✔` - The current working directory is clean
-
-## Vim and Neovim Setup
-
-[Neovim](https://neovim.io/) is a fork and drop-in replacement for vim. in most cases, you would not notice a difference between the two, other than Neovim allows plugins to run asynchronously so that they do not freeze the editor, which is the main reason I use it. Vim and Neovim both use Vimscript and most plugins will work in both. Neovim uses the [XDG base directory specification](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html) which means it won't look for a `.vimrc` in your home directory. Instead, its configuration looks like the following:
-
-|                         | Vim        | Neovim                    |
-|-------------------------|------------|---------------------------|
-| Main Configuratin File  | `~/.vimrc` | `~/.config/nvim/init.vim` |
-| Configuration directory | `~/.vim`   | `~/.config/nvim`          |
-
-Vim is likely already installed on your system. If using a Mac, MacVim will be installed from Homebrew. Neovim will also be installed from Homebrew by default on a Mac. For other systems, you may need to install Neovim manually. See their [web site](https://neovim.io) for more information.
-
-[`link.sh`](install/link.sh) will symlink the XDG configuration directory into your home directory and will then create symlinks for `.vimrc` and `.vim` over to the Neovim configuration, so that Vim and Neovim will both be configured in the same way from the same files. The benefit of this configuration is that you only have to maintain a single vim configuration for both, so you can very seamlessly transition back to vim with no big impact to your productivity.
-
-Inside [`.zshrc`](zsh/zshrc.symlink), the `EDITOR` shell variable is set to `nvim`, defaulting to Neovim for editor tasks, such as git commit messages. Additionally, I have aliased `vim` to `nvim` in [`aliases.zsh`](zsh/aliases.zsh) You can remove this if you would rather not alias the `vim` command to `nvim`.
-
-Vim and neovim should just work once the correct plugins are installed. To install the plugins, you will need to open Neovim in the following way:
-
-```bash
-➜ nvim +PlugInstall
+```
+~/.config/nvim/
+├── init.lua                  -- Entry point
+└── lua/user/
+    ├── options.lua           -- Editor settings
+    ├── keymaps.lua           -- Key mappings
+    ├── autocmds.lua          -- Autocommands
+    ├── plugins.lua           -- Plugin declarations (lazy.nvim)
+    └── lsp.lua               -- LSP server configuration
 ```
 
-### LSP (Language Server Protocol)
+Plugins are managed by [lazy.nvim](https://github.com/folke/lazy.nvim) and installed automatically on first launch. Run `:Lazy` inside neovim to manage plugins.
 
-Vim is configured with [coc.nvim](https://github.com/neoclide/coc.nvim) for full LSP support for your prefered languages. It makes vim as smart as VSCode with Intellisense engine.
+### LSP and Autocompletion
 
-Pre-configured suppport for python, elixir, ruby, JS and vim. Want more, just add them to `g:coc_global_extensions` and configure [coc-settings.json](config/nvim/coc-settings.json) accordingly.
+Language servers are managed by [Mason](https://github.com/williamboman/mason.nvim) and configured via Neovim's native `vim.lsp.config` (0.11+). Autocompletion is powered by [blink.cmp](https://github.com/saghen/blink.cmp).
 
-Autocompletion navigation is set on the `<TAB>` key. Then some gotos keys are remapped as:
+| Language   | Server        | Features                                    |
+|------------|---------------|---------------------------------------------|
+| Terraform  | terraformls   | Completions, diagnostics, prefill required fields |
+| Python     | pyright + ruff| Pyright for completions/types, Ruff for linting/formatting |
+| YAML       | yamlls        | Schema-aware completions (K8s, Docker Compose, GitHub Actions, etc.) |
+| JSON       | jsonls        | Schema-aware completions (package.json, tsconfig, etc.) |
 
-+ `gd` : Jump to definition(s) of current symbol
-+ `gi` : Jump to implementation(s) of current symbol
-+ `gr` : Jump to references of current symbol
-+ `K` : Show documentation of the current symbol
-+ `<leader> d` : Toggle linters on/off
+Schemas are provided by [SchemaStore.nvim](https://github.com/b0o/SchemaStore.nvim) (300+ schemas).
+
+**Note:** For Terraform, run `terraform init` in each project directory for provider-aware completions.
+
+### LSP Keymaps
+
+| Key            | Action              |
+|----------------|---------------------|
+| `gd`           | Go to definition    |
+| `gy`           | Go to type definition |
+| `gi`           | Go to implementation |
+| `gr`           | Find references     |
+| `K`            | Show documentation  |
+| `<leader>rn`   | Rename symbol       |
+| `<leader>ca`   | Code action         |
+
+### Completion Keymaps
+
+| Key         | Action                |
+|-------------|-----------------------|
+| `Tab`       | Next completion       |
+| `S-Tab`     | Previous completion   |
+| `CR`        | Confirm selection     |
+| `C-Space`   | Trigger / toggle docs |
+| `C-e`       | Dismiss completion    |
+| `C-b / C-f` | Scroll documentation  |
+
+### Diagnostics
+
+Diagnostics show inline virtual text, gutter signs, and underlines. Holding the cursor on an error line auto-opens a floating window with the full message.
+
+### Plugins
+
+**UI**: vim-one (colorscheme), lualine (statusline), nvim-web-devicons, vim-smoothie (smooth scrolling)
+
+**Editor**: vim-surround, vim-repeat, vim-unimpaired, vim-sleuth, vim-abolish, Comment.nvim, splitjoin.vim, nvim-autopairs, editorconfig
+
+**Git**: fugitive, gitsigns, diffview.nvim, vim-flog, vim-twiggy
+
+**Navigation**: FZF (files, buffers, ripgrep), nvim-tree (file explorer)
+
+**Session**: vim-obsession + vim-prosession (auto-save/restore sessions)
+
+**Syntax**: Treesitter with parsers for Terraform, HCL, Python, TypeScript, JSON, YAML, Lua, and more
 
 ## Tmux Configuration
 
-Tmux is a terminal multiplexor which lets you create windows and splits in the terminal that you can attach and detach from. I use it to keep multiple projects open in separate windows and to create an IDE-like environment to work in where I can have my code open in vim/neovim and a shell open to run tests/scripts. Tmux is configured in [~/.tmux.conf](tmux/tmux.conf.symlink), and in [tmux/theme.sh](tmux/theme.sh), which defines the colors used, the layout of the tmux bar, and what what will be displayed. If not running on macOS, this configuration should be removed.
+Tmux is configured in `~/.tmux.conf` with prefix set to `control+a`. Sessions are automatically saved and restored via tmux-continuum and tmux-resurrect.
+
+### Tmux Commands
+
+| Key                         | Action                    |
+|-----------------------------|---------------------------|
+| `prefix + I`                | Install plugins           |
+| `prefix + U`                | Update plugins            |
+| `prefix + w`                | Window/pane selection     |
+| `prefix + c`                | New window                |
+| `prefix + ,`                | Rename window             |
+| `prefix + &`                | Kill window               |
+| `prefix + [1-9]`            | Select window             |
+| `prefix + -`                | Split vertically          |
+| `prefix + \|`               | Split horizontally        |
+| `prefix + x`                | Kill pane                 |
+| `prefix + [h,j,k,l]`       | Move to pane              |
+| `prefix + z`                | Toggle pane fullscreen    |
+| `prefix + shift + [h,j,k,l]` | Resize pane             |
 
 ## Terminal Configuration
 
-My terminal of choice is [Alacritty](https://alacritty.org/). This setup works great with it but should also work with your prefered one, though not tested.
-
-You can find the default profile that use SauceCodePro NF font and the color scheme I use in [config/alacritty/alacritty.yml](config/alacritty/alacritty.yml)
+Terminal of choice is [Alacritty](https://alacritty.org/). Configuration is in `config/alacritty/alacritty.yml`.
 
 ## Fonts
 
-I am currently using [SauceCodePro NF](https://eng.m.fontke.com/font/28281398/), installed via homebrew, as my default font via alacritty's settings.
+[SauceCodePro NF](https://eng.m.fontke.com/font/28281398/), installed via Homebrew.
 
 ## Color Scheme
 
-I am currently using [vim-one](https://github.com/rakr/vim-one) color scheme (light mode).
+[vim-one](https://github.com/rakr/vim-one) in light mode. Comments are displayed in light grey italic.
 
-Dark mode is pre-configured and can be enabled by changing these configurations:
+Dark mode can be enabled by changing:
 
-+ Alacritty (config/alacritty/alacritty.yml): `colors: *one_dark`
-+ Vim (config/nvim/init.vim): `set background=dark`
-+ ZSH (zsh/zshrc.symlink): `THEME_ONE_BG=dark`
++ Alacritty: `colors: *one_dark`
++ Neovim: `vim.opt.background = "dark"` in `plugins.lua`
++ ZSH: `THEME_ONE_BG=dark`
 
 ### Dark Theme
 
@@ -159,107 +202,52 @@ Dark mode is pre-configured and can be enabled by changing these configurations:
 
 ## Usage
 
-You installed everything, now what? Your environment is now composed of alacritty + tmux + zsh + vim.
+### Vim Quick Reference
 
-### Increase productivity
+Leader key is `Space`.
 
-Tmux is a fantastic tool for improving productivity when working with a terminal. The prefix key has been modified to control+a instead of control+b, which is not very confortable to press with a single hand. But this can be improved even more by reconfiguring your caps lock key to control.
+| Key              | Action                      |
+|------------------|-----------------------------|
+| `<leader>k`      | Toggle file explorer        |
+| `<leader>st`     | Start screen                |
+| `<leader>b`      | Close buffer (keep split)   |
+| `<leader>t`      | Git file finder             |
+| `<leader>e`      | All files finder            |
+| `<leader>r`      | Buffer finder               |
+| `<leader>s`      | Git status files            |
+| `:Rg`            | Ripgrep search              |
+| `<leader>gs`     | Git status                  |
+| `<leader>gd`     | Git 3-way diff              |
+| `gdh` / `gdl`   | Take left/right in diff     |
+| `<leader>dvo`    | Open Diffview               |
+| `<leader>dvc`    | Close Diffview              |
+| `<leader>dvh`    | Diffview file history       |
+| `]g` / `[g`      | Next/previous git hunk      |
+| `gs`             | Preview git hunk            |
+| `gu`             | Reset git hunk              |
+| `gc` / `gcc`     | Comment toggle              |
 
-![A screenshot of the key remapper](keyboard_caps_modifier.png)
+### Zsh Shortcuts
 
-### Tmux basic control
-
-Tmux is configured with 2 plugins ([tmux-continuum](https://github.com/tmux-plugins/tmux-continuum) and [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)) to continuously save tmux environment and restore it when started. This includes also your vim session, so your development environment is back where you left it off.
-To start tmux, open your terminal and type
-
-```bash
-➜ tmux
-```
-
-Here is a basic list of commands you'll use all the time in tmux. Reminder, prefix is `control+a`
-
-+ `prefix + I` : install new tmux plugins
-+ `prefix + U` : update tmux plugins
-+ `prefix + w` : interactive window/pane selection
-+ `prefix + :` : tmux shell
-+ `prefix + $` : rename session
-+ `prefix + c` : create a new window
-+ `prefix + ,` : rename current window
-+ `prefix + &` : kill current window
-+ `prefix + [1, 2, 3, ...]` : select window
-+ `prefix + -` : split new pane vertically
-+ `prefix + |` : split new pane horizontally
-+ `prefix + x` : kill current pane
-+ `prefix + [h, j, k, l]` : move to pane
-+ `prefix + z` : toggle pane fullscreen
-+ `prefix + shift + [h, j, k, l]` : resize pane
-
-### Zsh basic control
-
-Here is a basic list of commands you'll use all the time in zsh.
-
-+ `ALT + arrow right` : move one word forward
-+ `ALT + arrow left` : move one word backward
-+ `CMD + arrow right` : move to the end of the line
-+ `CMD + arrow left` : move to the beginning of the line
-+ `ALT + arrow down` : clear the characters on the line after the current cursor position
-+ `ALT + arrow up` : clear the characters on the line before the current cursor position
-+ `ALT + D` : delete the word after the cursor
-+ `ALT + BACKSPACE` : delete the word before the cursor
-+ `CTRL + U` : clear the entire line
-+ `CTRL + R` : list commands history
-+ `CTRL + T` : list files history
-
-### Vim basic control
-
-Vim is configured with various plugins to increase productivity. You can explore [config/nvim/init.vim](config/nvim/init.vim) to find out which plugins are installed.
-
-To start vim, open your terminal and type
-
-```bash
-➜ vim
-```
-
-Here is basic list of commands you'll use all the time in vim. Reminder, the leader key is `SPACE`
-
-+ `leader + k` : toggle file system explorer
-+ `leader + y` : find the current file in the file system explorer
-+ `leader + st` : toggle start screen
-+ `leader + b` : close buffer but keep split
-+ `leader + t` : Git fuzzy finder
-+ `leader + e` : General fuzzy finder
-+ `leader + r` : Buffer fuzzy finder
-+ `control+w + s` : Split new buffer horizontally
-+ `control+w + v` : Split new buffer vertically
-+ `control+w [h, j, k, l]` : move to buffer
-
-Some more advanced commands.
-
-+ `:Rg` : Recursively searches directories for a regex pattern. Use ALT + TAB to select and add to quickfix list
-+ `:cope` : to enter the quickfix window. `dd` is remapped to remove a line from the quickfix list
-+ `leader + gs` : Display Git Status
-+ `leader + gd` : Open a Git 3-way split to resolve conflict
-+ `gdh` : In Git 3-way split mode, get the change from the left pane (buffer with `//2` name)
-+ `gdl` : In Git 3-way split mode, get the change from the right pane (buffer with `//3` name)
-+ `]c` : Jumping to the next Git conflict to fix
-+ `[c` : Jumping to the previous Git conflict to fix
-+ `control+w + o` : Leave only the current pane open
-+ `gd` : Goto definition
-+ `gr` : Goto references
-+ `do` : Automated changes or fixes for issue
-+ `leader + gdo` : Open Diffview
-+ `leader + gdc` : Close Diffview
-+ `leader + gdh` : Open Diffview file history
+| Key                | Action                          |
+|--------------------|---------------------------------|
+| `Alt + Right/Left` | Move one word forward/backward  |
+| `Cmd + Right/Left` | Move to end/beginning of line   |
+| `Alt + D`          | Delete word after cursor        |
+| `Alt + Backspace`  | Delete word before cursor       |
+| `Ctrl + U`         | Clear entire line               |
+| `Ctrl + R`         | Command history                 |
+| `Ctrl + T`         | File history                    |
 
 ## Troubleshooting
 
-The automated installation can encounter errors around file permissions in case you don't have administrator access to the file system, or you're trying to install it under a new OS user. Open a terminal and type:
+If you encounter permission errors during installation:
 
 ```bash
-➜ sudo chown -R $(whoami):admin /usr/local/
-➜ sudo chmod -R 755 /usr/local
+sudo chown -R $(whoami):admin /usr/local/
+sudo chmod -R 755 /usr/local
 ```
 
 ## Questions
 
-If you have questions, notice issues, or would like to see improvements, please open an [issue](https://github.com/puffin/dotfiles/issues/new) and I'm happy to help you out!
+If you have questions or notice issues, please open an [issue](https://github.com/puffin/dotfiles/issues/new).
