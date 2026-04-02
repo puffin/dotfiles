@@ -399,6 +399,21 @@ require("lazy").setup({
     },
 
     ---------------------------------------------------------------------------
+    -- AI (Claude Code)
+    ---------------------------------------------------------------------------
+    {
+        "coder/claudecode.nvim",
+        dependencies = { "folke/snacks.nvim" },
+        lazy = false,
+        opts = {},
+        keys = {
+            { "<leader>ac", ":ClaudeCode<cr>",      silent = true, desc = "Toggle Claude Code" },
+            { "<leader>as", ":ClaudeCodeSend<cr>",   silent = true, desc = "Send to Claude", mode = { "n", "v" } },
+            { "<leader>aa", ":ClaudeCodeAdd<cr>",    silent = true, desc = "Add file to Claude" },
+        },
+    },
+
+    ---------------------------------------------------------------------------
     -- File Explorer
     ---------------------------------------------------------------------------
     {
