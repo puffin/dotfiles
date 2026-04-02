@@ -6,3 +6,8 @@ require("user.autocmds")
 
 -- Plugin management (lazy.nvim)
 require("user.plugins")
+
+-- LSP, completion, and formatting
+require("user.lsp")
+require("user.completion")
+require("user.format")

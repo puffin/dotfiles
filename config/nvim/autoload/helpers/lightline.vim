@@ -26,10 +26,6 @@ function! helpers#lightline#gitBranch()
     return "\uE725 " . FugitiveHead()
 endfunction
 
-function! helpers#lightline#currentFunction()
-    return get(b:, 'coc_current_function', '')
-endfunction
-
 function! helpers#lightline#gitBlame()
-    return winwidth(0) > 100 ? strpart(substitute(get(b:, 'coc_git_blame', ''), '[\(\)]', '', 'g'), 0, 50) : ''
+    return winwidth(0) > 100 ? strpart(substitute(get(b:, 'gitsigns_blame_line', ''), '[\(\)]', '', 'g'), 0, 50) : ''
 endfunction

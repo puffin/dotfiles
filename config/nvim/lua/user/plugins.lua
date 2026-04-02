@@ -58,7 +58,7 @@ require("lazy").setup({
                     right = {
                         { "percent", "lineinfo" },
                         { "fileformat", "fileencoding" },
-                        { "gitblame", "currentfunction", "cocstatus", "linter_errors", "linter_warnings" },
+                        { "gitblame", "linter_errors", "linter_warnings" },
                     },
                 },
                 component_expand = vim.empty_dict(),
@@ -69,12 +69,10 @@ require("lazy").setup({
                 },
                 component_function = {
                     gitbranch = "helpers#lightline#gitbranch",
-                    cocstatus = "coc#status",
                     filename = "helpers#lightline#fileName",
                     fileencoding = "helpers#lightline#fileEncoding",
                     fileformat = "helpers#lightline#fileFormat",
                     filetype = "helpers#lightline#fileType",
-                    currentfunction = "helpers#lightline#currentFunction",
                     gitblame = "helpers#lightline#gitBlame",
                 },
                 tabline = {
@@ -173,16 +171,32 @@ require("lazy").setup({
         keys = { { "<leader>b", ":Bdelete<cr>", desc = "Delete buffer" } },
     },
 
-    -- Git signs in gutter
+    -- Git signs, blame, hunk navigation (replaces vim-signify + coc-git)
     {
-        "mhinz/vim-signify",
+        "lewis6991/gitsigns.nvim",
         event = "VeryLazy",
-        init = function()
-            vim.g.signify_vcs_list = { "git" }
-            vim.g.signify_sign_add = "┃"
-            vim.g.signify_sign_delete = "-"
-            vim.g.signify_sign_delete_first_line = "_"
-            vim.g.signify_sign_change = "┃"
+        config = function()
+            require("gitsigns").setup({
+                signs = {
+                    add = { text = "┃" },
+                    change = { text = "┃" },
+                    delete = { text = "-" },
+                    topdelete = { text = "_" },
+                    changedelete = { text = "┃" },
+                },
+                current_line_blame = true,
+                current_line_blame_opts = { delay = 300 },
+                on_attach = function(bufnr)
+                    local gs = package.loaded.gitsigns
+                    local map = function(mode, l, r, desc)
+                        vim.keymap.set(mode, l, r, { buffer = bufnr, silent = true, desc = desc })
+                    end
+                    map("n", "]g", gs.next_hunk, "Next git hunk")
+                    map("n", "[g", gs.prev_hunk, "Previous git hunk")
+                    map("n", "gs", gs.preview_hunk, "Preview hunk")
+                    map("n", "gu", gs.reset_hunk, "Reset hunk")
+                end,
+            })
         end,
     },
 
@@ -284,125 +298,67 @@ require("lazy").setup({
     end },
     { "kyazdani42/nvim-web-devicons", lazy = false },
 
-    -- Snippets
-    { "honza/vim-snippets", event = "VeryLazy" },
+    -- LSP
     {
-        "SirVer/ultisnips",
-        event = "VeryLazy",
-        init = function()
-            vim.g.UltiSnipsExpandTrigger = "<nop>"
+        "williamboman/mason.nvim",
+        lazy = false,
+        dependencies = {
+            "williamboman/mason-lspconfig.nvim",
+            "neovim/nvim-lspconfig",
+        },
+    },
+
+    -- Completion
+    {
+        "hrsh7th/nvim-cmp",
+        event = "InsertEnter",
+        dependencies = {
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-path",
+            "saadparwaiz1/cmp_luasnip",
+            {
+                "L3MON4D3/LuaSnip",
+                build = "make install_jsregexp",
+                dependencies = {
+                    "rafamadriz/friendly-snippets",
+                },
+            },
+        },
+    },
+
+    -- Auto-pairs (replaces coc-pairs)
+    {
+        "windwp/nvim-autopairs",
+        event = "InsertEnter",
+        config = function()
+            require("nvim-autopairs").setup()
         end,
     },
 
-    -- CoC
+    -- Formatting (replaces coc-prettier)
     {
-        "neoclide/coc.nvim",
-        branch = "release",
-        lazy = false,
+        "stevearc/conform.nvim",
+        event = "BufWritePre",
+        cmd = "ConformInfo",
+    },
+
+    -- File explorer (replaces coc-explorer)
+    {
+        "nvim-tree/nvim-tree.lua",
+        cmd = { "NvimTreeToggle", "NvimTreeFocus" },
+        keys = {
+            { "<leader>k", ":NvimTreeToggle<cr>", silent = true, desc = "Toggle file explorer" },
+        },
         config = function()
-            vim.g.coc_global_extensions = {
-                "coc-pyright",
-                "coc-json",
-                "coc-tsserver",
-                "coc-git",
-                "coc-explorer",
-                "coc-prettier",
-                "coc-eslint",
-                "coc-lists",
-                "coc-diagnostic",
-                "coc-elixir",
-                "coc-solargraph",
-                "coc-snippets",
-                "coc-ultisnips",
-                "coc-vimlsp",
-                "coc-docker",
-                "coc-groovy",
-                "coc-markdownlint",
-                "coc-pairs",
-                "coc-xml",
-            }
-
-            -- Highlight on cursor hold
-            vim.cmd("autocmd CursorHold * silent call CocActionAsync('highlight')")
-
-            -- Explorer
-            vim.keymap.set("n", "<leader>k", ":CocCommand explorer<cr>", { silent = true })
-
-            -- Prettier
-            vim.api.nvim_create_user_command("Prettier", "CocCommand prettier.forceFormatDocument", {})
-            vim.keymap.set("n", "<leader>f", ":CocCommand prettier.forceFormatDocument<cr>")
-
-            -- Git chunks
-            vim.keymap.set("n", "[g", "<Plug>(coc-git-prevchunk)")
-            vim.keymap.set("n", "]g", "<Plug>(coc-git-nextchunk)")
-            vim.keymap.set("n", "gs", "<Plug>(coc-git-chunkinfo)")
-            vim.keymap.set("n", "gu", ":CocCommand git.chunkUndo<cr>")
-
-            -- Gotos
-            vim.keymap.set("n", "gd", "<Plug>(coc-definition)", { silent = true })
-            vim.keymap.set("n", "gy", "<Plug>(coc-type-definition)", { silent = true })
-            vim.keymap.set("n", "gi", "<Plug>(coc-implementation)", { silent = true })
-            vim.keymap.set("n", "gr", "<Plug>(coc-references)", { silent = true })
-            vim.keymap.set("n", "gh", "<Plug>(coc-doHover)", { silent = true })
-
-            -- Diagnostics
-            vim.keymap.set("n", "[c", "<Plug>(coc-diagnostic-prev)", { silent = true })
-            vim.keymap.set("n", "]c", "<Plug>(coc-diagnostic-next)", { silent = true })
-            vim.keymap.set("n", "<leader>d", ":call CocAction('diagnosticToggle')<cr>", { silent = true })
-
-            -- Rename
-            vim.keymap.set("n", "<leader>rn", "<Plug>(coc-rename)", { silent = true })
-
-            -- Code action
-            vim.keymap.set("n", "do", "<Plug>(coc-codeaction)", { silent = true })
-
-            -- Organize imports
-            vim.api.nvim_create_user_command("OR", "call CocAction('runCommand', 'editor.action.organizeImport')", {})
-
-            -- Show documentation
-            vim.cmd([[
-                function! s:show_documentation()
-                    if (index(['vim','help'], &filetype) >= 0)
-                        execute 'h '.expand('<cword>')
-                    else
-                        call CocAction('doHover')
-                    endif
-                endfunction
-            ]])
-            vim.keymap.set("n", "K", ":call <SID>show_documentation()<CR>", { silent = true })
-
-            -- Snippets
-            vim.cmd([[
-                imap <C-l> <Plug>(coc-snippets-expand)
-                vmap <C-j> <Plug>(coc-snippets-select)
-                let g:coc_snippet_next = '<c-j>'
-                let g:coc_snippet_prev = '<c-k>'
-                imap <C-j> <Plug>(coc-snippets-expand-jump)
-                xmap <leader>x <Plug>(coc-convert-snippet)
-            ]])
-
-            -- Tab completion
-            vim.cmd([[
-                inoremap <silent><expr> <TAB>
-                    \ coc#pum#visible() ? coc#pum#next(1) :
-                    \ <SID>check_back_space() ? "\<Tab>" :
-                    \ coc#refresh()
-                inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
-
-                function! s:check_back_space() abort
-                    let col = col('.') - 1
-                    return !col || getline('.')[col - 1]  =~# '\s'
-                endfunction
-            ]])
-
-            -- Trigger completion
-            vim.cmd([[inoremap <silent><expr> <c-space> coc#refresh()]])
-
-            -- Confirm completion with CR
-            vim.cmd([[
-                inoremap <silent><expr> <cr> coc#pum#visible() ? coc#_select_confirm()
-                    \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-            ]])
+            require("nvim-tree").setup({
+                view = { width = 50, side = "left" },
+                renderer = {
+                    icons = { show = { git = true, folder = true, file = true } },
+                },
+                filters = { dotfiles = false },
+                git = { enable = true },
+            })
         end,
     },
 
