@@ -14,6 +14,8 @@ require("mason-lspconfig").setup({
         "terraformls",   -- Terraform
         "yamlls",        -- YAML
         "jsonls",        -- JSON
+        "pyright",       -- Python (completions, type checking, hover)
+        "ruff",          -- Python (linting, formatting)
     },
 })
 
@@ -110,6 +112,33 @@ vim.lsp.config("jsonls", {
 })
 
 -------------------------------------------------------------------------------
+-- Python (pyright: completions + types, ruff: linting + formatting)
+-------------------------------------------------------------------------------
+vim.lsp.config("pyright", {
+    capabilities = capabilities,
+    settings = {
+        pyright = {
+            -- Let ruff handle import sorting
+            disableOrganizeImports = true,
+        },
+        python = {
+            analysis = {
+                -- Let ruff handle linting diagnostics
+                ignore = { "*" },
+            },
+        },
+    },
+})
+
+vim.lsp.config("ruff", {
+    capabilities = capabilities,
+    on_attach = function(client)
+        -- Let pyright handle hover
+        client.server_capabilities.hoverProvider = false
+    end,
+})
+
+-------------------------------------------------------------------------------
 -- Enable servers
 -------------------------------------------------------------------------------
-vim.lsp.enable({ "terraformls", "yamlls", "jsonls" })
+vim.lsp.enable({ "terraformls", "yamlls", "jsonls", "pyright", "ruff" })
