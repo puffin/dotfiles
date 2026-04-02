@@ -44,7 +44,7 @@ require("lazy").setup({
             vim.cmd("filetype plugin indent on")
 
             -- Italic comments and HTML attributes
-            vim.api.nvim_set_hl(0, "Comment",    { italic = true })
+            vim.api.nvim_set_hl(0, "Comment",    { fg = "#a0a0a0", italic = true })
             vim.api.nvim_set_hl(0, "htmlArg",    { italic = true })
             vim.api.nvim_set_hl(0, "xmlAttrib",  { italic = true })
 
