@@ -205,7 +205,7 @@ Dark mode can be enabled by changing:
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://upload.wikimedia.org/wikipedia/commons/8/8a/Claude_AI_logo.svg">
-  <img alt="Claude" src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Claude_AI_logo.svg" width="40">
+  <img alt="Claude" src="https://upload.wikimedia.org/wikipedia/commons/8/8a/Claude_AI_logo.svg" width="120">
 </picture>
 
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) is integrated into Neovim via the [claudecode.nvim](https://github.com/coder/claudecode.nvim) plugin, providing an in-editor AI assistant panel.
