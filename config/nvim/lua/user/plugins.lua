@@ -101,10 +101,10 @@ require("lazy").setup({
     { "benmills/vimux", cmd = { "VimuxRunCommand", "VimuxPromptCommand", "VimuxRunLastCommand" } },
 
     -- Session management
-    { "tpope/vim-obsession", event = "VeryLazy" },
+    { "tpope/vim-obsession", lazy = false },
     {
         "dhruvasagar/vim-prosession",
-        event = "VeryLazy",
+        lazy = false,
         dependencies = { "tpope/vim-obsession" },
     },
 
@@ -340,8 +340,17 @@ require("lazy").setup({
             { "<leader>k", ":NvimTreeToggle<cr>", silent = true, desc = "Toggle file explorer" },
         },
         config = function()
+            local api = require("nvim-tree.api")
             require("nvim-tree").setup({
+                disable_netrw = false,
+                hijack_netrw = false,
                 view = { width = 50, side = "left" },
+                on_attach = function(bufnr)
+                    -- Default mappings
+                    api.config.mappings.default_on_attach(bufnr)
+                    -- E opens file in a new vertical split (like coc-explorer)
+                    vim.keymap.set("n", "E", api.node.open.vertical, { buffer = bufnr, desc = "Open in vsplit" })
+                end,
                 renderer = {
                     icons = { show = { git = true, folder = true, file = true } },
                 },
