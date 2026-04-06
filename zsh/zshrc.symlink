@@ -4,7 +4,7 @@
 
 export DOTFILES=$HOME/.dotfiles
 export ZSH=$DOTFILES/zsh
-export BREW_PREFIX="$(brew --prefix)"
+export BREW_PREFIX="/opt/homebrew"
 
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
@@ -72,10 +72,11 @@ zinit wait lucid for \
     atload"!_zsh_autosuggest_start" \
         zsh-users/zsh-autosuggestions
 
-# Oh-my-zsh git aliases
-zinit snippet OMZL::async_prompt.zsh
-zinit snippet OMZL::git.zsh
-zinit snippet OMZP::git
+# Oh-my-zsh git aliases (deferred)
+zinit wait lucid for \
+    OMZL::async_prompt.zsh \
+    OMZL::git.zsh \
+    OMZP::git
 
 # ===========================================================================
 # Theme & colors
@@ -161,19 +162,25 @@ export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 # Tools
 # ===========================================================================
 
-# direnv
-_direnv_hook() {
-    trap -- '' SIGINT
-    eval "$("direnv" export zsh)"
-    trap - SIGINT
-}
-typeset -ag precmd_functions
-if (( ! ${precmd_functions[(I)_direnv_hook]} )); then
-    precmd_functions=(_direnv_hook $precmd_functions)
+# direnv (deferred — registers hook without running eval at startup)
+if (( $+commands[direnv] )); then
+    _direnv_hook() {
+        trap -- '' SIGINT
+        eval "$("direnv" export zsh)"
+        trap - SIGINT
+    }
+    typeset -ag precmd_functions
+    if (( ! ${precmd_functions[(I)_direnv_hook]} )); then
+        precmd_functions=(_direnv_hook $precmd_functions)
+    fi
 fi
 
-# Terraform version manager
-[[ -f $BREW_PREFIX/share/chtf/chtf.sh ]] && source "$BREW_PREFIX/share/chtf/chtf.sh"
+# Terraform version manager (lazy-loaded)
+function chtf() {
+    unset -f chtf
+    [[ -f $BREW_PREFIX/share/chtf/chtf.sh ]] && source "$BREW_PREFIX/share/chtf/chtf.sh"
+    chtf "$@"
+}
 
 # Docker (Colima)
 export DOCKER_HOST="unix://$HOME/.colima/docker.sock"
