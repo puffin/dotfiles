@@ -94,8 +94,8 @@ setw -g mouse on
 # set vi mode for copy mode
 setw -g mode-keys vi
 
-# command to pipe to for all key bindings
-set -s copy-command "tmux save-buffer - | reattach-to-user-namespace pbcopy"
+# native clipboard (tmux 3.2+, no reattach-to-user-namespace needed)
+set -s copy-command 'pbcopy'
 
 # more settings to make copy-mode more vim-like
 unbind [
@@ -105,14 +105,13 @@ bind p paste-buffer
 
 # enable copy mode in selection
 bind -T copy-mode-vi 'v' send -X begin-selection
-bind -T copy-mode-vi 'y' send -X copy-pipe-and-cancel "tmux save-buffer - | reattach-to-user-namespace pbcopy"
+bind -T copy-mode-vi 'y' send -X copy-pipe-and-cancel 'pbcopy'
 
 # Install plugin manager
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @plugin 'tmux-plugins/tmux-continuum'
-
 # set auto save/restore sessions
 set -g @continuum-restore 'on'
 set -g @resurrect-strategy-nvim 'session'
