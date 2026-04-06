@@ -438,8 +438,8 @@ require("lazy").setup({
         priority = 1000,
         opts = {
             bigfile = { enabled = true },
-            dashboard = { enabled = true },
-            explorer = { enabled = true },
+            dashboard = { enabled = false },
+            explorer = { enabled = false },
             image = { enabled = false },
             input = { enabled = true },
             notifier = { enabled = true },
