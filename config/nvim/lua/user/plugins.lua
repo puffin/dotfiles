@@ -448,7 +448,11 @@ require("lazy").setup({
     {
         "coder/claudecode.nvim",
         dependencies = { "folke/snacks.nvim" },
-        opts = {},
+        opts = {
+            terminal = {
+                split_width_percentage = 0.25,
+            },
+        },
         keys = {
             { "<leader>ac", ":ClaudeCode<cr>",      silent = true, desc = "Toggle Claude Code" },
             { "<leader>as", ":ClaudeCodeSend<cr>",   silent = true, desc = "Send to Claude", mode = { "n", "v" } },
@@ -461,9 +465,9 @@ require("lazy").setup({
     ---------------------------------------------------------------------------
     {
         "nvim-tree/nvim-tree.lua",
-        cmd = { "NvimTreeToggle", "NvimTreeFocus" },
+        cmd = { "NvimTreeToggle", "NvimTreeFindFileToggle", "NvimTreeFocus" },
         keys = {
-            { "<leader>k", ":NvimTreeToggle<cr>", silent = true, desc = "Toggle explorer" },
+            { "<leader>k", ":NvimTreeFindFileToggle<cr>", silent = true, desc = "Toggle explorer" },
         },
         config = function()
             -- Single-keypress y/n prompts (no Enter needed)
