@@ -433,6 +433,25 @@ require("lazy").setup({
     -- AI (Claude Code)
     ---------------------------------------------------------------------------
     {
+        "folke/snacks.nvim",
+        lazy = false,
+        priority = 1000,
+        opts = {
+            bigfile = { enabled = true },
+            dashboard = { enabled = true },
+            explorer = { enabled = true },
+            image = { enabled = false },
+            input = { enabled = true },
+            notifier = { enabled = true },
+            picker = { enabled = true, ui_select = true },
+            quickfile = { enabled = true },
+            scope = { enabled = true },
+            scroll = { enabled = true },
+            statuscolumn = { enabled = true },
+            words = { enabled = true },
+        },
+    },
+    {
         "coder/claudecode.nvim",
         dependencies = { "folke/snacks.nvim" },
         opts = {},
@@ -544,8 +563,8 @@ require("lazy").setup({
         "nvim-treesitter/nvim-treesitter",
         build = ":TSUpdate",
         event = { "BufReadPost", "BufNewFile" },
-        config = function()
-            local parsers = {
+        opts = {
+            ensure_installed = {
                 "javascript", "typescript", "tsx", "json",
                 "python", "ruby", "elixir",
                 "terraform", "hcl",
@@ -555,10 +574,12 @@ require("lazy").setup({
                 "lua", "vim", "vimdoc",
                 "bash", "yaml", "toml",
                 "gitcommit", "diff",
-            }
-            for _, lang in ipairs(parsers) do
-                pcall(function() vim.cmd("TSInstall! " .. lang) end)
-            end
+            },
+            highlight = { enable = true },
+            indent = { enable = true },
+        },
+        config = function(_, opts)
+            require("nvim-treesitter").setup(opts)
 
             -- Register TSX for React filetypes
             vim.treesitter.language.register("tsx", "typescriptreact")
@@ -585,6 +606,7 @@ require("lazy").setup({
     },
 
 }, {
+    rocks = { enabled = false },
     ui = { border = "rounded" },
     performance = { rtp = { disabled_plugins = {} } },
 })
