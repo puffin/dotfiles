@@ -17,7 +17,7 @@ opt.directory   = { "~/.vim-tmp", "~/.tmp", "~/tmp", "/var/tmp", "/tmp" }
 opt.inccommand  = "nosplit"          -- Live preview of :substitute
 opt.backspace   = { "indent", "eol", "start" }
 opt.clipboard   = "unnamedplus"      -- Use system clipboard
-opt.mouse       = ""                 -- Disable mouse
+opt.mouse       = "a"                -- Enable mouse
 
 -------------------------------------------------------------------------------
 -- Search

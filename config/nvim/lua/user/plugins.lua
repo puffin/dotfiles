@@ -89,9 +89,6 @@ require("lazy").setup({
     -- UI
     ---------------------------------------------------------------------------
 
-    -- Smooth scrolling
-    { "psliwka/vim-smoothie", event = "VeryLazy" },
-
     -- Statusline
     {
         "nvim-lualine/lualine.nvim",
@@ -155,9 +152,6 @@ require("lazy").setup({
 
     -- Ripgrep search (provides :Ack)
     { "wincent/ferret", event = "VeryLazy" },
-
-    -- EditorConfig support
-    { "editorconfig/editorconfig-vim", event = "VeryLazy" },
 
     -- Close buffer without closing split
     {
