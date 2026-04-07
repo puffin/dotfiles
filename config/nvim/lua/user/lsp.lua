@@ -79,6 +79,23 @@ vim.lsp.config("terraformls", {
     },
 })
 
+-- Re-validate all open .tf buffers when any .tf file is saved
+vim.api.nvim_create_autocmd("BufWritePost", {
+    pattern = "*.tf",
+    callback = function()
+        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].filetype == "terraform" then
+                local clients = vim.lsp.get_clients({ bufnr = buf, name = "terraformls" })
+                for _, client in ipairs(clients) do
+                    client:notify("textDocument/didSave", {
+                        textDocument = { uri = vim.uri_from_bufnr(buf) },
+                    })
+                end
+            end
+        end
+    end,
+})
+
 -------------------------------------------------------------------------------
 -- YAML
 -------------------------------------------------------------------------------
