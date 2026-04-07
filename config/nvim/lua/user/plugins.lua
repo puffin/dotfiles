@@ -480,6 +480,9 @@ require("lazy").setup({
         opts = {
             terminal = {
                 split_width_percentage = 0.25,
+                snacks_win_opts = {
+                    wo = { winhighlight = "Normal:Normal,NormalNC:Normal" },
+                },
             },
         },
         keys = {
