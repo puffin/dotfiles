@@ -28,8 +28,14 @@ local custom_highlights = {
     xmlAttrib         = { italic = true },
     Visual            = { bg = "#e5c07b", fg = "#282c34", nocombine = true },
     VisualNOS         = { bg = "#e5c07b", fg = "#282c34", nocombine = true },
-    DiagnosticInfo    = { fg = "Blue" },
-    DiagnosticHint    = { fg = "Grey" },
+    DiagnosticError       = { fg = "#e06c75" },
+    DiagnosticWarn        = { fg = "#e5c07b" },
+    DiagnosticInfo        = { fg = "#61afef" },
+    DiagnosticHint        = { fg = "#98c379" },
+    DiagnosticSignError   = { fg = "#e06c75" },
+    DiagnosticSignWarn    = { fg = "#e5c07b" },
+    DiagnosticSignInfo    = { fg = "#61afef" },
+    DiagnosticSignHint    = { fg = "#98c379" },
     NvimTreeCopiedHL  = { fg = "#5faf5f", bold = true },
     NvimTreeCutHL     = { fg = "#f38ba8", bold = true, strikethrough = true },
 }
@@ -37,6 +43,26 @@ local custom_highlights = {
 local function apply_custom_highlights()
     for group, opts in pairs(custom_highlights) do
         vim.api.nvim_set_hl(0, group, opts)
+    end
+
+    -- Float background adapts to light/dark theme
+    local is_dark = vim.o.background == "dark"
+    local float_bg = is_dark and "#3e4452" or "#e8e8e8"
+    local float_fg = is_dark and "#dcdfe4" or "#383a42"
+    local border_fg = is_dark and "#5c6370" or "#a0a1a7"
+    vim.api.nvim_set_hl(0, "NormalFloat", { bg = float_bg, fg = float_fg })
+    vim.api.nvim_set_hl(0, "FloatBorder", { bg = float_bg, fg = border_fg })
+    vim.api.nvim_set_hl(0, "DiagnosticFloatingError", { bg = float_bg, fg = float_fg })
+    vim.api.nvim_set_hl(0, "DiagnosticFloatingWarn",  { bg = float_bg, fg = float_fg })
+    vim.api.nvim_set_hl(0, "DiagnosticFloatingInfo",  { bg = float_bg, fg = float_fg })
+    vim.api.nvim_set_hl(0, "DiagnosticFloatingHint",  { bg = float_bg, fg = float_fg })
+
+    -- Brighter text for readability in dark mode
+    if is_dark then
+        local bright_fg = "#c8cdd3"
+        vim.api.nvim_set_hl(0, "Normal", { fg = bright_fg, bg = "#282c34" })
+        vim.api.nvim_set_hl(0, "NvimTreeNormal", { fg = bright_fg })
+        vim.api.nvim_set_hl(0, "NvimTreeNormalNC", { fg = bright_fg })
     end
 end
 

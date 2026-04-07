@@ -6,7 +6,7 @@ set-option -g status "on"
 set-option -g status-style bg=default,fg=colour250
 
 # default window title colors
-set-window-option -g window-status-style bg=default,fg=colour244
+set-window-option -g window-status-style bg=default,fg=colour252
 
 # default window with an activity alert
 set-window-option -g window-status-activity-style bg=default,fg=colour250
@@ -45,4 +45,4 @@ set-option -g status-left "#[bg=default,fg=colour67] #S "
 set-option -g status-right ""
 
 set-window-option -g window-status-current-format "#[bg=default,fg=colour176,bold] #I #W "
-set-window-option -g window-status-format "#[bg=default,fg=colour244] #I #W "
+set-window-option -g window-status-format "#[bg=default,fg=colour252] #I #W "

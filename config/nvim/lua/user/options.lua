@@ -16,6 +16,7 @@ opt.backupdir   = { "~/.vim-tmp", "~/.tmp", "~/tmp", "/var/tmp", "/tmp" }
 opt.directory   = { "~/.vim-tmp", "~/.tmp", "~/tmp", "/var/tmp", "/tmp" }
 opt.inccommand  = "nosplit"          -- Live preview of :substitute
 opt.backspace   = { "indent", "eol", "start" }
+opt.autoread    = true               -- Reload files changed outside neovim
 opt.clipboard   = "unnamedplus"      -- Use system clipboard
 opt.mouse       = "a"                -- Enable mouse
 

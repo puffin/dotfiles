@@ -24,13 +24,23 @@ require("mason-lspconfig").setup({
 -- Diagnostics
 -------------------------------------------------------------------------------
 vim.diagnostic.config({
-    virtual_text     = true,           -- Inline error text at end of line
-    signs            = true,           -- Signs in the gutter
-    underline        = true,           -- Underline the problematic code
+    virtual_text = false,
+    signs = {
+        text = {
+            [vim.diagnostic.severity.ERROR] = "●",
+            [vim.diagnostic.severity.WARN]  = "●",
+            [vim.diagnostic.severity.INFO]  = "●",
+            [vim.diagnostic.severity.HINT]  = "●",
+        },
+    },
+    underline        = false,
     update_in_insert = false,
     float            = {
-        border = "rounded",
-        source = true,                 -- Show which LSP produced the diagnostic
+        border = "single",
+        source = true,
+        prefix = "● ",
+        max_width = 80,
+        wrap = true,
     },
 })
 
