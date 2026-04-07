@@ -26,6 +26,8 @@ local custom_highlights = {
     Comment           = { fg = "#a0a0a0", italic = true },
     htmlArg           = { italic = true },
     xmlAttrib         = { italic = true },
+    Visual            = { bg = "#e5c07b", fg = "#282c34", nocombine = true },
+    VisualNOS         = { bg = "#e5c07b", fg = "#282c34", nocombine = true },
     DiagnosticInfo    = { fg = "Blue" },
     DiagnosticHint    = { fg = "Grey" },
     NvimTreeCopiedHL  = { fg = "#5faf5f", bold = true },
@@ -69,6 +71,7 @@ require("lazy").setup({
             vim.api.nvim_create_autocmd("ColorScheme", {
                 callback = apply_custom_highlights,
             })
+            apply_custom_highlights()
 
             -- Toggle light/dark with <leader>th (neovim + alacritty + tmux)
             vim.keymap.set("n", "<C-x><C-t>", function()

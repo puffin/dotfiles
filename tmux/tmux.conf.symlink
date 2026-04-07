@@ -107,6 +107,7 @@ bind p paste-buffer
 bind -T copy-mode-vi 'v' send -X begin-selection
 bind -T copy-mode-vi 'y' send -X copy-pipe-and-cancel 'pbcopy'
 
+
 # Install plugin manager
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
@@ -121,6 +122,9 @@ set -g @continuum-save-interval '5'
 ### Color & Style Settings ###
 ##############################
 source $HOME/.dotfiles/tmux/theme-current.sh
+
+# Selection style in copy-mode
+set -g mode-style "bg=#e5c07b"
 
 # install tpm and plugins automatically when tmux is started
 if "test ! -d ~/.tmux/plugins/tpm" \

@@ -19,6 +19,9 @@ opt.backspace   = { "indent", "eol", "start" }
 opt.clipboard   = "unnamedplus"      -- Use system clipboard
 opt.mouse       = "a"                -- Enable mouse
 
+-- Copy to clipboard on mouse release (like tmux)
+vim.keymap.set("v", "<LeftRelease>", '"+y', { silent = true })
+
 -------------------------------------------------------------------------------
 -- Search
 -------------------------------------------------------------------------------
@@ -104,8 +107,8 @@ opt.guicursor = table.concat({
     "i-ci-ve:ver25",
     "r-cr:hor20",
     "o:hor50",
-    "a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor",
-    "sm:block-blinkwait175-blinkoff150-blinkon175",
+    "a:blinkon0-Cursor/lCursor",
+    "sm:block",
 }, ",")
 
 -------------------------------------------------------------------------------
