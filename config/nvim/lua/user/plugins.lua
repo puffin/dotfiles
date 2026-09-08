@@ -227,10 +227,6 @@ require("lazy").setup({
         end,
     },
 
-    -- Full-height nvim sidebar + fuzzy file picker inside a herdr pane,
-    -- toggled with prefix+shift+e / prefix+shift+o (see config/herdr/config.toml)
-    { "ChmaraX/herdr-nvim", opts = {} },
-
     ---------------------------------------------------------------------------
     -- Session Management
     ---------------------------------------------------------------------------

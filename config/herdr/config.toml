@@ -92,17 +92,3 @@ command = "persiyanov.reviewr.toggle"
 key = "prefix+shift+s"
 type = "plugin_action"
 command = "sessionizer.open"
-
-# ChmaraX/herdr-nvim: full-height nvim sidebar + fuzzy file picker. Its README
-# suggests prefix+e/prefix+o, but those are taken by built-in edit_scrollback
-# and open_notification_target - shift+e/shift+o are free instead.
-# open-link registers itself as a link handler, no keybinding needed.
-[[keys.command]]
-key = "prefix+shift+e"
-type = "plugin_action"
-command = "chmarax.herdr-nvim.toggle"
-
-[[keys.command]]
-key = "prefix+shift+o"
-type = "plugin_action"
-command = "chmarax.herdr-nvim.pick-file"

@@ -231,7 +231,6 @@ by hand, not exhaustively vetted against the ~1000 plugins listed there.
 | [vim-herdr-navigation](https://github.com/paulbkim-dev/vim-herdr-navigation) | `ctrl+h/j/k/l` crosses seamlessly between herdr panes and Neovim splits (vim-tmux-navigator, ported to herdr) | `ctrl + [h,j,k,l]` |
 | [herdr-reviewr](https://github.com/persiyanov/herdr-reviewr) | Diff/review pane - comment on an agent's changes, send feedback back to it | `prefix + shift + c` |
 | [herdr-sessionizer](https://github.com/andrewchng/herdr-sessionizer) | Fuzzy-open projects/worktrees, bootstrap a workspace layout from TOML | `prefix + shift + s` |
-| [herdr-nvim](https://github.com/ChmaraX/herdr-nvim) | Full-height nvim sidebar + fuzzy file picker in a herdr pane | `prefix + shift + e` (toggle), `prefix + shift + o` (pick file) |
 
 `herdr-sessionizer` needs `bun` to build (in the Brewfile via the `oven-sh/bun` tap).
 

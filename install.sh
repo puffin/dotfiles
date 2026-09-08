@@ -91,7 +91,6 @@ if command_exists herdr; then
         paulbkim-dev/vim-herdr-navigation
         persiyanov/herdr-reviewr
         andrewchng/herdr-sessionizer
-        ChmaraX/herdr-nvim
     )
     for plugin in "${herdr_plugins[@]}"; do
         herdr plugin install "$plugin" --yes || echo "Failed to install $plugin - see errors above. Continuing." >&2
