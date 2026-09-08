@@ -116,7 +116,7 @@ set -g @plugin 'tmux-plugins/tmux-continuum'
 # set auto save/restore sessions
 set -g @continuum-restore 'on'
 set -g @resurrect-strategy-nvim 'session'
-set -g @continuum-save-interval '5'
+set -g @continuum-save-interval '1'
 
 ##############################
 ### Color & Style Settings ###
