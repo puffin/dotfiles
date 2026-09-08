@@ -624,17 +624,6 @@ require("lazy").setup({
     -- Filetype-Specific
     ---------------------------------------------------------------------------
 
-    -- Open Markdown in Marked.app
-    {
-        "itspriddle/vim-marked",
-        ft = "markdown",
-        cmd = "MarkedOpen",
-        keys = {
-            { "<leader>m",  ":MarkedOpen!<cr>", desc = "Open in Marked" },
-            { "<leader>mq", ":MarkedQuit<cr>",  desc = "Quit Marked" },
-        },
-    },
-
 }, {
     rocks = { enabled = false },
     ui = { border = "rounded" },
