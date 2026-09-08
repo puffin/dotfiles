@@ -1,3 +1,4 @@
+onboarding = false
 # Herdr configuration - symlinked to ~/.config/herdr/config.toml.
 # Mirrors this repo's tmux setup (tmux/tmux.conf.symlink) so prefix-key
 # muscle memory carries over. Full reference: https://herdr.dev/docs/configuration/
