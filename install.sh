@@ -18,11 +18,30 @@ if [ "$(uname)" == "Darwin" ]; then
     fi
 
     # Third-party taps must be explicitly trusted before brew will load
-    # formulae from them (tmatilai/terraforms for chtf, hashicorp/tap for
-    # terraform/packer).
+    # formulae from them (tmatilai/terraforms for chtf, oven-sh/bun for bun).
     brew trust tmatilai/terraforms 2>/dev/null || true
-    brew trust hashicorp/tap 2>/dev/null || true
     brew trust oven-sh/bun 2>/dev/null || true
+
+    # brew bundle installs everything that needs work in a single `brew install`
+    # batch, so one unresolvable entry aborts the batch and every other package in
+    # it is reported as failed. A renamed tap does exactly that: brew refuses a
+    # formula whose install receipt names a different tap than the Brewfile asks
+    # for (chtf moved yleisradio/terraforms -> tmatilai/terraforms). Drop those
+    # kegs first so one rename can't take the whole run down.
+    prune_retapped_formulae() {
+        local cellar receipt want name have
+        cellar="$( brew --cellar )"
+        while read -r want name; do
+            receipt="$( ls -1 "$cellar/$name"/*/INSTALL_RECEIPT.json 2>/dev/null | head -1 )"
+            [ -n "$receipt" ] || continue
+            have="$( grep -o '"tap": "[^"]*"' "$receipt" | head -1 | cut -d'"' -f4 )"
+            [ -n "$have" ] && [ "$have" != "$want" ] || continue
+            echo "$name was installed from $have, Brewfile wants $want - uninstalling"
+            brew uninstall "$name" ||
+                echo "could not uninstall $name - brew bundle may fail" >&2
+        done < <( sed -n 's|^brew "\([^"/]*/[^"/]*\)/\([^"]*\)".*|\1 \2|p' Brewfile )
+    }
+    prune_retapped_formulae
 
     if ! brew bundle; then
         echo "brew bundle failed - see errors above. Continuing, but some tools may be missing." >&2
