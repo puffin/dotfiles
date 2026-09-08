@@ -46,11 +46,18 @@ Follow instructions at https://brew.sh/ to install Homebrew, then:
 ```
 
 This will:
-- Initialize git submodules
 - Symlink all `*.symlink` files to your home directory (e.g. `zshrc.symlink` becomes `~/.zshrc`)
 - Symlink the `config` directory contents to `~/.config/`
 - Install Homebrew packages from `Brewfile`
-- Run macOS-specific configurations via `install/osx.sh`
+- Run macOS-specific configurations via `install/osx.sh`, including remapping Caps Lock to Control on every keyboard (via `hidutil`, persisted with a LaunchAgent)
+
+### Uninstallation
+
+```bash
+./uninstall.sh
+```
+
+Reverses the above: removes the symlinks (only if they still point at this repo), reverts the shell change, uninstalls exactly the packages/casks/taps listed in `Brewfile`, clears zinit/fzf/tf-helper/nvim/tmux-plugin caches, and deletes the specific macOS `defaults` keys `install/osx.sh` set. It prompts for confirmation before doing anything, since most of it is destructive, and it deliberately leaves `~/.ssh`, `~/.gnupg` (besides the generated `gpg-agent.conf`), and any nvim/tmux session history alone, since those can hold data of your own. Note `claude-code` is itself a Brewfile cask, so it gets uninstalled too.
 
 ## Terminal Capabilities
 
@@ -159,7 +166,7 @@ Diagnostics show inline virtual text, gutter signs, and underlines. Holding the 
 
 ## Tmux Configuration
 
-Tmux is configured in `~/.tmux.conf` with prefix set to `control+a`. Sessions are automatically saved and restored via tmux-continuum and tmux-resurrect.
+Tmux is configured in `~/.tmux.conf` with prefix set to `control+a`. Sessions are automatically saved every minute via tmux-continuum and restored on tmux start via tmux-resurrect.
 
 ### Tmux Commands
 
