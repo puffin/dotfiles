@@ -17,22 +17,31 @@ if [ "$(uname)" == "Darwin" ]; then
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     fi
 
-    brew bundle
+    # Third-party taps must be explicitly trusted before brew will load
+    # formulae from them (e.g. tmatilai/terraforms for chtf).
+    brew trust tmatilai/terraforms 2>/dev/null || true
+
+    if ! brew bundle; then
+        echo "brew bundle failed - see errors above. Continuing, but some tools may be missing." >&2
+    fi
 
     # After the install, setup fzf
-    echo -e "\\n\\nRunning fzf install script..."
-    echo "=============================="
-    $(brew --prefix)/opt/fzf/install --all --no-bash --no-fish
+    fzf_install="$(brew --prefix)/opt/fzf/install"
+    if [ -x "$fzf_install" ]; then
+        echo -e "\\n\\nRunning fzf install script..."
+        echo "=============================="
+        "$fzf_install" --all --no-bash --no-fish
+    fi
 
     if [ ! -d "$HOME/.tf-helper" ]; then
         echo -e "\\n\\nRunning terraform helper install"
         echo "=============================="
-        git clone git@github.com:hashicorp-community/tf-helper.git ~/.tf-helper
+        git clone https://github.com/hashicorp-community/tf-helper.git ~/.tf-helper
     fi
 
     # Change the default shell to zsh
     zsh_path="$( command -v zsh )"
-    if ! grep "$zsh_path" /etc/shells; then
+    if ! grep -qF "$zsh_path" /etc/shells; then
         echo "adding $zsh_path to /etc/shells"
         echo "$zsh_path" | sudo tee -a /etc/shells
     fi

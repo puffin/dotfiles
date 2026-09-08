@@ -206,10 +206,11 @@ export GOROOT="$BREW_PREFIX/opt/go/libexec"
 _JAVA_HOME_CACHE="$HOME/.cache/java_home"
 if [[ -f $_JAVA_HOME_CACHE && -d "$(< $_JAVA_HOME_CACHE)" ]]; then
     export JAVA_HOME="$(< $_JAVA_HOME_CACHE)"
-else
-    export JAVA_HOME=$(/usr/libexec/java_home -v17)
+elif _java_home=$(/usr/libexec/java_home -v17 2>/dev/null); then
+    export JAVA_HOME="$_java_home"
     mkdir -p "$HOME/.cache"
     echo "$JAVA_HOME" > "$_JAVA_HOME_CACHE"
+    unset _java_home
 fi
 
 export PATH="\

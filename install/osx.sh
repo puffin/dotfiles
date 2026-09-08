@@ -7,7 +7,7 @@ echo "Finder: show all filename extensions"
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 
 echo "show hidden files by default"
-defaults write com.apple.Finder AppleShowAllFiles -bool false
+defaults write com.apple.finder AppleShowAllFiles -bool true
 
 echo "only use UTF-8 in Terminal.app"
 defaults write com.apple.terminal StringEncodings -array 4
@@ -46,7 +46,10 @@ echo "Enable tap to click (Trackpad)"
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 
 echo "Enable Safari’s debug menu"
-defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
+# Safari's prefs live in a sandboxed container; this write fails silently
+# unless Terminal has Full Disk Access under System Settings > Privacy.
+defaults write com.apple.Safari IncludeInternalDebugMenu -bool true 2>/dev/null || \
+    echo "  (skipped: grant Terminal Full Disk Access to set this)"
 
 echo "Kill affected applications"
 for app in Safari Finder Dock Mail SystemUIServer; do killall "$app" >/dev/null 2>&1; done
