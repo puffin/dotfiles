@@ -23,6 +23,12 @@ split_vertical = "prefix+|"
 move_tab_previous = "ctrl+shift+left"
 move_tab_next = "ctrl+shift+right"
 
+# Switch tabs directly with alt+1..9, no prefix needed. cmd would be more
+# natural on macOS but terminal apps generally don't forward the Cmd
+# modifier over the tty (Alacritty doesn't), so alt is what's reliable here.
+[keys.indexed]
+tabs = "alt"
+
 # Not remapped, already matching tmux/tmux.conf.symlink's bindings by default:
 # - focus_pane_left/down/up/right: prefix+h/j/k/l (tmux's `bind h/j/k/l select-pane`)
 # - navigate_pane_left/down/up/right: h/j/k/l

@@ -206,6 +206,7 @@ natively, with no plugin manager needed.
 | `prefix + shift + t`          | Rename tab                |
 | `prefix + shift + x`          | Close tab                 |
 | `prefix + [1-9]`              | Select tab                |
+| `alt + [1-9]`                 | Select tab (no prefix)    |
 | `prefix + minus`              | Split stacked             |
 | `prefix + \|`                 | Split side-by-side        |
 | `prefix + x`                  | Close pane                |
