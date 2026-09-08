@@ -90,11 +90,11 @@ require("lazy").setup({
         lazy = false,
         priority = 1000,
         config = function()
-            -- Detect background from Alacritty config (source of truth)
+            -- Detect background from the live alacritty theme (source of truth)
             local bg = "light"
-            local alacritty_conf = vim.fn.expand("~/.config/alacritty/alacritty.toml")
-            if vim.fn.filereadable(alacritty_conf) == 1 then
-                local content = vim.fn.readfile(alacritty_conf)
+            local theme_conf = vim.fn.expand("~/.config/alacritty/theme-current.toml")
+            if vim.fn.filereadable(theme_conf) == 1 then
+                local content = vim.fn.readfile(theme_conf)
                 for _, line in ipairs(content) do
                     if line:find("one%-dark") then
                         bg = "dark"

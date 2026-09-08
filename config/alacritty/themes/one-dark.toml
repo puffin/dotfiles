@@ -1,3 +1,5 @@
+# COLORSCHEME: one-dark
+
 [colors.primary]
 background = "0x282c34"
 foreground = "0xe0e0e0"

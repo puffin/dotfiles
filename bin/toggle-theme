@@ -1,14 +1,19 @@
 #!/usr/bin/env bash
 # Toggle alacritty, tmux, and neovim between one-light and one-dark
 # Usage: toggle-theme [light|dark]
-#   If no argument given, toggles based on current alacritty theme.
+#   If no argument given, toggles based on the current theme.
+#
+# The live theme for alacritty and tmux is a generated, gitignored file
+# (theme-current.*) copied from one of the tracked theme-* variants. Nothing
+# tracked gets rewritten, so a `git pull` never collides with the theme state.
 
 DOTFILES="$HOME/.dotfiles"
-ALACRITTY_CONF="$HOME/.config/alacritty/alacritty.toml"
+ALACRITTY_THEME="$DOTFILES/config/alacritty/theme-current.toml"
+TMUX_THEME="$DOTFILES/tmux/theme-current.sh"
 
 # Auto-detect current mode if no argument given
 if [ -z "$1" ]; then
-    if grep -q 'one-light' "$ALACRITTY_CONF"; then
+    if grep -q 'one-light' "$ALACRITTY_THEME" 2>/dev/null; then
         MODE="dark"
     else
         MODE="light"
@@ -17,15 +22,11 @@ else
     MODE="$1"
 fi
 
-# Alacritty: swap the theme import
-if [ "$MODE" = "dark" ]; then
-    sed -i '' 's/one-light/one-dark/' "$ALACRITTY_CONF"
-else
-    sed -i '' 's/one-dark/one-light/' "$ALACRITTY_CONF"
-fi
+# Alacritty: swap the imported theme (live_config_reload picks it up)
+cp "$DOTFILES/config/alacritty/themes/one-$MODE.toml" "$ALACRITTY_THEME"
 
 # Tmux: swap theme and reload
-cp "$DOTFILES/tmux/theme-$MODE.sh" "$DOTFILES/tmux/theme-current.sh"
+cp "$DOTFILES/tmux/theme-$MODE.sh" "$TMUX_THEME"
 tmux source-file ~/.tmux.conf 2>/dev/null
 
 # Neovim: switch all running instances

@@ -82,7 +82,7 @@ zinit wait lucid for \
 # Theme & colors
 # ===========================================================================
 
-if grep -q 'one-dark' "$HOME/.config/alacritty/alacritty.toml" 2>/dev/null; then
+if grep -q 'one-dark' "$HOME/.config/alacritty/theme-current.toml" 2>/dev/null; then
     THEME_ONE_BG=dark
 else
     THEME_ONE_BG=light

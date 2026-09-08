@@ -1,3 +1,5 @@
+# COLORSCHEME: one-light
+
 [colors.primary]
 background = "0xf8f8f8"
 foreground = "0x2a2b33"

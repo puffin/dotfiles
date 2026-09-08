@@ -120,6 +120,8 @@ rm -rf "$HOME/.local/share/nvim"
 rm -rf "$HOME/.tmux/plugins"
 rm -rf "$DOTFILES/config/herdr/plugins"
 rm -f  "$DOTFILES/config/herdr/plugins.json"
+rm -f  "$DOTFILES/config/alacritty/theme-current.toml"
+rm -f  "$DOTFILES/tmux/theme-current.sh"
 rm -f  "$HOME/.gnupg/gpg-agent.conf"
 
 cat <<'EOF'

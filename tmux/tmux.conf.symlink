@@ -121,7 +121,7 @@ set -g @continuum-save-interval '1'
 ##############################
 ### Color & Style Settings ###
 ##############################
-source $HOME/.dotfiles/tmux/theme-current.sh
+source -q $HOME/.dotfiles/tmux/theme-current.sh
 
 # Selection style in copy-mode
 set -g mode-style "bg=#e5c07b"
