@@ -1,6 +1,7 @@
 # taps
 tap "tmatilai/terraforms"
 tap "hashicorp/tap"
+tap "oven-sh/bun"
 
 # applications
 cask "session-manager-plugin"
@@ -23,6 +24,7 @@ brew "jq"
 brew "markdown"
 brew "neovim"
 brew "node"
+brew "oven-sh/bun/bun"
 brew "hashicorp/tap/packer"
 brew "keychain"
 brew "pinentry"

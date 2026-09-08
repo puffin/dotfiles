@@ -12,3 +12,5 @@ config/herdr/session.json
 config/herdr/.plugins.lock
 config/herdr/*.log
 config/herdr/*.sock
+config/herdr/plugins/
+config/herdr/plugins.json

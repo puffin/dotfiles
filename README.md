@@ -218,6 +218,23 @@ natively, with no plugin manager needed.
 | `ctrl + shift + [left,right]` | Reorder current tab       |
 | `prefix + q`                  | Detach                    |
 
+### Herdr Plugins
+
+Installed automatically by `install.sh` via `herdr plugin install` (source lives outside
+this repo under `~/.config/herdr/plugins/`, gitignored - not vendored). The [marketplace](https://herdr.dev/plugins/)
+is a self-tagged, unreviewed GitHub index; these were picked and their READMEs checked
+by hand, not exhaustively vetted against the ~1000 plugins listed there.
+
+| Plugin | What it does | Key |
+|--------|--------------|-----|
+| [herdr-auto-title](https://github.com/kryptamine/herdr-auto-title) | Renames tabs to match what's running in them | *(automatic)* |
+| [vim-herdr-navigation](https://github.com/paulbkim-dev/vim-herdr-navigation) | `ctrl+h/j/k/l` crosses seamlessly between herdr panes and Neovim splits (vim-tmux-navigator, ported to herdr) | `ctrl + [h,j,k,l]` |
+| [herdr-reviewr](https://github.com/persiyanov/herdr-reviewr) | Diff/review pane - comment on an agent's changes, send feedback back to it | `prefix + shift + c` |
+| [herdr-sessionizer](https://github.com/andrewchng/herdr-sessionizer) | Fuzzy-open projects/worktrees, bootstrap a workspace layout from TOML | `prefix + shift + s` |
+| [herdr-nvim](https://github.com/ChmaraX/herdr-nvim) | Full-height nvim sidebar + fuzzy file picker in a herdr pane | `prefix + shift + e` (toggle), `prefix + shift + o` (pick file) |
+
+`herdr-sessionizer` needs `bun` to build (in the Brewfile via the `oven-sh/bun` tap).
+
 ## Terminal Configuration
 
 Terminal of choice is [Alacritty](https://alacritty.org/). Configuration is in `config/alacritty/alacritty.yml`.
