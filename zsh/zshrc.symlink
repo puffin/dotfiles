@@ -188,9 +188,14 @@ export DOCKER_HOST="unix://$HOME/.colima/docker.sock"
 # GPG
 export GPG_TTY=$(tty)
 
-# Zscaler certificate (only set if provisioned on this machine)
+# Zscaler certificate (only set if provisioned on this machine; explicitly
+# unset otherwise so a stale value inherited from tmux/launchd doesn't stick)
 _zscaler_cert="$HOME/ca_certs/zscaler-root.pem"
-[[ -f "$_zscaler_cert" ]] && export NODE_EXTRA_CA_CERTS="$_zscaler_cert"
+if [[ -f "$_zscaler_cert" ]]; then
+    export NODE_EXTRA_CA_CERTS="$_zscaler_cert"
+else
+    unset NODE_EXTRA_CA_CERTS
+fi
 unset _zscaler_cert
 
 # Ripgrep config
