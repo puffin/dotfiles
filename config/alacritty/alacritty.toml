@@ -78,4 +78,9 @@ hide_when_typing = true
 [selection]
 save_to_clipboard = true
 
+[window]
+# macOS sends Option as a special-character modifier by default (Option+1 -> "¡"),
+# not Alt. herdr's alt+1..9 tab switching needs the real Alt modifier instead.
+option_as_alt = "Both"
+
 [keyboard]
