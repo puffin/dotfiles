@@ -18,8 +18,10 @@ if [ "$(uname)" == "Darwin" ]; then
     fi
 
     # Third-party taps must be explicitly trusted before brew will load
-    # formulae from them (e.g. tmatilai/terraforms for chtf).
+    # formulae from them (tmatilai/terraforms for chtf, hashicorp/tap for
+    # terraform/packer).
     brew trust tmatilai/terraforms 2>/dev/null || true
+    brew trust hashicorp/tap 2>/dev/null || true
 
     if ! brew bundle; then
         echo "brew bundle failed - see errors above. Continuing, but some tools may be missing." >&2
