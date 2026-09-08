@@ -23,8 +23,9 @@ This will undo what install.sh set up:
     recorded, so they can't be restored, only cleared)
 
 It will NOT touch: ~/.ssh, ~/.gnupg (besides gpg-agent.conf), ~/.vim-tmp,
-nvim's shada/undo history, or tmux-resurrect's saved session snapshots -
-those may hold data of your own, not just what install.sh put there.
+nvim's shada/undo history, tmux-resurrect's saved session snapshots, or
+herdr's session/pane state under ~/.local/state/herdr - those may hold data
+of your own, not just what install.sh put there.
 
 Note: claude-code is itself a Brewfile cask, so it will be uninstalled too.
 EOF
@@ -128,4 +129,5 @@ Done. Left untouched (may hold data of your own):
   ~/.vim-tmp
   ~/.local/state/nvim (shada/undo history)
   ~/.local/share/tmux/resurrect (saved tmux sessions)
+  ~/.local/state/herdr (herdr session/pane state)
 EOF

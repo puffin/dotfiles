@@ -1,0 +1,41 @@
+# Herdr configuration - symlinked to ~/.config/herdr/config.toml.
+# Mirrors this repo's tmux setup (tmux/tmux.conf.symlink) so prefix-key
+# muscle memory carries over. Full reference: https://herdr.dev/docs/configuration/
+
+[theme]
+name = "one-dark"
+
+[keys]
+# unbind default prefix (ctrl+b) and set it to ctrl+a, same as tmux
+prefix = "ctrl+a"
+
+# tmux's `bind | split-window -h` / `bind - split-window -v`: | makes a
+# side-by-side split, - makes a stacked split. Herdr names these actions by
+# the resulting divider orientation rather than tmux's flag, so
+# split_vertical (vertical divider) is the side-by-side one - opposite of
+# what tmux calls it. split_horizontal already defaults to prefix+minus, so
+# only split_vertical needs remapping to match the `|` key. There's no named
+# alias for it (unlike minus/comma/backtick/etc), so it's the literal char.
+split_vertical = "prefix+|"
+
+# tmux's `bind-key -n C-S-Left/Right swap-window`: reorder the current tab
+# without needing the prefix. Unset by default in herdr.
+move_tab_previous = "ctrl+shift+left"
+move_tab_next = "ctrl+shift+right"
+
+# Not remapped, already matching tmux/tmux.conf.symlink's bindings by default:
+# - focus_pane_left/down/up/right: prefix+h/j/k/l (tmux's `bind h/j/k/l select-pane`)
+# - navigate_pane_left/down/up/right: h/j/k/l
+# - workspace_picker: prefix+w (tmux's `prefix + w` window/pane selection)
+# - mouse_capture (see [ui] below): true (tmux's `setw -g mouse on`)
+#
+# Not replicated - herdr has no equivalent and doesn't need one:
+# - tpm/resurrect/continuum autosave: herdr's server persists sessions natively
+# - copy-mode-vi bindings (v/y, pbcopy): prefix+[ opens herdr's own vim-style
+#   copy mode (h/j/k/l, v or space to select, y or enter to copy) out of the box
+
+[ui]
+# Capture mouse input for splitting/selecting panes, same as tmux's
+# `setw -g mouse on`. This is already the default; kept explicit for parity
+# with the tmux config it mirrors.
+mouse_capture = true

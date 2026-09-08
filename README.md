@@ -11,6 +11,7 @@ A collection of neovim, tmux, and zsh configurations for macOS. Built for DevOps
 + [ZSH Setup](#zsh-setup)
 + [Neovim Setup](#neovim-setup)
 + [Tmux](#tmux-configuration)
++ [Herdr](#herdr-configuration)
 + [Terminal](#terminal-configuration)
 + [Fonts](#fonts)
 + [Color Scheme](#color-scheme)
@@ -185,6 +186,36 @@ Tmux is configured in `~/.tmux.conf` with prefix set to `control+a`. Sessions ar
 | `prefix + [h,j,k,l]`       | Move to pane              |
 | `prefix + z`                | Toggle pane fullscreen    |
 | `prefix + shift + [h,j,k,l]` | Resize pane             |
+
+## Herdr Configuration
+
+[Herdr](https://herdr.dev) is an agent-aware terminal multiplexer - it covers the same
+sessions/windows/panes ground as tmux, plus status tracking for AI coding agents (Claude
+Code, Codex, etc.) running in its panes. It's configured in `~/.config/herdr/config.toml`
+with the same `control+a` prefix as tmux, so the muscle memory carries over. Both tools are
+installed; use either as your daily driver, or reach for herdr specifically when running
+coding agents you want to keep tabs on. Sessions persist across restarts and reattaches
+natively, with no plugin manager needed.
+
+### Herdr Commands
+
+| Key                          | Action                    |
+|-------------------------------|---------------------------|
+| `prefix + w`                  | Workspace/agent picker    |
+| `prefix + c`                  | New tab                   |
+| `prefix + shift + t`          | Rename tab                |
+| `prefix + shift + x`          | Close tab                 |
+| `prefix + [1-9]`              | Select tab                |
+| `prefix + minus`              | Split stacked             |
+| `prefix + \|`                 | Split side-by-side        |
+| `prefix + x`                  | Close pane                |
+| `prefix + [h,j,k,l]`          | Move to pane               |
+| `prefix + z`                  | Toggle pane fullscreen    |
+| `prefix + shift + [h,j,k,l]`  | Swap pane                 |
+| `prefix + r`                  | Resize pane mode          |
+| `prefix + [`                  | Copy mode (vim-style)     |
+| `ctrl + shift + [left,right]` | Reorder current tab       |
+| `prefix + q`                  | Detach                    |
 
 ## Terminal Configuration
 
