@@ -2,6 +2,13 @@
 # Mirrors this repo's tmux setup (tmux/tmux.conf.symlink) so prefix-key
 # muscle memory carries over. Full reference: https://herdr.dev/docs/configuration/
 
+# Herdr otherwise persists this back into this file itself the first time you
+# dismiss the screen - but this file gets overwritten by hand periodically
+# (e.g. this PR's plugin keybindings), which wipes that persisted flag and
+# brings the screen back. Set explicitly instead of relying on herdr's
+# runtime write surviving edits to this file.
+onboarding = false
+
 [theme]
 name = "one-dark"
 
