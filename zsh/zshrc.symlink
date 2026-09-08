@@ -188,8 +188,10 @@ export DOCKER_HOST="unix://$HOME/.colima/docker.sock"
 # GPG
 export GPG_TTY=$(tty)
 
-# Zscaler certificate
-export NODE_EXTRA_CA_CERTS="$HOME/ca_certs/zscaler-root.pem"
+# Zscaler certificate (only set if provisioned on this machine)
+_zscaler_cert="$HOME/ca_certs/zscaler-root.pem"
+[[ -f "$_zscaler_cert" ]] && export NODE_EXTRA_CA_CERTS="$_zscaler_cert"
+unset _zscaler_cert
 
 # Ripgrep config
 export RIPGREP_CONFIG_PATH="$HOME/.rgrc"
