@@ -118,6 +118,8 @@ rm -f  "$HOME/.fzf.zsh"
 rm -rf "$HOME/.tf-helper"
 rm -rf "$HOME/.local/share/nvim"
 rm -rf "$HOME/.tmux/plugins"
+rm -rf "$DOTFILES/config/herdr/plugins"
+rm -f  "$DOTFILES/config/herdr/plugins.json"
 rm -f  "$HOME/.gnupg/gpg-agent.conf"
 
 cat <<'EOF'

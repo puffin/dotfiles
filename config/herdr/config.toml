@@ -1,7 +1,13 @@
-onboarding = false
 # Herdr configuration - symlinked to ~/.config/herdr/config.toml.
 # Mirrors this repo's tmux setup (tmux/tmux.conf.symlink) so prefix-key
 # muscle memory carries over. Full reference: https://herdr.dev/docs/configuration/
+
+# Herdr otherwise persists this back into this file itself the first time you
+# dismiss the screen - but this file gets overwritten by hand periodically
+# (e.g. this PR's plugin keybindings), which wipes that persisted flag and
+# brings the screen back. Set explicitly instead of relying on herdr's
+# runtime write surviving edits to this file.
+onboarding = false
 
 [theme]
 name = "one-dark"
@@ -46,3 +52,50 @@ tabs = "alt"
 # `setw -g mouse on`. This is already the default; kept explicit for parity
 # with the tmux config it mirrors.
 mouse_capture = true
+
+###############################################################################
+# Plugins (installed by install.sh via `herdr plugin install`, see herdr_plugins
+# in that script; source lives outside this repo under
+# ~/.config/herdr/plugins/, gitignored - see .gitignore)
+###############################################################################
+
+# kryptamine/herdr-auto-title: startup-only, no keybinding needed - it just
+# renames tabs to match what's running in them.
+
+# paulbkim-dev/vim-herdr-navigation: required for the plugin to work at all,
+# this exact binding set is what its README documents. Makes ctrl+h/j/k/l
+# cross seamlessly between herdr panes and Neovim splits (vim-tmux-navigator,
+# ported to herdr) - see config/nvim/lua/user/plugins.lua for the Neovim side.
+[[keys.command]]
+key = "ctrl+h"
+type = "plugin_action"
+command = "vim-herdr-navigation.left"
+
+[[keys.command]]
+key = "ctrl+j"
+type = "plugin_action"
+command = "vim-herdr-navigation.down"
+
+[[keys.command]]
+key = "ctrl+k"
+type = "plugin_action"
+command = "vim-herdr-navigation.up"
+
+[[keys.command]]
+key = "ctrl+l"
+type = "plugin_action"
+command = "vim-herdr-navigation.right"
+
+# persiyanov/herdr-reviewr: diff/review pane, comment on an agent's changes
+# and send feedback back to it. "c" is taken by new_tab, shift+c is free.
+[[keys.command]]
+key = "prefix+shift+c"
+type = "plugin_action"
+command = "persiyanov.reviewr.toggle"
+
+# andrewchng/herdr-sessionizer: fuzzy-open projects/worktrees, bootstrap a
+# workspace layout from TOML. "s" is taken by settings, shift+s is free.
+[[keys.command]]
+key = "prefix+shift+s"
+type = "plugin_action"
+command = "sessionizer.open"

@@ -22,6 +22,7 @@ if [ "$(uname)" == "Darwin" ]; then
     # terraform/packer).
     brew trust tmatilai/terraforms 2>/dev/null || true
     brew trust hashicorp/tap 2>/dev/null || true
+    brew trust oven-sh/bun 2>/dev/null || true
 
     if ! brew bundle; then
         echo "brew bundle failed - see errors above. Continuing, but some tools may be missing." >&2
@@ -81,5 +82,19 @@ fi
 
 # Install tmux-256color profile
 /usr/bin/tic -xe alacritty-direct,tmux-256color resources/terminfo.src
+
+if command_exists herdr; then
+    echo -e "\\n\\nInstalling herdr plugins"
+    echo "=============================="
+    herdr_plugins=(
+        kryptamine/herdr-auto-title
+        paulbkim-dev/vim-herdr-navigation
+        persiyanov/herdr-reviewr
+        andrewchng/herdr-sessionizer
+    )
+    for plugin in "${herdr_plugins[@]}"; do
+        herdr plugin install "$plugin" --yes || echo "Failed to install $plugin - see errors above. Continuing." >&2
+    done
+fi
 
 echo "Done. Reload your terminal."

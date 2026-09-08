@@ -204,6 +204,30 @@ require("lazy").setup({
     { "benmills/vimux", cmd = { "VimuxRunCommand", "VimuxPromptCommand", "VimuxRunLastCommand" } },
 
     ---------------------------------------------------------------------------
+    -- Herdr Integration
+    ---------------------------------------------------------------------------
+
+    -- ctrl+h/j/k/l crosses seamlessly between herdr panes and Neovim splits.
+    -- vim-herdr-navigation (installed as a herdr plugin, see
+    -- config/herdr/config.toml) reuses vim-tmux-navigator's Lua internals -
+    -- its install path has a content hash that changes on plugin updates, so
+    -- this globs for it instead of hardcoding it.
+    {
+        "christoomey/vim-tmux-navigator",
+        lazy = false,
+        init = function()
+            vim.g.tmux_navigator_no_mappings = 1
+        end,
+        config = function()
+            local matches = vim.fn.glob(
+                "~/.config/herdr/plugins/github/vim-herdr-navigation-*/editor/nvim.lua", false, true)
+            if matches[1] then
+                dofile(vim.fn.expand(matches[1]))
+            end
+        end,
+    },
+
+    ---------------------------------------------------------------------------
     -- Session Management
     ---------------------------------------------------------------------------
 
