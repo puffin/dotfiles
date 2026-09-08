@@ -1,7 +1,14 @@
 # taps
 tap "tmatilai/terraforms"
-tap "hashicorp/tap"
 tap "oven-sh/bun"
+
+# hashicorp/tap is deliberately absent. It fails Homebrew's tap-time validation
+# (Formula/vagrant.rb defines no url outside Linux/intel; its casks wrap
+# everything in `on_macos` without `depends_on :macos`), and the packer and
+# terraform kegs here came from homebrew/core, which brew refuses to reinstall
+# from a different tap. Both stay installed as-is; terraform versions come from
+# chtf. To restore: brew uninstall packer terraform &&
+# HOMEBREW_DEVELOPER=1 brew tap hashicorp/tap
 
 # applications
 cask "session-manager-plugin"
@@ -25,14 +32,12 @@ brew "markdown"
 brew "neovim"
 brew "node"
 brew "oven-sh/bun/bun"
-brew "hashicorp/tap/packer"
 brew "keychain"
 brew "pinentry"
 brew "pinentry-mac"
 brew "reattach-to-user-namespace"
 brew "the_silver_searcher"
 brew "shellcheck"
-brew "hashicorp/tap/terraform"
 brew "tmux"
 brew "herdr"
 brew "trash"
