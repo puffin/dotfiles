@@ -69,6 +69,17 @@ end
 -------------------------------------------------------------------------------
 -- Plugin specs
 -------------------------------------------------------------------------------
+
+-- Vendored locally: upstream's error catch pattern doesn't match Neovim's
+-- exception format, so E484 leaks out of VimEnter the first time Obsession
+-- runs in a directory that has no session file yet.
+local vim_obsession = {
+    name = "vim-obsession",
+    dir = vim.fn.stdpath("config") .. "/vendor/vim-obsession",
+    lazy = false,
+    priority = 1000, -- load before vim-prosession, which expects :Obsession to exist
+}
+
 require("lazy").setup({
 
     ---------------------------------------------------------------------------
@@ -196,11 +207,11 @@ require("lazy").setup({
     -- Session Management
     ---------------------------------------------------------------------------
 
-    { "tpope/vim-obsession",    lazy = false },
+    vim_obsession,
     {
         "dhruvasagar/vim-prosession",
         lazy = false,
-        dependencies = { "tpope/vim-obsession" },
+        dependencies = { vim_obsession },
     },
 
     ---------------------------------------------------------------------------
