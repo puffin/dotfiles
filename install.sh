@@ -114,6 +114,13 @@ if command_exists herdr; then
     for plugin in "${herdr_plugins[@]}"; do
         herdr plugin install "$plugin" --yes || echo "Failed to install $plugin - see errors above. Continuing." >&2
     done
+
+    # Claude Code integration: agent-state hook so herdr can track/restore
+    # Claude panes (idle/working/blocked/done, resume on session restore).
+    # Without it, restored panes come back as bare shells, not resumed agents.
+    if command_exists claude; then
+        herdr integration install claude || echo "Failed to install herdr claude integration - see errors above. Continuing." >&2
+    fi
 fi
 
 echo "Done. Reload your terminal."
