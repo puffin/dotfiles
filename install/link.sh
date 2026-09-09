@@ -33,6 +33,20 @@ for config in $config_files; do
     fi
 done
 
+echo -e "\\n\\ninstalling to ~/.claude/hooks"
+echo "=============================="
+mkdir -p "$HOME/.claude/hooks"
+claude_hooks=$( find "$DOTFILES/config/claude-hooks" -maxdepth 1 -type f 2>/dev/null )
+for hook in $claude_hooks; do
+    target="$HOME/.claude/hooks/$( basename "$hook" )"
+    if [ -e "$target" ]; then
+        echo "~${target#$HOME} already exists... Skipping."
+    else
+        echo "Creating symlink for $hook"
+        ln -s "$hook" "$target"
+    fi
+done
+
 echo -e "\\n\\nseeding generated theme state"
 echo "=============================="
 # bin/toggle-theme writes these and they're gitignored, so a fresh clone has

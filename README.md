@@ -275,6 +275,23 @@ Leader key is `Space`.
 | `<leader>aa`     | Add current file to Claude  |
 | `<C-w>`          | Navigate away from terminal (e.g. Claude panel) |
 
+### Claude Code CLI Hooks
+
+`config/claude-hooks/` holds portable [Claude Code hook](https://docs.anthropic.com/en/docs/claude-code/hooks) scripts, symlinked into `~/.claude/hooks/` by `install/link.sh`. `~/.claude/settings.json` itself is not tracked here (it's inherently per-machine — permissions, plugins, org-specific config), so after installing, register a hook manually in its `hooks` block, e.g.:
+
+```json
+"hooks": {
+    "PreCompact": [
+        {
+            "matcher": "auto",
+            "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/precompact-nudge.sh" }]
+        }
+    ]
+}
+```
+
+- **`precompact-nudge.sh`** — fires only on automatic compaction and prints a visible reminder to `/clear` instead if you're switching to an unrelated task, rather than letting one session run indefinitely.
+
 ## Usage
 
 ### Vim Quick Reference
