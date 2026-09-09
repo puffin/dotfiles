@@ -84,3 +84,8 @@ save_to_clipboard = true
 option_as_alt = "Both"
 
 [keyboard]
+
+[[keyboard.bindings]]
+key = "Return"
+mods = "Shift"
+chars = "\u001B\r"
