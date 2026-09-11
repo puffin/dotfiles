@@ -53,6 +53,12 @@ tabs = "alt"
 # with the tmux config it mirrors.
 mouse_capture = true
 
+# Default expanded sidebar width in columns (default is 26, too narrow).
+# sidebar_max_width defaults to 36 and silently clamps sidebar_width above
+# it, so it has to be raised too for a wider sidebar to actually take effect.
+sidebar_width = 48
+sidebar_max_width = 48
+
 ###############################################################################
 # Plugins (installed by install.sh via `herdr plugin install`, see herdr_plugins
 # in that script; source lives outside this repo under
