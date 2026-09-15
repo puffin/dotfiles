@@ -70,6 +70,36 @@ PLIST
 launchctl bootout "gui/$(id -u)" "$CAPSLOCK_AGENT" 2>/dev/null
 launchctl bootstrap "gui/$(id -u)" "$CAPSLOCK_AGENT"
 
+echo "Prevent sleep while a herdr remote session is attached (no-op on machines that are never a herdr remote target)"
+CAFFEINATE_AGENT="$HOME/Library/LaunchAgents/com.dotfiles.caffeinate-server.plist"
+mkdir -p "$HOME/Library/LaunchAgents"
+cat > "$CAFFEINATE_AGENT" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.dotfiles.caffeinate-server</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>-c</string>
+        <string>while true; do if pgrep -q -f "herdr remote-client-bridge"; then pgrep -q -f "^/usr/bin/caffeinate -s$" || /usr/bin/caffeinate -s &amp; else pkill -f "^/usr/bin/caffeinate -s$"; fi; sleep 20; done</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/caffeinate-server.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/caffeinate-server.log</string>
+</dict>
+</plist>
+PLIST
+launchctl bootout "gui/$(id -u)" "$CAFFEINATE_AGENT" 2>/dev/null
+launchctl bootstrap "gui/$(id -u)" "$CAFFEINATE_AGENT"
+
 echo "Enable Safari’s debug menu"
 # Safari's prefs live in a sandboxed container; this write fails silently
 # unless Terminal has Full Disk Access under System Settings > Privacy.
