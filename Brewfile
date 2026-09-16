@@ -13,7 +13,7 @@ tap "oven-sh/bun"
 # applications
 cask "session-manager-plugin"
 cask "font-sauce-code-pro-nerd-font"
-cask "claude-code@latest"
+cask "claude-code"
 cask "codex"
 
 # packages
