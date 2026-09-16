@@ -9,6 +9,15 @@
 # runtime write surviving edits to this file.
 onboarding = false
 
+# Restores recent terminal contents (scrollback text only, not the process)
+# after a full herdr server restart. Panes come back as new shells showing
+# the old screen output, not resumed programs - nvim session restore
+# (config/nvim) still handles actually relaunching an editor session.
+# Disabled by default upstream over security concerns re: replayed screen
+# content potentially containing secrets. https://herdr.dev/docs/session-state/#pane-screen-history-replay
+[experimental]
+pane_history = true
+
 [theme]
 name = "one-dark"
 

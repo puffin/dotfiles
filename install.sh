@@ -121,6 +121,14 @@ if command_exists herdr; then
     if command_exists claude; then
         herdr integration install claude || echo "Failed to install herdr claude integration - see errors above. Continuing." >&2
     fi
+
+    # Codex CLI integration: same agent-state hook as Claude, for herdr to
+    # track/restore Codex panes on session restore. Requires `codex login`
+    # to have been run at least once (see README) - the integration install
+    # itself doesn't touch auth.
+    if command_exists codex; then
+        herdr integration install codex || echo "Failed to install herdr codex integration - see errors above. Continuing." >&2
+    fi
 fi
 
 echo "Done. Reload your terminal."
