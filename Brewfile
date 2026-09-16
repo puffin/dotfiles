@@ -14,6 +14,7 @@ tap "oven-sh/bun"
 cask "session-manager-plugin"
 cask "font-sauce-code-pro-nerd-font"
 cask "claude-code@latest"
+cask "codex"
 
 # packages
 brew "autoconf"
