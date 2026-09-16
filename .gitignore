@@ -9,7 +9,6 @@ config/nvim/session
 config/nvim/sessions
 
 config/herdr/session.json
-config/herdr/session-history.json
 config/herdr/.plugins.lock
 config/herdr/*.log
 config/herdr/*.sock
