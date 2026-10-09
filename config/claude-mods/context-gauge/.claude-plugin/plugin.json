@@ -1,0 +1,1 @@
+{ "name": "context-gauge", "version": "0.1.0", "description": "Context fill as a bar on the prompt hint line, with a /clear nudge as context grows", "types": "./types/index.d.ts" }
