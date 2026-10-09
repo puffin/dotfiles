@@ -40,3 +40,6 @@ bindkey '^x^t' toggle-theme-widget
 claude_mods=( $HOME/.dotfiles/config/claude-mods/*/.claude-plugin(N:h) )
 (( ${#claude_mods} )) && export CLAUDE_CODE_PLUGIN_DIRS=${(j/:/)claude_mods}
 unset claude_mods
+
+# herdr passes OSC 8 hyperlinks through, but tools don't recognise it by TERM_PROGRAM.
+[[ $TERM_PROGRAM == herdr ]] && export FORCE_HYPERLINK=1
