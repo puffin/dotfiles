@@ -34,3 +34,9 @@ bindkey '^[d' kill-word                 # ALT + D
 toggle-theme-widget() { toggle-theme; zle reset-prompt; }
 zle -N toggle-theme-widget
 bindkey '^x^t' toggle-theme-widget
+
+# Claude Code mods: load every plugin under config/claude-mods in each session.
+# (N) drops the glob when the folder is empty; ${(j/:/)} joins with ':'.
+claude_mods=( $HOME/.dotfiles/config/claude-mods/*/.claude-plugin(N:h) )
+(( ${#claude_mods} )) && export CLAUDE_CODE_PLUGIN_DIRS=${(j/:/)claude_mods}
+unset claude_mods
