@@ -1,7 +1,7 @@
 import { describe, expect, mock, test } from 'claude-code/testing'
 import type { On } from 'claude-code'
 
-import { detect, elapsed, isPush, newestVersion, planSummary, readChecks, readJenkins, readQueue, readTerrakube, terrakubeTail } from './watch'
+import { detect, elapsed, isPush, newestVersion, planSummary, readChecks, readJenkins, readPrState, readQueue, readTerrakube, terrakubeTail } from './watch'
 
 const PLAN = 'Refreshing state...\nTerraform will perform the following actions:\nPlan: 2 to add, 0 to change, 1 to destroy.\n'
 
@@ -66,6 +66,13 @@ describe('readers', () => {
     expect(readChecks([{ name: 'plan', bucket: 'pass' }, { name: 'docs', bucket: 'skipping' }]).status).toBe('passed')
   })
 
+  test('pr state', () => {
+    expect(readPrState({ state: 'MERGED' })).toEqual({ status: 'passed', detail: 'merged' })
+    expect(readPrState({ state: 'CLOSED' })).toEqual({ status: 'failed', detail: 'closed without merging' })
+    expect(readPrState({ state: 'OPEN' })).toBeNull()
+    expect(readPrState(undefined)).toBeNull()
+  })
+
   test('helpers', () => {
     expect(newestVersion(['0.1.9', '0.2.1', '0.10.0', 'tmp'])).toBe('0.10.0')
     expect(elapsed(75_000)).toBe('1m15s')
@@ -81,6 +88,8 @@ function host(on: On, seen: { toasts: string[]; prompts: string[] }) {
     if (argv[0] === 'printenv') return out('/home/me')
     if (argv[1] === 'job') return out(JSON.stringify({ id: 'job-1', attributes: { status: polls++ === 0 ? 'running' : 'completed' } }))
     if (argv[1] === 'job-output') return out(JSON.stringify({ steps: [{ output: PLAN }] }))
+    if (argv[0] === 'gh' && argv[2] === 'view') return out(JSON.stringify({ state: 'MERGED' }))
+    if (argv[0] === 'gh' && argv[2] === 'checks') return { value: { exitCode: 1, stdout: '', stderr: 'no checks reported' } } as never
     return { value: { exitCode: 1, stdout: '', stderr: 'unexpected' } } as never
   })
   on('fs.list', () => ({ value: [{ name: '0.2.1', kind: 'directory', size: 0, mtimeMs: 0, isLink: false }] }) as never)
@@ -117,5 +126,18 @@ describe('runwatch', () => {
     expect(seen.toasts).toEqual(['✓ Terrakube job job-1: completed · plan: +2 ~0 -1'])
     expect(seen.prompts).toHaveLength(1)
     expect(seen.prompts[0]).toContain('[runwatch] Terrakube job job-1 finished: passed')
+  })
+
+  test('a merged PR with no checks finishes on the first poll', async ($, on) => {
+    const clock = mock.clock(on)
+    const seen = { toasts: [] as string[], prompts: [] as string[] }
+    host(on, seen)
+    await $.session.start({ source: 'startup', cwd: '/repo' } as never)
+
+    const ran = await $.tool.call({ tool: 'mcp__runwatch__watch', kind: 'pr', pr: 'https://github.com/o/r/pull/7' } as never)
+    expect(String(ran.result)).toContain('Watching PR r#7')
+    await clock.advance(0)
+    await clock.advance(20_000)
+    expect(seen.toasts).toEqual(['✓ PR r#7: merged'])
   })
 })

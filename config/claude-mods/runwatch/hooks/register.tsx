@@ -13,6 +13,7 @@ import {
   prSeed,
   readChecks,
   readJenkins,
+  readPrState,
   readQueue,
   readTerrakube,
   terrakubeTail,
@@ -107,6 +108,11 @@ async function poll($: EngineInterface, w: Watch): Promise<Poll> {
     const log = await run($, ['sh', '-c', '"$0" log "$1" "$2" | tail -n 12', jk, path, build])
     return { reading, tail: lastLines(log.stdout, 12) }
   }
+
+  // A repo without PR checks would otherwise wait out NO_CHECKS_MS even after the merge.
+  const view = await run($, ['gh', 'pr', 'view', w.pr ?? '', '--json', 'state'], w.cwd)
+  const ended = readPrState(json(view.stdout))
+  if (ended) return { reading: ended }
 
   const checks = await run($, ['gh', 'pr', 'checks', w.pr ?? '', '--json', 'name,bucket'], w.cwd)
   // gh exits non-zero while checks are pending or failing, so read its output first.
