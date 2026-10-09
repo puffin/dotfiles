@@ -85,8 +85,9 @@ async function poll($: EngineInterface, w: Watch): Promise<Poll> {
     const reading = readTerrakube(json(job.stdout))
     const hasOutput = reading.status === 'waiting' || isDone(reading.status)
     if (!hasOutput || reading.status === w.status) return { reading }
-    const output = await run($, [tk, 'job-output', w.org ?? '', w.job ?? ''])
-    return { reading, tail: terrakubeTail(json(output.stdout)) }
+    // A plugin older than step-log exits non-zero: finish without the log lines.
+    const log = await run($, [tk, 'step-log', w.org ?? '', w.job ?? ''])
+    return { reading, tail: log.exitCode === 0 ? terrakubeTail(log.stdout) : [] }
   }
 
   if (w.kind === 'jenkins') {
@@ -159,7 +160,7 @@ async function check($: EngineInterface, id: string) {
     }),
   )
 
-  const summary = fresh.kind === 'terrakube' && fresh.tail[0] && !fresh.tail[0].startsWith('log:') ? ` · ${fresh.tail[0]}` : ''
+  const summary = fresh.kind === 'terrakube' && /^(plan:|applied:|no changes)/.test(fresh.tail[0] ?? '') ? ` · ${fresh.tail[0]}` : ''
   if (isNowWaiting) $.ui.toast(`⏸ ${fresh.label} is waiting for approval${summary}`, { timeoutMs: TOAST_MS })
   if (isFinished) {
     $.ui.toast(`${LOOK[fresh.status].icon} ${fresh.label}: ${fresh.detail}${summary}`, { timeoutMs: TOAST_MS })
@@ -168,8 +169,9 @@ async function check($: EngineInterface, id: string) {
 }
 
 function wakeText(w: Watch) {
+  const link = w.kind === 'terrakube' && w.url ? `\nRun: ${w.url}` : ''
   const tail = w.tail.length ? `\n\n\`\`\`\n${w.tail.join('\n')}\n\`\`\`` : ''
-  return `[runwatch] ${w.label} finished: ${w.status} (${w.detail}) after ${elapsed((w.endedAt ?? w.checkedAt) - w.startedAt)}.${tail}`
+  return `[runwatch] ${w.label} finished: ${w.status} (${w.detail}) after ${elapsed((w.endedAt ?? w.checkedAt) - w.startedAt)}.${link}${tail}`
 }
 
 async function refreshStatus($: EngineInterface) {

@@ -3,7 +3,18 @@ import type { On } from 'claude-code'
 
 import { detect, elapsed, isPush, newestVersion, planSummary, readChecks, readJenkins, readPrState, readQueue, readTerrakube, terrakubeTail } from './watch'
 
-const PLAN = 'Refreshing state...\nTerraform will perform the following actions:\nPlan: 2 to add, 0 to change, 1 to destroy.\n'
+// What `terrakube.sh step-log` prints for a plan step.
+const PLAN = [
+  '===== step 100 (step-1) =====',
+  'Refreshing state...',
+  'Terraform will perform the following actions:',
+  '  # azurerm_storage_account.logs will be created',
+  '  # azurerm_key_vault.this will be updated in-place',
+  '  # azurerm_subnet.old will be destroyed',
+  'Plan: 2 to add, 0 to change, 1 to destroy.',
+  '│ Warning: Argument is deprecated',
+].join('\n')
+const RUN_URL = 'https://terrakube-main.example/organizations/org-1/workspaces/ws-1/runs/job-1'
 
 describe('detect', () => {
   test('a confirmed terrakube run', () => {
@@ -43,11 +54,20 @@ describe('readers', () => {
     expect(readTerrakube({ attributes: { status: 'completed' } }).status).toBe('passed')
     expect(readTerrakube({ attributes: { status: 'failed' } }).status).toBe('failed')
     expect(readTerrakube({ attributes: { status: 'constructor' } }).status).toBe('running')
+    expect(readTerrakube({ attributes: { status: 'completed' }, ui_url: RUN_URL }).url).toBe(RUN_URL)
+    expect(readTerrakube({ attributes: { status: 'completed' } }).url).toBeUndefined()
   })
 
-  test('terrakube output: the plan summary first, or the log link', () => {
-    expect(terrakubeTail({ steps: [{ output: PLAN }] })[0]).toBe('plan: +2 ~0 -1')
-    expect(terrakubeTail({ steps: [{ output: 'https://tk.example/logs/1' }] })).toEqual(['log: https://tk.example/logs/1'])
+  test('terrakube log: the plan summary, then the resources that change', () => {
+    expect(terrakubeTail(PLAN)).toEqual([
+      'plan: +2 ~0 -1',
+      '# azurerm_storage_account.logs will be created',
+      '# azurerm_key_vault.this will be updated in-place',
+      '# azurerm_subnet.old will be destroyed',
+    ])
+    // A failed run has no actions: its last lines carry the error.
+    expect(terrakubeTail('Initializing...\n│ Error: Unsupported argument')).toEqual(['Initializing...', '│ Error: Unsupported argument'])
+    expect(terrakubeTail('')).toEqual([])
     expect(planSummary('No changes. Your infrastructure matches.')).toBe('no changes')
   })
 
@@ -86,8 +106,8 @@ function host(on: On, seen: { toasts: string[]; prompts: string[] }) {
     const argv = (e as unknown as { argv: string[] }).argv
     const out = (stdout: string) => ({ value: { exitCode: 0, stdout, stderr: '' } }) as never
     if (argv[0] === 'printenv') return out('/home/me')
-    if (argv[1] === 'job') return out(JSON.stringify({ id: 'job-1', attributes: { status: polls++ === 0 ? 'running' : 'completed' } }))
-    if (argv[1] === 'job-output') return out(JSON.stringify({ steps: [{ output: PLAN }] }))
+    if (argv[1] === 'job') return out(JSON.stringify({ id: 'job-1', attributes: { status: polls++ === 0 ? 'running' : 'completed' }, ui_url: RUN_URL }))
+    if (argv[1] === 'step-log') return out(PLAN)
     if (argv[0] === 'gh' && argv[2] === 'view') return out(JSON.stringify({ state: 'MERGED' }))
     if (argv[0] === 'gh' && argv[2] === 'checks') return { value: { exitCode: 1, stdout: '', stderr: 'no checks reported' } } as never
     return { value: { exitCode: 1, stdout: '', stderr: 'unexpected' } } as never
@@ -126,6 +146,9 @@ describe('runwatch', () => {
     expect(seen.toasts).toEqual(['✓ Terrakube job job-1: completed · plan: +2 ~0 -1'])
     expect(seen.prompts).toHaveLength(1)
     expect(seen.prompts[0]).toContain('[runwatch] Terrakube job job-1 finished: passed')
+    expect(seen.prompts[0]).toContain(`Run: ${RUN_URL}`)
+    expect(seen.prompts[0]).toContain('# azurerm_key_vault.this will be updated in-place')
+    expect(seen.prompts[0]).not.toContain('log: ')
   })
 
   test('a merged PR with no checks finishes on the first poll', async ($, on) => {
