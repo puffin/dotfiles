@@ -1,0 +1,1 @@
+{ "name": "write-gate", "version": "0.1.0", "description": "Hold Jira, Confluence and Lucid writes, git push and gh pr create/merge until the user approves the exact payload", "types": "./types/index.d.ts" }
