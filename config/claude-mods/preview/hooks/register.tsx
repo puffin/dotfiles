@@ -12,9 +12,13 @@ const theme = atom({ plugin: 'preview', key: 'theme' } as const, 'dark')
 
 let home: string | null = null
 
-async function readTheme($: EngineInterface): Promise<Theme> {
+async function homeDir($: EngineInterface) {
   if (home === null) home = (await $.process.run(['printenv', 'HOME'])).stdout.trim()
-  const text = await $.fs.read(THEME_FILE.replace('~', home)).catch(() => '')
+  return home
+}
+
+async function readTheme($: EngineInterface): Promise<Theme> {
+  const text = await $.fs.read(THEME_FILE.replace('~', await homeDir($))).catch(() => '')
   return text.includes('one-light') ? 'light' : 'dark'
 }
 
@@ -217,8 +221,10 @@ export const register: Register = on => {
   on('command.run', { command: 'preview' }, async ($, e) => {
     // Resolved once against the session's folder, so reload reads the same file
     // even if the folder changes, and an error names the full path.
-    const arg = e.args.trim() || 'README.md'
-    const path = arg.startsWith('/') ? arg : `${await $.session.cwd()}/${arg}`
+    // An @-mention completes to `@path`: drop the @. `~` is the home folder.
+    const arg = e.args.trim().replace(/^@/, '') || 'README.md'
+    const expanded = arg.startsWith('~/') ? `${await homeDir($)}${arg.slice(1)}` : arg
+    const path = expanded.startsWith('/') ? expanded : `${await $.session.cwd()}/${expanded}`
     const loaded = await load(path, p => $.fs.read(p))
     await update($, doc, () => loaded)
     // The frame draws its own close button; Escape closes it too while it has the keys.
