@@ -83,21 +83,24 @@ const TERRAKUBE: Record<string, WatchStatus> = {
   unknown: 'failed',
 }
 
-// `terrakube.sh job <org> <id>`: { id, attributes: { status, ... } }
+// `terrakube.sh job <org> <id>`: { id, attributes: { status, ... }, ui_url? }. ui_url is the run's page in the web UI.
 export function readTerrakube(job: unknown): Reading {
-  const status = String((job as { attributes?: { status?: unknown } })?.attributes?.status ?? '')
-  return { status: Object.hasOwn(TERRAKUBE, status) ? TERRAKUBE[status]! : 'running', detail: status || 'unknown' }
+  const value = job as { attributes?: { status?: unknown }; ui_url?: unknown } | undefined
+  const status = String(value?.attributes?.status ?? '')
+  const url = typeof value?.ui_url === 'string' ? value.ui_url : undefined
+  return { status: Object.hasOwn(TERRAKUBE, status) ? TERRAKUBE[status]! : 'running', detail: status || 'unknown', url }
 }
 
-// `terrakube.sh job-output`: { steps: [{ status, output }] }. A step's output
-// is the log text, or a link to it.
-export function terrakubeTail(output: unknown): string[] {
-  const steps = (output as { steps?: { output?: unknown }[] })?.steps ?? []
-  const text = [...steps].reverse().map(step => (typeof step.output === 'string' ? step.output.trim() : '')).find(Boolean)
+// `terrakube.sh step-log <org> <id>`: the plain-text log of each step. The plan
+// summary first, then which resources change, or the log's last lines when
+// there are none (a failed run ends with its error).
+export function terrakubeTail(log: string): string[] {
+  const text = log.trim()
   if (!text) return []
-  if (/^https?:\/\/\S+$/.test(text)) return [`log: ${text}`]
   const summary = planSummary(text)
-  return [...(summary ? [summary] : []), ...lastLines(text, 10)]
+  const actions = lastLines(text, Number.MAX_SAFE_INTEGER).filter(line => /^\s*# \S.* (will be|must be) /.test(line))
+  const body = actions.length ? actions.slice(0, 10).map(line => line.trim()) : lastLines(text, 10)
+  return [...(summary ? [summary] : []), ...body]
 }
 
 export function planSummary(text: string) {
