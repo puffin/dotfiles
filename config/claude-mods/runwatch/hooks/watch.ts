@@ -139,6 +139,14 @@ export function readChecks(checks: unknown): Reading & { failing: string[] } {
   return { status: 'passed', detail: `${count('pass')}/${list.length} checks passed`, failing }
 }
 
+// `gh pr view <pr> --json state`: a merged or closed PR ends the watch, whatever its checks say.
+export function readPrState(view: unknown): Reading | null {
+  const state = (view as { state?: unknown } | undefined)?.state
+  if (state === 'MERGED') return { status: 'passed', detail: 'merged' }
+  if (state === 'CLOSED') return { status: 'failed', detail: 'closed without merging' }
+  return null
+}
+
 export const lastLines = (text: string, n: number) =>
   text
     .replace(/\r/g, '')
