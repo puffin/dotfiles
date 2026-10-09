@@ -163,4 +163,22 @@ describe('runwatch', () => {
     await clock.advance(20_000)
     expect(seen.toasts).toEqual(['✓ PR r#7: merged'])
   })
+
+  test('a long run link gets its own line, so the header keeps the status', async ($, on) => {
+    const clock = mock.clock(on)
+    host(on, { toasts: [], prompts: [] })
+    await $.session.start({ source: 'startup', cwd: '/repo' } as never)
+    await $.tool.call({ tool: 'mcp__runwatch__watch', kind: 'terrakube', org: 'alz-platform', job: 'job-1' } as never)
+    await clock.advance(0)
+    await clock.advance(20_000)
+
+    for (const surface of ['terminal', 'desktop'] as const) {
+      const ui = await $.ui.mount({ plugin: 'runwatch', surface, component: 'Pane', requestId: 'runwatch', props: {} } as never)
+      const head = await ui.find({ key: 'head-tk:job-1' })
+      expect(head?.text).toContain('Terrakube job job-1')
+      expect(JSON.stringify(head?.children)).not.toContain(RUN_URL)
+      expect((await ui.find({ type: 'Link' }))?.props).toEqual({ href: RUN_URL, label: 'open' })
+      await ui.unmount()
+    }
+  })
 })

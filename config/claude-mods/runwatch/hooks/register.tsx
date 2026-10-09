@@ -355,7 +355,7 @@ export const register: Register = on => {
       const tail = isDone(w.status) || w.status === 'waiting' ? w.tail.slice(0, 8) : w.tail.slice(-1)
       return (
         <Box key={w.id} flexDirection="column" marginBottom={1}>
-          <Box justifyContent="space-between">
+          <Box key={`head-${w.id}`} justifyContent="space-between">
             <Box gap={1} flexShrink={1}>
               <Text color={look.color} bold>
                 {look.icon}
@@ -369,7 +369,6 @@ export const register: Register = on => {
             </Box>
             <Box gap={2} flexShrink={0}>
               <Text color={MUTED}>{took}</Text>
-              {w.url && <Link key={`open-${w.id}`} href={w.url} label="open" />}
               <Button
                 key={`x-${w.id}`}
                 label="✕"
@@ -378,6 +377,12 @@ export const register: Register = on => {
               />
             </Box>
           </Box>
+          {/* Its own line: a terminal without hyperlinks draws the whole URL, which would push the status off the header. */}
+          {w.url && (
+            <Box paddingLeft={2}>
+              <Link key={`open-${w.id}`} href={w.url} label="open" />
+            </Box>
+          )}
           {w.misses > 0 && <Text color="red">  can't reach it ({w.misses}/{MAX_MISSES})</Text>}
           {tail.map((line, i) => (
             <Text key={`${w.id}-t${i}`} color={MUTED} wrap="truncate-end">
