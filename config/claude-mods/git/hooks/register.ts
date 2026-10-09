@@ -3,14 +3,12 @@ import type { EngineInterface, Register } from 'claude-code'
 // PR checks and reviews change on GitHub with nothing happening here, so poll.
 const PR_POLL_MS = 60_000
 
-let home: string | null = null
-let location = ''
 let pr = ''
 let prBranch: string | null = null
 
+// Only the PR: the statusline already shows the branch, and no PR means no line.
 function draw($: EngineInterface) {
-  const text = [location, pr].filter(Boolean).join('  ·  ')
-  $.ui.status(text || undefined)
+  $.ui.status(pr || undefined)
 }
 
 async function git($: EngineInterface, args: string[]) {
@@ -18,21 +16,9 @@ async function git($: EngineInterface, args: string[]) {
   return exitCode === 0 ? stdout.trim() : null
 }
 
-async function refreshLocation($: EngineInterface) {
-  if (home === null) {
-    const { stdout } = await $.process.run(['printenv', 'HOME'])
-    home = stdout.trim()
-  }
-  const cwd = await $.session.cwd()
-  const dir = home && (cwd === home || cwd.startsWith(`${home}/`)) ? `~${cwd.slice(home.length)}` : cwd
-
-  // Detached HEAD reports "HEAD": fall back to the short sha.
-  let branch = await git($, ['rev-parse', '--abbrev-ref', 'HEAD'])
-  if (branch === 'HEAD') branch = await git($, ['rev-parse', '--short', 'HEAD'])
-
-  location = branch ? `${dir}  ⎇ ${branch}` : dir
-  draw($)
-
+// A new branch (or cwd in another repo) may have a different PR.
+async function refreshBranch($: EngineInterface) {
+  const branch = await git($, ['rev-parse', '--abbrev-ref', 'HEAD'])
   if (branch !== prBranch) await refreshPr($)
 }
 
@@ -82,7 +68,7 @@ async function refreshPr($: EngineInterface) {
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     const result = await next(e)
-    await refreshLocation($)
+    await refreshBranch($)
     $.clock.every(PR_POLL_MS, () => void refreshPr($))
     return result
   })
@@ -91,14 +77,14 @@ export const register: Register = on => {
   // and what pushes or opens a PR.
   on('tool.call', { tool: 'Bash' }, async ($, e, next) => {
     const result = await next(e)
-    await refreshLocation($)
+    await refreshBranch($)
     if (/\bgh\s+pr\b|\bgit\s+push\b/.test(e.command)) await refreshPr($)
     return result
   })
 
   on('turn.complete', async ($, e, next) => {
     const result = await next(e)
-    await refreshLocation($)
+    await refreshBranch($)
     return result
   })
 }
