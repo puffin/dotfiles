@@ -99,13 +99,17 @@ describe('readers', () => {
   })
 })
 
-// Stands in for the host: a terrakube job that runs once, then completes.
-function host(on: On, seen: { toasts: string[]; prompts: string[] }) {
+type Seen = { toasts: string[]; prompts: string[]; statuses?: (string | undefined)[]; isPaneShown?: boolean }
+
+// Stands in for the host: a terrakube job that runs once, then completes,
+// and a jenkins wrapper with no credentials.
+function host(on: On, seen: Seen) {
   let polls = 0
   on('process.run', ($, e) => {
     const argv = (e as unknown as { argv: string[] }).argv
     const out = (stdout: string) => ({ value: { exitCode: 0, stdout, stderr: '' } }) as never
     if (argv[0] === 'printenv') return out('/home/me')
+    if (argv[1] === 'build-info') return { value: { exitCode: 1, stdout: '', stderr: 'Error: credentials file not found\n' } } as never
     if (argv[1] === 'job') return out(JSON.stringify({ id: 'job-1', attributes: { status: polls++ === 0 ? 'running' : 'completed' }, ui_url: RUN_URL }))
     if (argv[1] === 'step-log') return out(PLAN)
     if (argv[0] === 'gh' && argv[2] === 'view') return out(JSON.stringify({ state: 'MERGED' }))
@@ -118,7 +122,11 @@ function host(on: On, seen: { toasts: string[]; prompts: string[] }) {
   on('command.register', () => ({ value: undefined }) as never)
   on('tool.register', () => ({ value: { tool: 'mcp__runwatch__watch' } }) as never)
   on('ui.open', () => ({ value: { isPlaced: false, reason: 'test' } }) as never)
-  on('ui.status', () => ({ value: undefined }) as never)
+  on('ui.panes', () => ({ value: [{ id: 'runwatch', title: 'runwatch', isShown: true, isFocused: false, isPlaced: seen.isPaneShown ?? false }] }) as never)
+  on('ui.status', ($, e) => {
+    seen.statuses?.push((e as unknown as { text: string | undefined }).text)
+    return { value: undefined } as never
+  })
   on('ui.toast', ($, e) => {
     seen.toasts.push((e as unknown as { text: string }).text)
     return { value: undefined } as never
@@ -180,5 +188,33 @@ describe('runwatch', () => {
       expect((await ui.find({ type: 'Link' }))?.props).toEqual({ href: RUN_URL, label: 'open' })
       await ui.unmount()
     }
+  })
+
+  test('the status line counts runs only while the pane is off screen', async ($, on) => {
+    const clock = mock.clock(on)
+    const seen: Seen = { toasts: [], prompts: [], statuses: [], isPaneShown: false }
+    host(on, seen)
+    await $.session.start({ source: 'startup', cwd: '/repo' } as never)
+    await $.tool.call({ tool: 'mcp__runwatch__watch', kind: 'terrakube', org: 'alz-platform', job: 'job-1' } as never)
+    await clock.advance(0)
+    expect(seen.statuses?.at(-1)).toBe('⟳ 1 running')
+
+    seen.isPaneShown = true
+    await $.command.run({ command: 'watch', args: '' } as never)
+    expect(seen.statuses?.at(-1)).toBeUndefined()
+  })
+
+  test("a service it can't reach says why, before the watch gives up", async ($, on) => {
+    const clock = mock.clock(on)
+    host(on, { toasts: [], prompts: [] })
+    await $.session.start({ source: 'startup', cwd: '/repo' } as never)
+    await $.tool.call({ tool: 'mcp__runwatch__watch', kind: 'jenkins', path: 'grocery-site-qa-reset', build: '114882' } as never)
+    await clock.advance(0)
+    await clock.advance(20_000)
+
+    const ui = await $.ui.mount({ plugin: 'runwatch', surface: 'terminal', component: 'Pane', requestId: 'runwatch', props: {} } as never)
+    const pane = await ui.find({ type: 'Box' })
+    expect(pane?.text).toMatch(/can't reach it \([1-5]\/6\): Error: credentials file not found/)
+    await ui.unmount()
   })
 })

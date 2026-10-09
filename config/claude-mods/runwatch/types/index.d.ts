@@ -27,8 +27,9 @@ export type Watch = {
   endedAt?: number
   // Queue a prompt for Claude when it finishes (watches Claude handed off).
   wake: boolean
-  // Polls in a row that failed to reach the service.
+  // Polls in a row that failed to reach the service, and why the last one did.
   misses: number
+  error?: string
 }
 
 // The input of the mod's own tool, as the model calls it.

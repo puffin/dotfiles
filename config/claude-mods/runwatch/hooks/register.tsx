@@ -141,10 +141,10 @@ async function check($: EngineInterface, id: string) {
     fresh =
       misses >= MAX_MISSES
         ? { ...w, misses, status: 'failed', detail: `lost contact: ${result.error}`, checkedAt: now, endedAt: now }
-        : { ...w, misses, checkedAt: now }
+        : { ...w, misses, error: result.error, checkedAt: now }
   } else {
     const { reading, tail } = result
-    fresh = { ...w, ...defined(reading), tail: tail ?? w.tail, misses: 0, checkedAt: now }
+    fresh = { ...w, ...defined(reading), tail: tail ?? w.tail, misses: 0, error: undefined, checkedAt: now }
     if (isDone(fresh.status)) fresh.endedAt = now
   }
 
@@ -174,9 +174,12 @@ function wakeText(w: Watch) {
   return `[runwatch] ${w.label} finished: ${w.status} (${w.detail}) after ${elapsed((w.endedAt ?? w.checkedAt) - w.startedAt)}.${link}${tail}`
 }
 
+// The status line stands in for the pane: none while the pane is on screen.
 async function refreshStatus($: EngineInterface) {
   const active = (await read($, watches)).filter(w => !isDone(w.status)).length
-  $.ui.status(active ? `⟳ ${active} running` : undefined)
+  const panes = await $.ui.panes().catch(() => [])
+  const isPaneVisible = panes.some(pane => pane.id === PANE && pane.isPlaced && pane.isShown)
+  $.ui.status(active && !isPaneVisible ? `⟳ ${active} running` : undefined)
 }
 
 let isTicking = false
@@ -195,8 +198,8 @@ async function add($: EngineInterface, seed: Seed) {
   const w = newWatch(seed, Date.now())
   // The same run started again replaces its old watch.
   await update($, watches, list => [...list.filter(one => one.id !== w.id), w].slice(-MAX_WATCHES))
-  void $.ui.open({ id: PANE, title: 'runwatch' }).catch(() => undefined)
-  void check($, w.id).then(() => refreshStatus($))
+  const opened = $.ui.open({ id: PANE, title: 'runwatch' }).catch(() => undefined)
+  void Promise.all([opened, check($, w.id)]).then(() => refreshStatus($))
   return w
 }
 
@@ -316,6 +319,7 @@ export const register: Register = on => {
     }
     if (req === 'open') {
       await $.ui.open({ id: PANE, title: 'runwatch' })
+      await refreshStatus($)
       const count = (await read($, watches)).length
       return { text: count ? `${count} watch${count === 1 ? '' : 'es'}.` : `Nothing watched yet. ${USAGE}` }
     }
@@ -343,7 +347,7 @@ export const register: Register = on => {
         </Box>
         <Box gap={2}>
           <Button key="clear" label="clear done" hotkey="d" plain onPress={() => clearDone($)} />
-          <Button key="close" label="close" hotkey="c" plain onPress={() => $.ui.close({ id: PANE })} />
+          <Button key="close" label="close" hotkey="c" plain onPress={() => $.ui.close({ id: PANE }).then(() => refreshStatus($))} />
         </Box>
       </Box>
     )
@@ -383,7 +387,12 @@ export const register: Register = on => {
               <Link key={`open-${w.id}`} href={w.url} label="open" />
             </Box>
           )}
-          {w.misses > 0 && <Text color="red">  can't reach it ({w.misses}/{MAX_MISSES})</Text>}
+          {/* A watch that gave up says why in its detail. */}
+          {w.misses > 0 && !isDone(w.status) && (
+            <Text color="red" wrap="truncate-end">
+              {'  '}can't reach it ({w.misses}/{MAX_MISSES}){w.error ? `: ${w.error}` : ''}
+            </Text>
+          )}
           {tail.map((line, i) => (
             <Text key={`${w.id}-t${i}`} color={MUTED} wrap="truncate-end">
               {'  '}
