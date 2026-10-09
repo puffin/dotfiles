@@ -1,0 +1,1 @@
+{ "name": "runwatch", "version": "0.1.0", "description": "Watch Terrakube jobs, Jenkins builds and PR checks in a pane and toast when they finish", "types": "./types/index.d.ts" }
