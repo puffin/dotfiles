@@ -1,0 +1,1 @@
+{ "name": "preview", "version": "0.1.0", "description": "Render a markdown file in a side pane, with mermaid diagrams as text", "types": "./types/index.d.ts" }

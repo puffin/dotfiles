@@ -298,6 +298,7 @@ Leader key is `Space`.
 
 - **`context-gauge`** — context fill as a bar at the end of the prompt hint line (`ctx ▰▱▱▱▱▱▱▱▱▱ 6% · 62k`), plus a band above the prompt from 50% of the window (red from 75%) suggesting `/clear` before switching tasks. Thresholds are `WARN_PCT` / `HOT_PCT` in `hooks/register.tsx`.
 - **`git`** — a status-line entry with the folder, git branch and the branch's PR checks and review (`~/.dotfiles  ⎇ my-branch  ·  #31 ✓5 ✗1 ●2 approved`). PR status comes from `gh` and is polled every minute.
+- **`preview`** — `/preview [file.md]` (default `README.md`) renders a markdown file in a side pane: markdown through `glow` with One Dark / One Light styles (`styles/*.json`) that follow `bin/toggle-theme`, and mermaid blocks drawn as text diagrams by `termaid` (both in the Brewfile). Falls back to Claude Code's own markdown renderer, or the mermaid source, when either tool is missing.
 
 ## Usage
 
