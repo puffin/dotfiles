@@ -87,3 +87,14 @@ function zscaler-on () {
     fi
     echo "ZScaler is now enabled"
 }
+
+# gh as the account that owns the repo. Personal repos clone through the
+# github.com-private SSH alias, so they get puffin's token; everything else
+# uses gh's active (work) account. An explicit GH_TOKEN always wins.
+function gh() {
+    if [[ -z "$GH_TOKEN" && "$(git remote get-url origin 2>/dev/null)" == *github.com-private:* ]]; then
+        GH_TOKEN="$(command gh auth token --user puffin 2>/dev/null)" command gh "$@"
+    else
+        command gh "$@"
+    fi
+}
