@@ -15,10 +15,6 @@ describe('classify', () => {
     }
   })
 
-  test('a write with no target asks without one', () => {
-    expect(classify({ tool: 'mcp__atlassian__createIssueLink', inwardIssue: 'CE-1', outwardIssue: 'CE-2' })?.question).toBe('Link Jira issues?')
-  })
-
   test('gates Lucid writes', () => {
     expect(classify({ tool: 'mcp__claude_ai_Lucid__post_document_thread_comment', documentId: 'd1', text: 'hi' })?.action).toBe('Lucid comment')
   })

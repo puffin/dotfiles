@@ -3,6 +3,7 @@ import type { EngineInterface, Register } from 'claude-code'
 
 import type { Pending } from '../types'
 import { classify, type Context, decide, describeShell, NO_CONTEXT, REJECT } from './gate'
+import { transitionName } from './mcp'
 import { parseShell, repoFromUrl, resolveDir, type Write } from './shell'
 
 const PANE = 'write-gate'
@@ -82,6 +83,22 @@ async function explain($: EngineInterface, gate: Pending): Promise<Pending> {
   return described ? { ...gate, ...described } : gate
 }
 
+// For a Jira transition: the status it moves to, from the issue's
+// transitions. Asked only when that read is already allowed, so it never
+// raises a second dialog; the question says so when the name is not found.
+async function lookUp($: EngineInterface, e: { tool: string; [key: string]: unknown }, gate: Pending): Promise<Pending> {
+  if (!e.tool.endsWith('__transitionJiraIssue')) return gate
+  const id = String((e.transition as { id?: unknown } | undefined)?.id ?? '')
+  const tool = e.tool.replace(/transitionJiraIssue$/, 'getTransitionsForJiraIssue')
+  const input = { cloudId: e.cloudId, issueIdOrKey: e.issueIdOrKey }
+  const { decision } = await $.tool.check({ tool, input })
+  if (decision !== 'allow') return gate
+  const answer = await Promise.race([$.tool.call({ tool, ...input } as never), $.clock.sleep(8000).then(() => null)])
+  if (!answer || answer.deny !== undefined || answer.isError) return gate
+  const name = transitionName(answer.text ?? JSON.stringify(answer.result), id)
+  return name ? (classify(e, { transitionName: name }) ?? gate) : gate
+}
+
 async function audit($: EngineInterface, gate: Pending, outcome: string) {
   const line = JSON.stringify({ at: new Date().toISOString(), outcome, ...gate }) + '\n'
   await $.process.run(['sh', '-c', 'cat >> "$0"', `${await home($)}/${LOG}`], { stdin: line }).catch(() => undefined)
@@ -104,7 +121,7 @@ export const register: Register = on => {
     const found = classify(e)
     if (!found) return next(e)
 
-    const gate = await explain($, found).catch(() => found)
+    const gate = await (found.command ? explain($, found) : lookUp($, e, found)).catch(() => found)
     await update($, pending, () => gate)
     const { isPlaced } = await $.ui
       .open({ id: PANE, title: `write-gate · ${gate.action}` })
