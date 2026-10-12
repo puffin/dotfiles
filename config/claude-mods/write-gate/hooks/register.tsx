@@ -2,7 +2,8 @@ import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register } from 'claude-code'
 
 import type { Pending } from '../types'
-import { APPROVE, classify, decide, REJECT } from './gate'
+import { classify, type Context, decide, describeShell, NO_CONTEXT, REJECT } from './gate'
+import { parseShell, repoFromUrl, resolveDir, type Write } from './shell'
 
 const PANE = 'write-gate'
 const LOG = '.claude/write-gate.log'
@@ -10,43 +11,92 @@ const LOG = '.claude/write-gate.log'
 const ACCENT = 'yellow'
 const MUTED = 'gray'
 const BAR_BG = 'blackBright'
+const LABEL_WIDTH = 10
 
 const pending = atom({ plugin: 'write-gate', key: 'pending' } as const, null)
 
-async function git($: EngineInterface, args: string[]) {
-  const { exitCode, stdout } = await $.process
-    .run(['git', ...args], { cwd: await $.session.cwd(), timeoutMs: 5000 })
-    .catch(() => ({ exitCode: 1, stdout: '' }))
+async function run($: EngineInterface, argv: string[], cwd: string, timeoutMs = 5000) {
+  const { exitCode, stdout } = await $.process.run(argv, { cwd, timeoutMs }).catch(() => ({ exitCode: 1, stdout: '' }))
   return exitCode === 0 ? stdout.trim() : null
 }
 
-// For git push and gh pr: the branch, and the commits no remote has yet.
-async function withGitContext($: EngineInterface, gate: Pending): Promise<Pending> {
-  if (gate.tool !== 'Bash') return gate
-  const branch = (await git($, ['rev-parse', '--abbrev-ref', 'HEAD'])) ?? ''
-  const commits =
-    (await git($, ['log', '--oneline', '@{u}..HEAD'])) ??
-    (await git($, ['log', '--oneline', '-n', '20', 'HEAD', '--not', '--remotes'])) ??
-    ''
-  return { ...gate, target: branch, meta: commits ? `Commits not on the remote:\n${commits}` : '' }
+async function home($: EngineInterface) {
+  return (await $.process.run(['printenv', 'HOME']).catch(() => ({ stdout: '' }))).stdout.trim()
+}
+
+// Looks at the repository a write runs in: its branch, remote, and the commits
+// it would send. Reads the PR description from --body-file, or from the file
+// a heredoc earlier in the command writes.
+async function context($: EngineInterface, write: Write, files: Record<string, string>, cwd: string, home: string): Promise<Context> {
+  const dir = resolveDir(write.dirs, cwd, home)
+  if (dir === null) return NO_CONTEXT
+  const git = (...args: string[]) => run($, ['git', ...args], dir)
+
+  const branch = (await git('rev-parse', '--abbrev-ref', 'HEAD')) ?? ''
+  const upstream = (await git('rev-parse', '--abbrev-ref', '@{u}')) ?? ''
+  const remote = (write.kind === 'push' && write.remote) || upstream.split('/')[0] || 'origin'
+  const repo = repoFromUrl((await git('remote', 'get-url', remote)) ?? '')
+  const found: Context = { ...NO_CONTEXT, dir, branch, remote, repo }
+
+  if (write.kind === 'push') {
+    const ref = write.refs[0]?.split(':')[0] || 'HEAD'
+    const isCurrent = ref === 'HEAD' || ref === branch
+    found.commits =
+      (isCurrent ? await git('log', '--oneline', '@{u}..HEAD') : await git('log', '--oneline', `${remote}/${ref}..${ref}`)) ??
+      (await git('log', '--oneline', '-n', '20', ref, '--not', '--remotes')) ??
+      ''
+  }
+
+  if (write.kind === 'pr create') {
+    found.defaultBranch = ((await git('symbolic-ref', '--short', `refs/remotes/${remote}/HEAD`)) ?? '').replace(`${remote}/`, '')
+    const head = (write.head || branch).replace(/^[^:]+:/, '')
+    const base = write.base || found.defaultBranch
+    if (head && base) found.commits = (await git('log', '--oneline', '-n', '50', `${remote}/${base}..${head}`)) ?? ''
+    if (write.bodyFile && write.bodyFile !== '-') {
+      const path = resolveDir([write.bodyFile], dir, home) ?? write.bodyFile
+      found.body = files[write.bodyFile] ?? (await $.fs.read(path).catch(() => null))
+    }
+  }
+
+  if (write.kind === 'pr merge') {
+    const args = ['gh', 'pr', 'view', ...(write.pr ? [write.pr] : []), '--json', 'number,title,headRefName,baseRefName']
+    const json = await run($, [...args, ...(write.repo ? ['-R', write.repo] : [])], dir, 8000)
+    try {
+      const pr = json ? (JSON.parse(json) as { number: number; title: string; headRefName: string; baseRefName: string }) : null
+      if (pr) found.pr = { number: pr.number, title: pr.title, head: pr.headRefName, base: pr.baseRefName }
+    } catch {
+      // gh printed something else; show the PR as given.
+    }
+  }
+  return found
+}
+
+// For git push and gh pr: says what the command will do, from its flags and
+// the repository it runs in. Left as classify made it when nothing parses.
+async function explain($: EngineInterface, gate: Pending): Promise<Pending> {
+  if (!gate.command) return gate
+  const { writes, files } = parseShell(gate.command)
+  const [cwd, homeDir] = await Promise.all([$.session.cwd(), home($)])
+  const contexts = await Promise.all(writes.map(write => context($, write, files, cwd, homeDir).catch(() => NO_CONTEXT)))
+  const described = describeShell(writes, contexts, homeDir)
+  return described ? { ...gate, ...described } : gate
 }
 
 async function audit($: EngineInterface, gate: Pending, outcome: string) {
-  const home = (await $.process.run(['printenv', 'HOME'])).stdout.trim()
   const line = JSON.stringify({ at: new Date().toISOString(), outcome, ...gate }) + '\n'
-  await $.process.run(['sh', '-c', 'cat >> "$0"', `${home}/${LOG}`], { stdin: line }).catch(() => undefined)
+  await $.process.run(['sh', '-c', 'cat >> "$0"', `${await home($)}/${LOG}`], { stdin: line }).catch(() => undefined)
 }
 
 async function ask($: EngineInterface, gate: Pending, isShown: boolean) {
   // The pane did not fit: put the payload in the transcript (never sent to the model).
-  if (!isShown) $.ui.log([`write-gate · ${gate.action} ${gate.target}`, gate.body, gate.meta].filter(Boolean).join('\n\n'))
-  const where = gate.target ? ` to ${gate.target}` : ''
+  if (!isShown) {
+    const rows = gate.rows.map(([label, value]) => `${label.padEnd(LABEL_WIDTH)}${value}`).join('\n')
+    const meta = gate.meta && `${gate.metaLabel}:\n${gate.meta}`
+    $.ui.log([`write-gate · ${gate.question}`, rows, gate.body, meta, gate.command].filter(Boolean).join('\n\n'))
+  }
   // Reject first, so a default or idle pick never sends anything.
-  const answer = await $.ui.ask(`Send this ${gate.action}${where}? (payload in the write-gate pane)`, {
-    header: 'write-gate',
-    options: [REJECT, APPROVE],
-  })
-  return decide(answer)
+  const answer = await $.ui.ask(gate.question, { header: 'write-gate', options: [REJECT, gate.approve] })
+  return decide(answer, gate.approve)
 }
 
 export const register: Register = on => {
@@ -54,7 +104,7 @@ export const register: Register = on => {
     const found = classify(e)
     if (!found) return next(e)
 
-    const gate = await withGitContext($, found)
+    const gate = await explain($, found).catch(() => found)
     await update($, pending, () => gate)
     const { isPlaced } = await $.ui
       .open({ id: PANE, title: `write-gate · ${gate.action}` })
@@ -77,32 +127,51 @@ export const register: Register = on => {
     const gate = await read($, pending)
     if (gate === null) return <Text dimColor>Nothing is waiting for approval.</Text>
 
-    const isCommand = gate.tool === 'Bash'
+    const isCommand = gate.command !== ''
+    const section = (label: string) => <Text color={MUTED}>{label}</Text>
     return (
       <Box flexDirection="column">
-        <Box backgroundColor={BAR_BG} paddingX={1} gap={1} width={e.props.bodyColumns}>
+        <Box backgroundColor={BAR_BG} paddingX={1} width={e.props.bodyColumns}>
           <Text color={ACCENT} bold>
-            ⏸ {gate.action}
+            ⏸ {gate.question}
           </Text>
-          {gate.target && <Text color={MUTED}>→ {gate.target}</Text>}
         </Box>
+        {gate.rows.length > 0 && (
+          <Box flexDirection="column" paddingX={1} marginTop={1}>
+            {gate.rows.map(([label, value]) => (
+              <Box key={`${label}:${value}`}>
+                <Box width={LABEL_WIDTH} flexShrink={0}>
+                  <Text color={MUTED}>{label}</Text>
+                </Box>
+                <Text>{value}</Text>
+              </Box>
+            ))}
+          </Box>
+        )}
         <Box flexDirection="column" paddingX={1} marginTop={1}>
-          {gate.body === '' ? (
-            <Text dimColor>(no body)</Text>
-          ) : isCommand ? (
-            <Code source={gate.body} language="bash" />
-          ) : (
+          {isCommand && gate.body !== '' && section('Description')}
+          {gate.body !== '' ? (
             <Markdown text={gate.body.slice(0, 9000)} />
+          ) : (
+            !isCommand && <Text dimColor>(no body)</Text>
           )}
           {gate.meta && (
-            <Box flexDirection="column" marginTop={1}>
-              <Text color={MUTED}>{isCommand ? 'git' : 'other arguments'}</Text>
+            <Box flexDirection="column" marginTop={gate.body === '' ? 0 : 1}>
+              {section(gate.metaLabel)}
               <Code source={gate.meta} language={isCommand ? 'text' : 'json'} />
+            </Box>
+          )}
+          {isCommand && (
+            <Box flexDirection="column" marginTop={1}>
+              {section('Command')}
+              <Code source={gate.command} language="bash" />
             </Box>
           )}
         </Box>
         <Box paddingX={1} marginTop={1}>
-          <Text color={MUTED}>Answer in the dialog: {APPROVE} or {REJECT}</Text>
+          <Text color={MUTED}>
+            Answer in the dialog: {gate.approve} or {REJECT}
+          </Text>
         </Box>
       </Box>
     )
