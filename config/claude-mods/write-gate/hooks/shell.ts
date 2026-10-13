@@ -1,55 +1,23 @@
-// Reads just enough of a shell command to say what a git push or gh pr call in
-// it will do: the folder it runs in and its flags. Anything it cannot follow
+// Reads just enough of a shell command to say what a `gh pr ready` in it will
+// do: the folder it runs in and the PR it names. Anything it cannot follow
 // (a variable, a command substitution) is marked unknown rather than guessed.
 
 export type Word = { text: string; isDynamic: boolean }
 type Segment = { words: Word[]; heredoc: string | null; output: string | null }
 
-// A folder from `cd` or `git -C`; null when a variable sets it.
+// A folder from `cd`; null when a variable sets it.
 export type Dir = string | null
 
-export type Push = {
-  kind: 'push'
-  dirs: Dir[]
-  remote: string
-  refs: string[]
-  isForce: boolean
-  isDelete: boolean
-  isUpstream: boolean
-  isTags: boolean
-}
-
-export type PrCreate = {
-  kind: 'pr create'
-  dirs: Dir[]
-  repo: string
-  base: string
-  head: string
-  title: string
-  // The description given inline (a heredoc is unwrapped), null when absent.
-  body: string | null
-  bodyFile: string
-  isDraft: boolean
-  isFill: boolean
-  reviewers: string[]
-  labels: string[]
-}
-
-export type PrMerge = {
-  kind: 'pr merge'
+export type PrReady = {
+  kind: 'pr ready'
   dirs: Dir[]
   repo: string
   pr: string
-  method: string
-  isDeleteBranch: boolean
-  isAuto: boolean
+  // --undo turns the PR back into a draft, which is not gated.
+  isUndo: boolean
 }
 
-export type Write = Push | PrCreate | PrMerge
-
-// The writes in a command, and files it fills from a heredoc first
-// (`cat > body.md <<EOF`), so a --body-file the command writes can be shown.
-export type Shell = { writes: Write[]; files: Record<string, string> }
+export type Write = PrReady
 
 const OPERATORS = ';&|()'
 const DELIMITER_END = /[\s;&|<>()]/
@@ -296,108 +264,25 @@ function readFlags(words: Word[], { spellings, valued }: Spec) {
     }
   }
   const text = (name: string) => values.get(name)?.at(-1)?.text ?? ''
-  const list = (name: string) => (values.get(name) ?? []).flatMap(w => w.text.split(',')).filter(Boolean)
-  return { has: (name: string) => values.has(name), text, list, last: (name: string) => values.get(name)?.at(-1), positionals }
+  return { has: (name: string) => values.has(name), text, positionals }
 }
 
 function spec(spellings: Record<string, string>, valued: string[]): Spec {
   return { spellings, valued: new Set(valued) }
 }
 
-const PUSH = spec(
-  {
-    '-u': 'upstream', '--set-upstream': 'upstream',
-    '-f': 'force', '--force': 'force', '--force-with-lease': 'force',
-    '-d': 'delete', '--delete': 'delete',
-    '--tags': 'tags', '--follow-tags': 'tags',
-    '--repo': 'repo', '-o': 'option', '--push-option': 'option', '--receive-pack': 'pack', '--exec': 'pack',
-  },
-  ['repo', 'option', 'pack'],
-)
+const READY = spec({ '-R': 'repo', '--repo': 'repo', '--undo': 'undo' }, ['repo'])
 
-const CREATE = spec(
-  {
-    '-B': 'base', '--base': 'base', '-H': 'head', '--head': 'head',
-    '-t': 'title', '--title': 'title', '-b': 'body', '--body': 'body', '-F': 'bodyFile', '--body-file': 'bodyFile',
-    '-r': 'reviewer', '--reviewer': 'reviewer', '-l': 'label', '--label': 'label',
-    '-a': 'assignee', '--assignee': 'assignee', '-m': 'milestone', '--milestone': 'milestone',
-    '-p': 'project', '--project': 'project', '-T': 'template', '--template': 'template', '--recover': 'recover',
-    '-R': 'repo', '--repo': 'repo',
-    '-d': 'draft', '--draft': 'draft', '-f': 'fill', '--fill': 'fill', '--fill-first': 'fill', '--fill-verbose': 'fill',
-  },
-  ['base', 'head', 'title', 'body', 'bodyFile', 'reviewer', 'label', 'assignee', 'milestone', 'project', 'template', 'recover', 'repo'],
-)
-
-const MERGE = spec(
-  {
-    '-R': 'repo', '--repo': 'repo',
-    '-s': 'squash', '--squash': 'squash', '-m': 'merge', '--merge': 'merge', '-r': 'rebase', '--rebase': 'rebase',
-    '-d': 'deleteBranch', '--delete-branch': 'deleteBranch', '--auto': 'auto',
-    '-t': 'subject', '--subject': 'subject', '-b': 'body', '--body': 'body', '-F': 'bodyFile', '--body-file': 'bodyFile',
-    '-A': 'author', '--author-email': 'author', '--match-head-commit': 'sha',
-  },
-  ['repo', 'subject', 'body', 'bodyFile', 'author', 'sha'],
-)
-
-// The text of a `$(cat <<'EOF' ... EOF)` argument, or the argument as given.
-export function unwrapHeredoc(text: string): string {
-  const match = /^\$\(\s*cat\s*<<-?\s*(['"]?)([^'"\s)]+)\1[ \t]*\n([\s\S]*?)\n[ \t]*\2[ \t]*\n?\s*\)$/.exec(text)
-  return match ? match[3]! : text
-}
-
-function push(words: Word[], dirs: Dir[]): Push {
-  const flags = readFlags(words, PUSH)
-  const [remote, ...refs] = flags.positionals.map(w => w.text)
-  return {
-    kind: 'push',
-    dirs,
-    remote: flags.text('repo') || remote || '',
-    refs: refs.map(ref => ref.replace(/^\+/, '')),
-    isForce: flags.has('force') || refs.some(ref => ref.startsWith('+')),
-    isDelete: flags.has('delete'),
-    isUpstream: flags.has('upstream'),
-    isTags: flags.has('tags'),
-  }
-}
-
-function prCreate(words: Word[], dirs: Dir[]): PrCreate {
-  const flags = readFlags(words, CREATE)
-  const body = flags.last('body')
-  return {
-    kind: 'pr create',
-    dirs,
-    repo: flags.text('repo'),
-    base: flags.text('base'),
-    head: flags.text('head'),
-    title: flags.text('title'),
-    body: body ? unwrapHeredoc(body.text) : null,
-    bodyFile: flags.text('bodyFile'),
-    isDraft: flags.has('draft'),
-    isFill: flags.has('fill'),
-    reviewers: flags.list('reviewer'),
-    labels: flags.list('label'),
-  }
-}
-
-function prMerge(words: Word[], dirs: Dir[]): PrMerge {
-  const flags = readFlags(words, MERGE)
-  return {
-    kind: 'pr merge',
-    dirs,
-    repo: flags.text('repo'),
-    pr: flags.positionals[0]?.text ?? '',
-    method: ['squash', 'merge', 'rebase'].find(m => flags.has(m)) ?? '',
-    isDeleteBranch: flags.has('deleteBranch'),
-    isAuto: flags.has('auto'),
-  }
+function prReady(words: Word[], dirs: Dir[]): PrReady {
+  const flags = readFlags(words, READY)
+  return { kind: 'pr ready', dirs, repo: flags.text('repo'), pr: flags.positionals[0]?.text ?? '', isUndo: flags.has('undo') }
 }
 
 const PREFIXES = new Set(['command', 'env', 'exec', 'sudo', 'time', 'nohup'])
 
-// The writes in `command`, each with the cd and -C folders it runs under.
-export function parseShell(command: string): Shell {
+// The writes in `command`, each with the cd folders it runs under.
+export function parseShell(command: string): Write[] {
   const writes: Write[] = []
-  const files: Record<string, string> = {}
   const dirs: Dir[] = []
   for (const segment of lex(command)) {
     let start = 0
@@ -409,34 +294,13 @@ export function parseShell(command: string): Shell {
     const [head, ...args] = segment.words.slice(start)
     if (!head) continue
 
-    if (head.text === 'cat' && segment.heredoc !== null && segment.output) files[segment.output] = segment.heredoc
     if (head.text === 'cd') {
       const to = args.find(w => !w.text.startsWith('-') || w.text === '-')
       dirs.push(!to ? '~' : to.isDynamic || to.text === '-' ? null : to.text)
     }
-    if (head.text === 'git') {
-      const here = [...dirs]
-      let k = 0
-      while (k < args.length && args[k]!.text.startsWith('-')) {
-        const flag = args[k]!.text
-        if (flag === '-C') {
-          const to = args[k + 1]
-          here.push(!to || to.isDynamic ? null : to.text)
-          k += 2
-        } else if (['-c', '--git-dir', '--work-tree', '--namespace'].includes(flag)) {
-          k += 2
-        } else {
-          k++
-        }
-      }
-      if (args[k]?.text === 'push') writes.push(push(args.slice(k + 1), here))
-    }
-    if (head.text === 'gh' && args[0]?.text === 'pr') {
-      if (args[1]?.text === 'create') writes.push(prCreate(args.slice(2), [...dirs]))
-      if (args[1]?.text === 'merge') writes.push(prMerge(args.slice(2), [...dirs]))
-    }
+    if (head.text === 'gh' && args[0]?.text === 'pr' && args[1]?.text === 'ready') writes.push(prReady(args.slice(2), [...dirs]))
   }
-  return { writes, files }
+  return writes
 }
 
 // Follows the folders from `cwd`: ~ is `home`, a relative one joins the last.

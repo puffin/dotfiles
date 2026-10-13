@@ -7,7 +7,7 @@ import { parseShell } from './shell'
 const COMMENT = 'mcp__atlassian__addCommentToJiraIssue'
 
 describe('classify', () => {
-  test('gates Atlassian writes under any server spelling', () => {
+  test('gates Jira writes under any server spelling', () => {
     for (const tool of [COMMENT, 'mcp__claude_ai_Atlassian_Rovo__addCommentToJiraIssue']) {
       const gate = classify({ tool, tool_use_id: 't', cloudId: 'c', issueIdOrKey: 'CE-1234', commentBody: 'Done.' })
       expect(gate).toMatchObject({ tool, action: 'Jira comment', question: 'Post a Jira comment on CE-1234?', approve: 'Post comment', target: 'CE-1234', body: 'Done.' })
@@ -15,92 +15,84 @@ describe('classify', () => {
     }
   })
 
-  test('gates Lucid writes', () => {
-    expect(classify({ tool: 'mcp__claude_ai_Lucid__post_document_thread_comment', documentId: 'd1', text: 'hi' })?.action).toBe('Lucid comment')
-  })
-
-  test('lets reads through', () => {
+  test('lets reads, Confluence and Lucid through', () => {
     expect(classify({ tool: 'mcp__atlassian__getJiraIssue', issueIdOrKey: 'CE-1' })).toBeNull()
-    expect(classify({ tool: 'mcp__claude_ai_Lucid__lucid_search_document' })).toBeNull()
+    expect(classify({ tool: 'mcp__atlassian__createConfluencePage', spaceId: '42', title: 'T' })).toBeNull()
+    expect(classify({ tool: 'mcp__claude_ai_Lucid__post_document_thread_comment', document_id: 'd1' })).toBeNull()
     expect(classify({ tool: 'Read', file_path: '/x' })).toBeNull()
   })
 
-  test('gates git push and gh pr create/merge, not other git', () => {
-    expect(classify({ tool: 'Bash', command: 'git push -u origin feat/x' })?.action).toBe('git push')
-    expect(classify({ tool: 'Bash', command: 'git -C ~/Dev/repo push' })?.action).toBe('git push')
-    expect(classify({ tool: 'Bash', command: 'gh pr create --draft --title t' })?.action).toBe('gh pr create')
-    expect(classify({ tool: 'Bash', command: 'gh pr merge 12 --squash' })?.action).toBe('gh pr merge')
-    expect(classify({ tool: 'Bash', command: 'git status && gh pr view' })).toBeNull()
-    expect(classify({ tool: 'Bash', command: 'git pull --rebase' })).toBeNull()
+  test('gates gh pr ready, not --undo or other git and gh', () => {
+    expect(classify({ tool: 'Bash', command: 'gh pr ready 12' })?.action).toBe('gh pr ready')
+    expect(classify({ tool: 'Bash', command: `bash -c 'gh pr ready'` })?.action).toBe('gh pr ready')
+    expect(classify({ tool: 'Bash', command: 'gh pr ready 12 --undo' })).toBeNull()
+    expect(classify({ tool: 'Bash', command: 'git push -u origin feat/x && gh pr create --draft --title t' })).toBeNull()
+    expect(classify({ tool: 'Bash', command: 'gh pr merge 12 --squash' })).toBeNull()
   })
 })
 
 describe('describeShell', () => {
-  const at = (c: Partial<Context>): Context => ({ ...NO_CONTEXT, dir: '/h/Dev/infra', ...c })
+  const at = (c: Partial<Context>): Context => ({ ...NO_CONTEXT, dir: '/h/Dev/tools', ...c })
+  const pr = { number: 271, title: 'fix(runwatch): detect indirect runs', head: 'fix/x', base: 'main', isDraft: true }
 
-  test('push then draft PR reads as one plain question', () => {
-    const { writes } = parseShell('cd ~/Dev/infra && git push -u origin feat && gh pr create --draft --base main --head feat --title "T" -F b.md')
-    const repo = 'giant-eagle/GE.Shared.CloudOps.Infra'
-    const described = describeShell(writes, [at({ repo, commits: 'a1 one\nb2 two' }), at({ repo, commits: 'a1 one\nb2 two', body: '## Why' })], '/h')
-    expect(described).toEqual({
-      question: 'Push feat to origin (2 commits) and open a draft PR in GE.Shared.CloudOps.Infra: feat → main?',
-      approve: 'Push and open draft PR',
-      target: repo,
-      rows: [['Folder', '~/Dev/infra'], ['Repo', repo], ['Push', 'feat → origin'], ['Options', 'sets upstream'], ['Branch', 'feat → main'], ['Title', 'T']],
-      body: '## Why',
-      meta: 'a1 one\nb2 two',
-      metaLabel: 'Commits in this PR',
+  test('names the PR, its repo and branch', () => {
+    const writes = parseShell('cd ~/Dev/tools && gh pr ready 271')
+    expect(describeShell(writes, [at({ repo: 'giant-eagle/GE.CloudOps.Platform.Tools', pr })], '/h')).toEqual({
+      question: 'Mark PR #271 in GE.CloudOps.Platform.Tools ready for review?',
+      approve: 'Mark ready',
+      target: 'giant-eagle/GE.CloudOps.Platform.Tools',
+      rows: [
+        ['Folder', '~/Dev/tools'],
+        ['Repo', 'giant-eagle/GE.CloudOps.Platform.Tools'],
+        ['PR', 'PR #271: fix(runwatch): detect indirect runs'],
+        ['Branch', 'fix/x → main'],
+      ],
+      body: '',
+      meta: '',
+      metaLabel: '',
     })
   })
 
-  test('falls back to the branch and default branch it found', () => {
-    const [pr] = parseShell('gh pr create --title T').writes
-    expect(describeShell([pr!], [at({ branch: 'fix/x', defaultBranch: 'master' })], '/h')?.question).toBe('Open a PR: fix/x → master?')
+  test('says so when the PR is already ready', () => {
+    const described = describeShell(parseShell('gh pr ready'), [at({ pr: { ...pr, isDraft: false } })], '/h')
+    expect(described?.rows).toContainEqual(['Note', 'already ready for review'])
   })
 
-  test('says so when the folder is unknown', () => {
-    const described = describeShell(parseShell('cd "$R" && git push -f').writes, [NO_CONTEXT], '/h')
-    expect(described?.question).toBe('Force-push the current branch to its remote?')
-    expect(described?.approve).toBe('Force-push')
+  test('falls back to what the command gives', () => {
+    const described = describeShell(parseShell('cd "$R" && gh pr ready'), [NO_CONTEXT], '/h')
+    expect(described?.question).toBe("Mark this branch's PR ready for review?")
     expect(described?.rows[0]).toEqual(['Folder', 'set by a variable, not checked'])
-  })
-
-  test('merge names the PR', () => {
-    const pr = { number: 12, title: 'Add X', head: 'x', base: 'main' }
-    const described = describeShell(parseShell('gh pr merge 12 --squash').writes, [at({ repo: 'o/r', pr })], '/h')
-    expect(described?.question).toBe('Merge PR #12 in r (squash)?')
-    expect(described?.approve).toBe('Merge PR')
+    expect(describeShell(parseShell('gh pr ready -R o/r 12'), [NO_CONTEXT], '/h')?.question).toBe('Mark PR #12 in r ready for review?')
   })
 
   test('nothing parsed, nothing described', () => {
     expect(describeShell([], [], '/h')).toBeNull()
+    expect(describeShell(parseShell('gh pr ready --undo'), [NO_CONTEXT], '/h')).toBeNull()
   })
 })
 
 describe('decide', () => {
   test("only the write's own approve label passes", () => {
-    expect(decide('Push', 'Push')).toEqual({ isApproved: true })
-    expect(decide('Post comment', 'Push').isApproved).toBe(false)
-    expect(decide(REJECT, 'Push')).toEqual({ isApproved: false, reason: 'the user rejected it' })
-    expect(decide('', 'Push').isApproved).toBe(false)
+    expect(decide('Mark ready', 'Mark ready')).toEqual({ isApproved: true })
+    expect(decide('Post comment', 'Mark ready').isApproved).toBe(false)
+    expect(decide(REJECT, 'Mark ready')).toEqual({ isApproved: false, reason: 'the user rejected it' })
+    expect(decide('', 'Mark ready').isApproved).toBe(false)
   })
   test('text typed under Other becomes the reason', () => {
-    expect(decide('reword the second line', 'Push')).toEqual({ isApproved: false, reason: 'the user said: reword the second line' })
+    expect(decide('reword the second line', 'Post comment')).toEqual({ isApproved: false, reason: 'the user said: reword the second line' })
   })
 })
 
 // Stands in for the engine: the dialog answers `answer` and records the
-// question, git answers from `git`, and the gated tools record that they ran.
-function engine(on: On, answer: string, ran: string[], asked: string[] = [], git: Record<string, string> = {}) {
+// question, git and gh answer from `out`, and the gated tools record that they ran.
+function engine(on: On, answer: string, ran: string[], asked: string[] = [], out: Record<string, string> = {}) {
   on('process.run', ($, e) => {
     const argv = (e as unknown as { argv: string[] }).argv
-    const key = argv.slice(1).join(' ')
+    const key = argv.join(' ')
     if (argv[0] === 'printenv') return { value: { exitCode: 0, stdout: '/h\n', stderr: '' } } as never
-    if (argv[0] === 'git') return { value: key in git ? { exitCode: 0, stdout: git[key], stderr: '' } : { exitCode: 1, stdout: '', stderr: '' } } as never
-    return { value: { exitCode: 0, stdout: '', stderr: '' } } as never
+    return { value: key in out ? { exitCode: 0, stdout: out[key], stderr: '' } : { exitCode: 1, stdout: '', stderr: '' } } as never
   })
   on('session.cwd', () => ({ value: '/w' }) as never)
-  on('fs.read', () =>({ value: '## Why\nReviews go to the cloud team.' }) as never)
   on('ui.open', () => ({ value: { isPlaced: false, reason: 'test' } }) as never)
   on('ui.close', () => ({ value: undefined }) as never)
   on('ui.log', () => ({ value: undefined }) as never)
@@ -137,22 +129,26 @@ describe('gate', () => {
     expect(ran).toEqual(['comment'])
   })
 
-  test('push and PR in another folder are asked about from that folder', async ($, on) => {
+  test('gh pr ready in another folder is asked about from that folder', async ($, on) => {
     const ran: string[] = []
     const asked: string[] = []
-    engine(on, 'Push and open draft PR', ran, asked, {
-      'rev-parse --abbrev-ref HEAD': 'CE-3554-add-codeowners',
-      'remote get-url origin': 'https://github.com/giant-eagle/GE.Shared.CloudOps.Infra.git',
-      'log --oneline -n 20 CE-3554-add-codeowners --not --remotes': 'abc1234 feat(codeowners): add cloud review teams',
-      'log --oneline -n 50 origin/main..CE-3554-add-codeowners': 'abc1234 feat(codeowners): add cloud review teams',
+    engine(on, 'Mark ready', ran, asked, {
+      'git rev-parse --abbrev-ref @{u}': 'origin/fix/x',
+      'git remote get-url origin': 'https://github.com/giant-eagle/GE.CloudOps.Platform.Tools.git',
+      'gh pr view 271 --json number,title,headRefName,baseRefName,isDraft':
+        JSON.stringify({ number: 271, title: 'fix(runwatch): detect indirect runs', headRefName: 'fix/x', baseRefName: 'main', isDraft: true }),
     })
-    const command =
-      'cd ~/Dev/GE.Shared.CloudOps.Infra.CE-3554 && git push -u origin CE-3554-add-codeowners 2>&1 | tail -4 && ' +
-      'gh pr create --draft --base main --head CE-3554-add-codeowners --title "CE-3554: add CODEOWNERS" --body-file /tmp/pr-body.md'
-    await $.tool.call({ tool: 'Bash', command } as never)
-    expect(asked).toEqual([
-      'Push CE-3554-add-codeowners to origin (1 commit) and open a draft PR in GE.Shared.CloudOps.Infra: CE-3554-add-codeowners → main? [Reject / Push and open draft PR]',
-    ])
+    await $.tool.call({ tool: 'Bash', command: 'cd ~/Dev/GE.CloudOps.Platform.Tools && gh pr ready 271' } as never)
+    expect(asked).toEqual(['Mark PR #271 in GE.CloudOps.Platform.Tools ready for review? [Reject / Mark ready]'])
+    expect(ran).toEqual(['bash'])
+  })
+
+  test('a push runs without asking', async ($, on) => {
+    const ran: string[] = []
+    const asked: string[] = []
+    engine(on, REJECT, ran, asked)
+    await $.tool.call({ tool: 'Bash', command: 'git push -u origin feat' } as never)
+    expect(asked).toEqual([])
     expect(ran).toEqual(['bash'])
   })
 })

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'claude-code/testing'
 
-import { lex, parseShell, repoFromUrl, resolveDir, unwrapHeredoc } from './shell'
+import { lex, parseShell, repoFromUrl, resolveDir } from './shell'
 
 const words = (command: string) => lex(command).map(s => s.words.map(w => w.text))
 
@@ -24,46 +24,24 @@ describe('lex', () => {
 })
 
 describe('parseShell', () => {
-  test('the push-then-PR command from the CE-3554 screenshot', () => {
-    const command =
-      'cd ~/Dev/GE.Shared.CloudOps.Infra.CE-3554 && git push -u origin CE-3554-add-codeowners 2>&1 | tail -4 && ' +
-      'gh pr create --draft --base main --head CE-3554-add-codeowners --title "CE-3554: add CODEOWNERS for cloud review teams" ' +
-      '--body-file /private/tmp/pr-body.md 2>&1 | tail -3'
-    const { writes } = parseShell(command)
-    expect(writes).toEqual([
-      { kind: 'push', dirs: ['~/Dev/GE.Shared.CloudOps.Infra.CE-3554'], remote: 'origin', refs: ['CE-3554-add-codeowners'], isForce: false, isDelete: false, isUpstream: true, isTags: false },
-      {
-        kind: 'pr create', dirs: ['~/Dev/GE.Shared.CloudOps.Infra.CE-3554'], repo: '', base: 'main', head: 'CE-3554-add-codeowners',
-        title: 'CE-3554: add CODEOWNERS for cloud review teams', body: null, bodyFile: '/private/tmp/pr-body.md',
-        isDraft: true, isFill: false, reviewers: [], labels: [],
-      },
+  test('gh pr ready with the folder it runs in', () => {
+    expect(parseShell('cd ~/Dev/GE.CloudOps.Platform.Tools && gh pr ready 271 2>&1 | tail -2')).toEqual([
+      { kind: 'pr ready', dirs: ['~/Dev/GE.CloudOps.Platform.Tools'], repo: '', pr: '271', isUndo: false },
     ])
   })
 
-  test('git -C, force and refspecs', () => {
-    const [push] = parseShell('git -C ~/Dev/repo push --force-with-lease origin +HEAD:feat').writes
-    expect(push).toMatchObject({ dirs: ['~/Dev/repo'], remote: 'origin', refs: ['HEAD:feat'], isForce: true })
+  test('-R, --repo= and --undo', () => {
+    expect(parseShell('gh pr ready -R giant-eagle/x').at(0)).toMatchObject({ repo: 'giant-eagle/x', pr: '' })
+    expect(parseShell('gh pr ready --repo=o/r 12 --undo').at(0)).toMatchObject({ repo: 'o/r', pr: '12', isUndo: true })
   })
 
   test('a folder set by a variable is unknown', () => {
-    expect(parseShell('cd "$REPO" && git push').writes[0]?.dirs).toEqual([null])
+    expect(parseShell('cd "$REPO" && gh pr ready').at(0)?.dirs).toEqual([null])
   })
 
-  test('an inline heredoc body is unwrapped, short flags and -R read', () => {
-    const [pr] = parseShell(`gh pr create -R giant-eagle/x -B main -t "T" -r a,b -r c --body "$(cat <<'EOF'\nbody\nEOF\n)"`).writes
-    expect(pr).toMatchObject({ repo: 'giant-eagle/x', base: 'main', title: 'T', reviewers: ['a', 'b', 'c'], body: 'body' })
-  })
-
-  test('gh pr merge', () => {
-    expect(parseShell('gh pr merge 12 --squash -d').writes[0]).toMatchObject({ kind: 'pr merge', pr: '12', method: 'squash', isDeleteBranch: true })
-  })
-
-  test('a file the command writes first is remembered', () => {
-    expect(parseShell(`cat > b.md <<EOF\nhi\nEOF\ngh pr create -F b.md`).files).toEqual({ 'b.md': 'hi' })
-  })
-
-  test('nothing to describe in an unparseable wrapper', () => {
-    expect(parseShell(`bash -c 'git push'`).writes).toEqual([])
+  test('other gh pr commands and unparseable wrappers are not writes', () => {
+    expect(parseShell('gh pr view 12 && gh pr create --draft && git push')).toEqual([])
+    expect(parseShell(`bash -c 'gh pr ready'`)).toEqual([])
   })
 })
 
@@ -78,9 +56,5 @@ describe('helpers', () => {
   test('repoFromUrl reads https and ssh remotes', () => {
     expect(repoFromUrl('https://github.com/giant-eagle/GE.Shared.CloudOps.Infra.git')).toBe('giant-eagle/GE.Shared.CloudOps.Infra')
     expect(repoFromUrl('git@github.com:puffin/dotfiles.git')).toBe('puffin/dotfiles')
-  })
-
-  test('unwrapHeredoc leaves other text alone', () => {
-    expect(unwrapHeredoc('plain')).toBe('plain')
   })
 })

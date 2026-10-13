@@ -5,7 +5,6 @@ import { classify, REJECT } from './gate'
 import { transitionName } from './mcp'
 
 const jira = (name: string, args: Record<string, unknown>) => classify({ tool: `mcp__atlassian__${name}`, cloudId: 'c', ...args })
-const lucid = (name: string, args: Record<string, unknown>) => classify({ tool: `mcp__claude_ai_Lucid__${name}`, ...args })
 
 describe('Jira', () => {
   test('a comment, and an edit of one', () => {
@@ -47,29 +46,6 @@ describe('Jira', () => {
   test('a link names both issues and the type, a worklog its time', () => {
     expect(jira('createIssueLink', { inwardIssue: 'CE-1', outwardIssue: 'CE-2', type: 'Blocks' })?.question).toBe('Link CE-1 and CE-2 as "Blocks"?')
     expect(jira('addWorklogToJiraIssue', { issueIdOrKey: 'CE-1', timeSpent: '2h' })?.question).toBe('Log 2h on CE-1?')
-  })
-})
-
-describe('Confluence', () => {
-  test('pages and comments', () => {
-    expect(jira('createConfluencePage', { spaceId: '42', title: 'Runbook', body: 'b', status: 'draft' })?.question).toBe('Create a draft Confluence page "Runbook" in space 42?')
-    expect(jira('updateConfluencePage', { pageId: '7', title: 'Runbook', body: 'b', versionMessage: 'typo' })?.rows).toEqual([['Title', 'Runbook'], ['Note', 'typo']])
-    expect(jira('createConfluenceFooterComment', { parentCommentId: '5', body: 'b' })?.question).toBe('Reply to Confluence comment 5?')
-    expect(jira('createConfluenceInlineComment', { pageId: '7', body: 'b', inlineCommentProperties: { textSelection: 'foo' } })?.rows).toEqual([['On text', '"foo"']])
-  })
-})
-
-describe('Lucid', () => {
-  test('reads document_id as the target', () => {
-    expect(lucid('post_document_thread_comment', { document_id: 'd1', thread_id: 't1', content: 'hi' })).toMatchObject({
-      question: 'Post a Lucid comment on document d1?', target: 'd1', body: 'hi',
-    })
-  })
-
-  test('says who a share reaches', () => {
-    expect(lucid('share_document_with_collaborators', { document_id: 'd1', emails: ['a@x.com'], role: 'editor' })?.question).toBe('Share Lucid document d1 with a@x.com as editor?')
-    expect(lucid('share_document_with_collaborators', { document_id: 'd1', emails: ['a@x.com', 'b@x.com'] })?.question).toBe('Share Lucid document d1 with 2 people?')
-    expect(lucid('lucid_create_document_share_link', { document_id: 'd1', role: 'viewer', allow_anonymous: true })?.question).toBe('Create a viewer share link for Lucid document d1 that anyone can open?')
   })
 })
 

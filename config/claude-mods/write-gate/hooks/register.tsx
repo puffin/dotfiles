@@ -25,60 +25,33 @@ async function home($: EngineInterface) {
   return (await $.process.run(['printenv', 'HOME']).catch(() => ({ stdout: '' }))).stdout.trim()
 }
 
-// Looks at the repository a write runs in: its branch, remote, and the commits
-// it would send. Reads the PR description from --body-file, or from the file
-// a heredoc earlier in the command writes.
-async function context($: EngineInterface, write: Write, files: Record<string, string>, cwd: string, home: string): Promise<Context> {
+// Looks at the repository a `gh pr ready` runs in and the PR it names.
+async function context($: EngineInterface, write: Write, cwd: string, home: string): Promise<Context> {
   const dir = resolveDir(write.dirs, cwd, home)
   if (dir === null) return NO_CONTEXT
-  const git = (...args: string[]) => run($, ['git', ...args], dir)
+  const upstream = (await run($, ['git', 'rev-parse', '--abbrev-ref', '@{u}'], dir)) ?? ''
+  const remote = upstream.split('/')[0] || 'origin'
+  const repo = repoFromUrl((await run($, ['git', 'remote', 'get-url', remote], dir)) ?? '')
+  const found: Context = { ...NO_CONTEXT, dir, repo }
 
-  const branch = (await git('rev-parse', '--abbrev-ref', 'HEAD')) ?? ''
-  const upstream = (await git('rev-parse', '--abbrev-ref', '@{u}')) ?? ''
-  const remote = (write.kind === 'push' && write.remote) || upstream.split('/')[0] || 'origin'
-  const repo = repoFromUrl((await git('remote', 'get-url', remote)) ?? '')
-  const found: Context = { ...NO_CONTEXT, dir, branch, remote, repo }
-
-  if (write.kind === 'push') {
-    const ref = write.refs[0]?.split(':')[0] || 'HEAD'
-    const isCurrent = ref === 'HEAD' || ref === branch
-    found.commits =
-      (isCurrent ? await git('log', '--oneline', '@{u}..HEAD') : await git('log', '--oneline', `${remote}/${ref}..${ref}`)) ??
-      (await git('log', '--oneline', '-n', '20', ref, '--not', '--remotes')) ??
-      ''
-  }
-
-  if (write.kind === 'pr create') {
-    found.defaultBranch = ((await git('symbolic-ref', '--short', `refs/remotes/${remote}/HEAD`)) ?? '').replace(`${remote}/`, '')
-    const head = (write.head || branch).replace(/^[^:]+:/, '')
-    const base = write.base || found.defaultBranch
-    if (head && base) found.commits = (await git('log', '--oneline', '-n', '50', `${remote}/${base}..${head}`)) ?? ''
-    if (write.bodyFile && write.bodyFile !== '-') {
-      const path = resolveDir([write.bodyFile], dir, home) ?? write.bodyFile
-      found.body = files[write.bodyFile] ?? (await $.fs.read(path).catch(() => null))
-    }
-  }
-
-  if (write.kind === 'pr merge') {
-    const args = ['gh', 'pr', 'view', ...(write.pr ? [write.pr] : []), '--json', 'number,title,headRefName,baseRefName']
-    const json = await run($, [...args, ...(write.repo ? ['-R', write.repo] : [])], dir, 8000)
-    try {
-      const pr = json ? (JSON.parse(json) as { number: number; title: string; headRefName: string; baseRefName: string }) : null
-      if (pr) found.pr = { number: pr.number, title: pr.title, head: pr.headRefName, base: pr.baseRefName }
-    } catch {
-      // gh printed something else; show the PR as given.
-    }
+  const args = ['gh', 'pr', 'view', ...(write.pr ? [write.pr] : []), '--json', 'number,title,headRefName,baseRefName,isDraft']
+  const json = await run($, [...args, ...(write.repo ? ['-R', write.repo] : [])], dir, 8000)
+  try {
+    const pr = json ? (JSON.parse(json) as { number: number; title: string; headRefName: string; baseRefName: string; isDraft: boolean }) : null
+    if (pr) found.pr = { number: pr.number, title: pr.title, head: pr.headRefName, base: pr.baseRefName, isDraft: pr.isDraft }
+  } catch {
+    // gh printed something else; show the PR as given.
   }
   return found
 }
 
-// For git push and gh pr: says what the command will do, from its flags and
-// the repository it runs in. Left as classify made it when nothing parses.
+// For gh pr ready: says which PR it marks, from its arguments and the
+// repository it runs in. Left as classify made it when nothing parses.
 async function explain($: EngineInterface, gate: Pending): Promise<Pending> {
   if (!gate.command) return gate
-  const { writes, files } = parseShell(gate.command)
+  const writes = parseShell(gate.command)
   const [cwd, homeDir] = await Promise.all([$.session.cwd(), home($)])
-  const contexts = await Promise.all(writes.map(write => context($, write, files, cwd, homeDir).catch(() => NO_CONTEXT)))
+  const contexts = await Promise.all(writes.map(write => context($, write, cwd, homeDir).catch(() => NO_CONTEXT)))
   const described = describeShell(writes, contexts, homeDir)
   return described ? { ...gate, ...described } : gate
 }
