@@ -1,8 +1,8 @@
 import type { Row } from '../types'
 
-// Says what a Jira, Confluence or Lucid write will do: a question naming its
-// target, the fields that matter as rows, and the text it posts. The keys a
-// describer reads are listed in `used`; the rest are shown as JSON.
+// Says what a Jira write will do: a question naming its target, the fields
+// that matter as rows, and the text it posts. The keys a describer reads are
+// listed in `used`; the rest are shown as JSON.
 
 type Args = Record<string, unknown>
 
@@ -38,8 +38,6 @@ const text = (value: unknown): string => {
 // The text a comment or description will carry, ADF shown as JSON.
 const body = (value: unknown) => (typeof value === 'string' ? value : value === undefined ? '' : JSON.stringify(value, null, 2))
 
-const yes = (value: unknown) => (value === true ? 'yes' : value === false ? 'no' : '')
-
 // Rows for the fields a Jira edit or transition sets; a description is the body.
 function fieldRows(fields: unknown): { rows: Row[]; body: string } {
   if (!fields || typeof fields !== 'object') return { rows: [], body: '' }
@@ -52,7 +50,7 @@ function fieldRows(fields: unknown): { rows: Row[]; body: string } {
 
 const write = (action: string, approve: string, describe: McpWrite['describe']): McpWrite => ({ action, approve, describe })
 
-export const ATLASSIAN = new Map(Object.entries({
+export const JIRA = new Map(Object.entries({
   addCommentToJiraIssue: write('Jira comment', 'Post comment', a => ({
     question: a.commentId ? `Edit comment ${text(a.commentId)} on ${text(a.issueIdOrKey)}?` : `Post a Jira comment on ${text(a.issueIdOrKey)}?`,
     target: text(a.issueIdOrKey),
@@ -120,83 +118,6 @@ export const ATLASSIAN = new Map(Object.entries({
     body: body(a.comment),
     used: ['inwardIssue', 'outwardIssue', 'type', 'comment'],
   })),
-
-  createConfluencePage: write('new Confluence page', 'Create page', a => ({
-    question: `Create ${a.status === 'draft' ? 'a draft ' : 'a '}Confluence ${a.contentType === 'blog' ? 'blog post' : 'page'}${a.title ? ` "${text(a.title)}"` : ''} in space ${text(a.spaceId)}?`,
-    target: text(a.spaceId),
-    rows: [['Title', text(a.title)], ['Parent', text(a.parentId)], ['Private', yes(a.isPrivate)]],
-    body: body(a.body),
-    used: ['spaceId', 'title', 'parentId', 'body', 'status', 'contentType', 'isPrivate'],
-  })),
-
-  updateConfluencePage: write('Confluence page update', 'Update page', a => ({
-    question: `Update Confluence page ${text(a.pageId)}${a.title ? ` "${text(a.title)}"` : ''}?`,
-    target: text(a.pageId),
-    rows: [['Title', text(a.title)], ['Status', text(a.status)], ['Note', text(a.versionMessage)], ['Moves to', text(a.parentId)]],
-    body: body(a.body),
-    used: ['pageId', 'title', 'status', 'versionMessage', 'parentId', 'body'],
-  })),
-
-  createConfluenceFooterComment: write('Confluence comment', 'Post comment', a => ({
-    question: a.parentCommentId ? `Reply to Confluence comment ${text(a.parentCommentId)}?` : `Post a Confluence comment on page ${text(a.pageId)}?`,
-    target: text(a.pageId || a.parentCommentId),
-    rows: [],
-    body: body(a.body),
-    used: ['pageId', 'parentCommentId', 'body'],
-  })),
-
-  createConfluenceInlineComment: write('Confluence inline comment', 'Post comment', a => {
-    const selection = (a.inlineCommentProperties as Args | undefined)?.textSelection
-    return {
-      question: a.parentCommentId ? `Reply to inline comment ${text(a.parentCommentId)}?` : `Post an inline comment on page ${text(a.pageId)}?`,
-      target: text(a.pageId || a.parentCommentId),
-      rows: [['On text', selection ? `"${text(selection)}"` : '']],
-      body: body(a.body),
-      used: ['pageId', 'parentCommentId', 'body', 'inlineCommentProperties'],
-    }
-  }),
-}))
-
-export const LUCID = new Map(Object.entries({
-  post_document_thread_comment: write('Lucid comment', 'Post comment', a => ({
-    question: `Post a Lucid comment on document ${text(a.document_id)}?`,
-    target: text(a.document_id),
-    rows: [['Thread', text(a.thread_id)]],
-    body: body(a.content),
-    used: ['document_id', 'thread_id', 'content'],
-  })),
-
-  share_document_with_collaborators: write('Lucid share', 'Share it', a => {
-    const emails = Array.isArray(a.emails) ? a.emails.map(text) : []
-    return {
-      question: `Share Lucid document ${text(a.document_id)} with ${emails.length === 1 ? emails[0] : `${emails.length} people`}${a.role ? ` as ${text(a.role)}` : ''}?`,
-      target: text(a.document_id),
-      rows: [['With', emails.join(', ')], ['Role', text(a.role)]],
-      body: '',
-      used: ['document_id', 'emails', 'role'],
-    }
-  }),
-
-  lucid_create_document_share_link: write('Lucid share link', 'Create link', a => ({
-    question: `Create a ${text(a.role)} share link for Lucid document ${text(a.document_id)}${a.allow_anonymous ? ' that anyone can open' : ''}?`,
-    target: text(a.document_id),
-    rows: [
-      ['Role', text(a.role)],
-      ['Anonymous', yes(a.allow_anonymous)],
-      ['Account only', yes(a.restrict_to_account)],
-      ['Expires', text(a.expires) || 'never'],
-    ],
-    body: '',
-    used: ['document_id', 'role', 'allow_anonymous', 'restrict_to_account', 'expires'],
-  })),
-
-  lucid_update_document: write('Lucid document update', 'Update it', a => ({
-    question: `Update Lucid document ${text(a.document_id)}${a.title ? `: rename to "${text(a.title)}"` : ''}?`,
-    target: text(a.document_id),
-    rows: [['Title', text(a.title)], ['Folder', text(a.parent)], ['Tags', text(a.custom_tags)]],
-    body: '',
-    used: ['document_id', 'title', 'parent', 'custom_tags'],
-  })),
 }))
 
 // The write a tool name makes, or null for a tool that is not gated. The
@@ -206,9 +127,7 @@ export function mcpWrite(tool: string): McpWrite | null {
   const match = /^mcp__(.+)__([^_].*)$/.exec(tool)
   if (!match) return null
   const [, server = '', name = ''] = match
-  if (/atlassian|rovo/i.test(server)) return ATLASSIAN.get(name) ?? null
-  if (/lucid/i.test(server)) return LUCID.get(name) ?? null
-  return null
+  return /atlassian|rovo/i.test(server) ? (JIRA.get(name) ?? null) : null
 }
 
 // The transition's status name in a getTransitionsForJiraIssue answer: Jira's
