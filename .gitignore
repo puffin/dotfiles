@@ -14,6 +14,8 @@ config/herdr/session-snapshots/
 config/herdr/.plugins.lock
 config/herdr/*.log
 config/herdr/*.sock
+config/herdr/*.sock.agent
+config/herdr/release-notes.json
 config/herdr/plugins/
 config/herdr/plugins.json
 
