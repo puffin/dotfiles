@@ -98,11 +98,11 @@ export const register: Register = (on, options) => {
     return { text: 'Dock opened. ctrl+x tab puts the keys in it.' }
   })
 
-  // The focus ring's row is the one the action bar acts on; moving onto a
-  // button of the bar keeps it.
+  // The focus ring's row, or its details' open, is the one the action bar acts
+  // on; moving onto a button of the bar keeps it.
   on('ui.focus', { requestId: PANE }, async ($, e, next) => {
     const key = e.element
-    if (!key?.startsWith('act-')) await update($, selected, () => (key?.startsWith('row:') ? key.slice(4) : null))
+    if (!key?.startsWith('act-')) await update($, selected, () => key?.match(/^(?:row|open):(.*)$/s)?.[1] ?? null)
     return next(e)
   }).catch(($, e, next) => next(e))
 
@@ -113,7 +113,7 @@ export const register: Register = (on, options) => {
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Button, Link, Text } = $.ui.resolve(e)
+    const { Box, Button, Text } = $.ui.resolve(e)
     const list = await read($, sections)
     const flipped = await read($, toggled)
     const open = await read($, expanded)
@@ -153,7 +153,9 @@ export const register: Register = (on, options) => {
                   {item.title}
                 </Text>
               )}
-              {href && <Link key={`open:${id}`} href={href} label="open ↗" />}
+              {/* A button, not a Link: a terminal hyperlink opens only on the terminal's
+                  own modifier click, and a plain click is the dock's. */}
+              {href && <Button key={`open:${id}`} label="open ↗" plain onPress={() => openUrl($, href)} />}
               {(item.lines ?? []).map((line, i) => (
                 <Text key={`${id}-l${i}`} color={line.color ?? MUTED} wrap="truncate-end">
                   {line.text}

@@ -1,6 +1,7 @@
 // Re-review: you reviewed it and it changed since, or you were asked again.
-// Review: asked, not yet reviewed. Waiting: your comments stand, nothing new.
-export type Bucket = 'rereview' | 'review' | 'waiting'
+// Review: asked, not yet reviewed. Team: asked only through a team you are on.
+// Waiting: your comments stand, nothing new.
+export type Bucket = 'rereview' | 'review' | 'team' | 'waiting'
 
 export type Item = {
   url: string
