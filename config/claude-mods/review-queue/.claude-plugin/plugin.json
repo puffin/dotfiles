@@ -1,11 +1,8 @@
 {
   "name": "review-queue",
-  "version": "0.2.0",
-  "description": "PRs waiting on your review or re-review, polled from GitHub into the dock's Reviews section",
+  "version": "0.3.0",
+  "description": "PRs waiting on your review or re-review, polled from GitHub once for every session, shown in the dock or a pane of their own",
   "types": "./types/index.d.ts",
-  "dependencies": [
-    "dock"
-  ],
   "userConfig": {
     "account": {
       "type": "string",
@@ -75,6 +72,12 @@
       "title": "Toast duration (seconds)",
       "description": "How long the in-terminal toast stays up.",
       "default": 10
+    },
+    "openPane": {
+      "type": "boolean",
+      "title": "Open the pane on a new re-review",
+      "description": "Without the dock: open the review-queue pane by itself when a PR becomes ready for re-review. Off: use /review-queue to open it.",
+      "default": true
     }
   }
 }

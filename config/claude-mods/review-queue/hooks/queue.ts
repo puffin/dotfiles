@@ -1,11 +1,34 @@
-import type { EngineInterface } from 'claude-code'
-
-import type { Bucket, Item, Queue } from '../types'
+import type { Bucket, Item, Queue, Shared } from '../types'
 
 const DAY_MS = 86_400_000
 
-// The dock's contract, laid beside this mod as a dependency.
-export type DockSection = Parameters<EngineInterface['dock']['publish']>[0]
+// The part of the dock's section contract this mod fills (the dock mod's
+// types/index.d.ts). The dock is optional, not a dependency, so it is spelled here.
+export type DockRow = {
+  key: string
+  icon?: string
+  iconColor?: string
+  label: string
+  aside?: string
+  detail?: string
+  meta?: string
+  href?: string
+  title?: string
+  lines?: { text: string; color?: string }[]
+}
+export type DockGroup = { key: string; title: string; rows: DockRow[]; isFolded?: boolean }
+export type DockAction = { id: string; label: string; hotkey?: string; scope: 'row' | 'section' }
+export type DockSection = {
+  id: string
+  title: string
+  order?: number
+  badge?: string
+  attention?: number
+  groups: DockGroup[]
+  actions?: DockAction[]
+  footer?: string
+  error?: string
+}
 
 // Both searches in one request. `@me` is whoever the token belongs to;
 // `$login` names the same account for the reviews filter.
@@ -244,6 +267,39 @@ export function announcement(bucket: 'rereview' | 'review', fresh: readonly Item
   const named = `${shortRepo(one.repo)}#${one.number} ${one.title}`
   if (bucket === 'rereview') return `${icon} ${fresh.length === 1 ? `Re-review: ${named}` : `${fresh.length} PRs ready for re-review`}`
   return `${icon} ${fresh.length === 1 ? `Review requested: ${named}` : `${fresh.length} new review requests`}`
+}
+
+// What this session does with the queue in the store: ask GitHub, or show
+// what another session asked. The owner asks once a poll is due; anyone takes
+// over once the owner has not asked for a poll and a minute (closed, asleep).
+export const GRACE_MS = 60_000
+
+export function duty(stored: Shared | undefined, self: string, now: number, pollMs: number): 'fetch' | 'adopt' {
+  if (!stored) return 'fetch'
+  const quiet = now - stored.checkedAt
+  if (stored.owner === self) return quiet >= pollMs ? 'fetch' : 'adopt'
+  return quiet > pollMs + GRACE_MS ? 'fetch' : 'adopt'
+}
+
+export function isShared(value: unknown): value is Shared {
+  const v = value as Partial<Shared> | null
+  return !!v && Array.isArray(v.items) && typeof v.owner === 'string' && typeof v.checkedAt === 'number' && typeof v.fetchedAt === 'number'
+}
+
+// The pane's row columns, as the dock lays them out: icon, name, detail, age.
+export function columns(inner: number) {
+  const metaWidth = 7
+  const flex = Math.max(10, inner - (2 + metaWidth))
+  const nameWidth = Math.ceil(flex * 0.45)
+  return { metaWidth, nameWidth, detailWidth: flex - nameWidth }
+}
+
+// Padded or cut to exactly `width` columns.
+export function fit(text: string, width: number) {
+  const chars = [...text]
+  if (width <= 0) return ''
+  if (chars.length > width) return `${chars.slice(0, Math.max(0, width - 1)).join('')}…`
+  return text + ' '.repeat(width - chars.length)
 }
 
 export function compileSkip(pattern: string) {

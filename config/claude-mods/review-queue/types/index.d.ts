@@ -25,8 +25,20 @@ export type Queue = {
   error?: string
 }
 
+// The queue as every session reads it from the store: the session that asks
+// GitHub (`owner`), and when it last asked, whether or not that worked.
+export type Shared = Queue & { owner: string; checkedAt: number }
+
 declare module 'claude-code' {
   interface PluginState {
-    'review-queue': { queue: Queue | null }
+    'review-queue': {
+      queue: Shared | null
+      // The PR the focus ring is on, in the pane or the dock.
+      selected: string | null
+      // PRs whose details are open in the pane.
+      expanded: string[]
+      // Groups the person folded or unfolded in the pane, against each one's default.
+      toggled: string[]
+    }
   }
 }

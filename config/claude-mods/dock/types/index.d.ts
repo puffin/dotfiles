@@ -69,6 +69,11 @@ export type Dock = {
   open: () => Promise<boolean>
   // Raised by the dock when the person presses a section's action: the mod
   // that owns the section hooks `dock.action` and acts on its own presses.
+  // Hooking it ties the mod to the dock (it doesn't load without one); a mod
+  // that keeps a pane of its own for that case hooks `ui.focus` and `ui.press`
+  // on `{ requestId: 'dock' }` instead, by the keys the dock draws:
+  // `row:<section>:<row>` for a row, `act-<section>-<action>` for a button.
+  // Those keys are part of this contract.
   action: (press: DockPress) => Promise<boolean>
 }
 
