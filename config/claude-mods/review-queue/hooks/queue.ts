@@ -31,9 +31,12 @@ export type DockSection = {
 }
 
 // Both searches in one request. `@me` is whoever the token belongs to;
-// `$login` names the same account for the reviews filter.
+// `$login` names the same account for the reviews filter. `review-requested:@me`
+// also matches a request to any team you are on: your teams, and who each PR
+// still asks, tell the two apart.
 export const QUERY = `
 query($requested: String!, $reviewed: String!, $login: String!) {
+  viewer { organizations(first: 20) { nodes { teams(first: 100, userLogins: [$login]) { nodes { slug } } } } }
   requested: search(query: $requested, type: ISSUE, first: 50) { nodes { ...pr } }
   reviewed: search(query: $reviewed, type: ISSUE, first: 50) { nodes { ...pr } }
 }
@@ -41,6 +44,9 @@ fragment pr on PullRequest {
   number title url isDraft createdAt updatedAt headRefOid
   repository { nameWithOwner }
   author { __typename login }
+  reviewRequests(first: 20) {
+    nodes { requestedReviewer { __typename ... on User { login } ... on Team { slug } } }
+  }
   reviews(author: $login, last: 1, states: [APPROVED, CHANGES_REQUESTED, COMMENTED, DISMISSED]) {
     nodes { state submittedAt commit { oid } }
   }
@@ -66,11 +72,16 @@ export type PrNode = {
   headRefOid: string
   repository: { nameWithOwner: string }
   author: { __typename: string; login: string } | null
-  reviews: { nodes: { state: ReviewState; submittedAt: string; commit: { oid: string } | null }[] }
+  reviewRequests: { nodes: ({ requestedReviewer: { __typename: string; login?: string; slug?: string } | null } | null)[] }
+  reviews:{ nodes: { state: ReviewState; submittedAt: string; commit: { oid: string } | null }[] }
   commits: { nodes: { commit: { committedDate: string } }[] }
   timelineItems: { nodes: ({ createdAt?: string; requestedReviewer?: { __typename: string; login?: string } | null } | null)[] }
 }
-export type SearchResult = { data?: { requested: { nodes: (PrNode | null)[] }; reviewed: { nodes: (PrNode | null)[] } }; errors?: { message: string }[] }
+type Teams = { organizations: { nodes: ({ teams: { nodes: ({ slug: string } | null)[] } } | null)[] } }
+export type SearchResult = {
+  data?: { viewer?: Teams; requested: { nodes: (PrNode | null)[] }; reviewed: { nodes: (PrNode | null)[] } }
+  errors?: { message: string }[]
+}
 
 export type Settings = { login: string; staleDays: number; skipAuthors: RegExp | null }
 
@@ -85,6 +96,16 @@ function requestedAt(pr: PrNode, login: string) {
   return time(pick?.createdAt) || time(pr.createdAt)
 }
 
+// The teams a PR still asks for you through, when it does not name you: yours
+// among them, else every team it asks. Undefined when it names you, or no team.
+function viaTeams(pr: PrNode, login: string, mine: ReadonlySet<string>) {
+  const asked = pr.reviewRequests.nodes.map(n => n?.requestedReviewer).filter(r => !!r)
+  if (asked.some(r => r.login === login)) return undefined
+  const teams = asked.filter(r => r.__typename === 'Team' && r.slug).map(r => r.slug!)
+  const ours = teams.filter(team => mine.has(team))
+  return ours.length ? ours : teams.length ? teams : undefined
+}
+
 function isSkipped(pr: PrNode, s: Settings) {
   const author = pr.author
   if (pr.isDraft || !author) return true
@@ -95,16 +116,18 @@ function isSkipped(pr: PrNode, s: Settings) {
 
 // Which bucket a PR is in for you, and since when; undefined when it needs
 // nothing from you (you approved it, or it is a draft, a bot's, your own).
+// A first request that reaches you only through a team is a Team request.
 type Where = Pick<Item, 'bucket' | 'reason' | 'since' | 'reviewedCommit'>
 
-export function classify(pr: PrNode, isRequested: boolean, s: Settings): Where | undefined {
+export function classify(pr: PrNode, isRequested: boolean, s: Settings, teams: ReadonlySet<string> = new Set()): Where | undefined {
   if (isSkipped(pr, s)) return undefined
   const mine = pr.reviews.nodes.at(-1)
   const reviewedCommit = mine?.commit?.oid
   if (isRequested) {
-    return mine
-      ? { bucket: 'rereview', reason: 're-requested', since: requestedAt(pr, s.login), reviewedCommit }
-      : { bucket: 'review', reason: 'requested', since: requestedAt(pr, s.login) }
+    const via = viaTeams(pr, s.login, teams)
+    const how = via ? ` via ${via.join(', ')}` : ''
+    if (mine) return { bucket: 'rereview', reason: `re-requested${how}`, since: requestedAt(pr, s.login), reviewedCommit }
+    return { bucket: via ? 'team' : 'review', reason: `requested${how}`, since: requestedAt(pr, s.login) }
   }
   if (!mine || mine.state === 'APPROVED') return undefined
   // Commit dates lie after a rebase; whether your review sat on today's head does not.
@@ -120,17 +143,18 @@ export function toQueue(result: SearchResult, s: Settings, now: number): Queue {
   const data = result.data
   if (!data) return { items: [], stale: 0, fetchedAt: now, error: result.errors?.[0]?.message ?? 'no data' }
   const requested = new Set(data.requested.nodes.filter(Boolean).map(pr => pr!.url))
+  const teams = new Set(data.viewer?.organizations.nodes.flatMap(org => org?.teams.nodes.map(team => team?.slug ?? '') ?? []).filter(Boolean))
   const seen = new Map<string, PrNode>()
   for (const pr of [...data.requested.nodes, ...data.reviewed.nodes]) if (pr && !seen.has(pr.url)) seen.set(pr.url, pr)
 
   const items: Item[] = []
   let stale = 0
   for (const pr of seen.values()) {
-    const where = classify(pr, requested.has(pr.url), s)
+    const where = classify(pr, requested.has(pr.url), s, teams)
     if (!where) continue
     // A request stands until someone acts on the PR; a re-review or a wait is as
     // old as the push or review behind it, whatever has touched the PR since.
-    const lastMoved = where.bucket === 'review' ? time(pr.updatedAt) : where.since
+    const lastMoved = where.bucket === 'review' || where.bucket === 'team' ? time(pr.updatedAt) : where.since
     if (now - lastMoved > s.staleDays * DAY_MS) {
       stale += 1
       continue
@@ -165,6 +189,7 @@ export function age(ms: number) {
 const GROUPS: { bucket: Bucket; title: string; icon: string; color: string; isFolded?: boolean }[] = [
   { bucket: 'rereview', title: 'Re-review', icon: '⟲', color: 'yellow' },
   { bucket: 'review', title: 'Review', icon: '○', color: 'cyan' },
+  { bucket: 'team', title: 'Team request', icon: '◌', color: 'blue', isFolded: true },
   { bucket: 'waiting', title: 'Waiting on author', icon: '‖', color: 'gray', isFolded: true },
 ]
 
@@ -236,7 +261,9 @@ export function askText(item: Item) {
       ? `Re-review ${pr}: ${item.reason}.${since} Look at what changed since my last review, check whether my earlier comments were addressed, and tell me what is still open.`
       : item.bucket === 'review'
         ? `Review ${pr}: my review was requested. Summarize what it changes and flag anything I should raise.`
-        : `Check ${pr}: I ${item.reason} and nothing was pushed since.${since} Summarize where the discussion stands and whether it needs a nudge.`
+        : item.bucket === 'team'
+          ? `Review ${pr}: a review was ${item.reason}, not of me by name. Summarize what it changes and flag anything I should raise.`
+          : `Check ${pr}: I ${item.reason} and nothing was pushed since.${since} Summarize where the discussion stands and whether it needs a nudge.`
   return `${ask} Don't post anything on GitHub; I'll write the review myself.`
 }
 

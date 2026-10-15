@@ -22,6 +22,7 @@ function pr(n: number, over: Partial<PrNode> & { mine?: PrNode['reviews']['nodes
     headRefOid: 'head',
     repository: { nameWithOwner: 'giant-eagle/repo' },
     author: { __typename: 'User', login: 'alice' },
+    reviewRequests: { nodes: [] },
     reviews: { nodes: mine ? [mine] : [] },
     commits: { nodes: [{ commit: { committedDate: '2026-10-14T00:00:00Z' } }] },
     timelineItems: { nodes: [] },
@@ -62,11 +63,33 @@ describe('classify', () => {
     const teamOnly = { nodes: events.nodes.slice(1) }
     expect(classify(pr(4, { timelineItems: teamOnly }), true, S)?.since).toBe(Date.parse('2026-10-12T00:00:00Z'))
   })
+
+  test('asked only through teams is a Team request, naming your teams among them', () => {
+    const asks = (...who: ({ login: string } | { slug: string })[]) => ({
+      reviewRequests: { nodes: who.map(w => ({ requestedReviewer: { __typename: 'login' in w ? 'User' : 'Team', ...w } })) },
+    })
+    const teams = new Set(['cloud-approvers', 'cloud-administrators'])
+    const viaTeams = asks({ slug: 'cloud-administrators' }, { slug: 'cloud-reviewers' }, { slug: 'cloud-approvers' }, { login: 'bob' })
+    expect(classify(pr(5, viaTeams), true, S, teams)).toMatchObject({ bucket: 'team', reason: 'requested via cloud-administrators, cloud-approvers' })
+    // Your teams unknown: every team it asks.
+    expect(classify(pr(5, asks({ slug: 'dfe-inf-admins' })), true, S)).toMatchObject({ bucket: 'team', reason: 'requested via dfe-inf-admins' })
+    // Named as well as a team: a Review.
+    expect(classify(pr(5, asks({ login: ME }, { slug: 'cloud-approvers' })), true, S, teams)).toMatchObject({ bucket: 'review', reason: 'requested' })
+    // Asked again through a team after reviewing: still a Re-review, saying how.
+    expect(classify(pr(5, { ...viaTeams, mine: reviewed('COMMENTED') }), true, S, teams)).toMatchObject({ bucket: 'rereview', reason: 're-requested via cloud-administrators, cloud-approvers' })
+  })
 })
 
 const RESULT: SearchResult = {
   data: {
-    requested: { nodes: [pr(10), pr(11, { mine: reviewed('COMMENTED') })] },
+    viewer: { organizations: { nodes: [{ teams: { nodes: [{ slug: 'cloud-approvers' }] } }] } },
+    requested: {
+      nodes: [
+        pr(10),
+        pr(11, { mine: reviewed('COMMENTED') }),
+        pr(18, { reviewRequests: { nodes: [{ requestedReviewer: { __typename: 'Team', slug: 'cloud-approvers' } }, { requestedReviewer: { __typename: 'Team', slug: 'cloud-reviewers' } }] } }),
+      ],
+    },
     reviewed: {
       nodes: [
         pr(11, { mine: reviewed('COMMENTED') }),
@@ -96,8 +119,10 @@ describe('the queue', () => {
       [13, 'waiting'],
       [10, 'review'],
       [11, 'rereview'],
+      [18, 'team'],
     ])
     expect(q.stale).toBe(2)
+    // Team requests are listed, not counted.
     expect(badge(q)).toBe('⟲ 2 re-review · 1 review')
     expect(badge({ ...q, items: q.items.filter(i => i.bucket === 'review') })).toBe('○ 1 review')
     // Plain JSON: no key left standing as undefined.
@@ -114,8 +139,10 @@ describe('the queue', () => {
     expect(section.groups.map(g => [g.key, g.rows.length, g.isFolded ?? false])).toEqual([
       ['rereview', 2, false],
       ['review', 1, false],
+      ['team', 1, true],
       ['waiting', 1, true],
     ])
+    expect(section.groups[2]?.rows[0]?.lines?.[1]?.text).toBe('requested via cloud-approvers 15d ago')
     const row = section.groups[0]?.rows[0]
     expect(row).toMatchObject({ key: 'https://github.com/giant-eagle/repo/pull/12', icon: '⟲', label: 'repo#12', aside: 'alice', detail: 'PR 12', meta: '3h' })
     expect(row?.href).toBe('https://github.com/giant-eagle/repo/pull/12')
@@ -130,6 +157,7 @@ describe('the queue', () => {
   test('the text names every PR with its URL', () => {
     const text = toText(toQueue(RESULT, S, NOW), NOW)
     expect(text).toContain('Re-review (2)')
+    expect(text).toContain('Team request (1)')
     expect(text).toContain('giant-eagle/repo#12 PR 12 — alice, new commits 3h ago — https://github.com/giant-eagle/repo/pull/12')
   })
 
@@ -152,6 +180,7 @@ describe('the queue', () => {
     expect(text).toContain('I last reviewed commit old.')
     expect(text.endsWith("Don't post anything on GitHub; I'll write the review myself.")).toBe(true)
     expect(askText(q.items.find(i => i.number === 10)!)).toContain('my review was requested')
+    expect(askText(q.items.find(i => i.number === 18)!)).toContain('a review was requested via cloud-approvers, not of me by name')
   })
 
   test('searches scope to the org, or to everything', () => {

@@ -228,7 +228,8 @@ export const register: Register = (on, options) => {
       name: 'list',
       description:
         "List the GitHub PRs waiting on the user's review: Re-review (they reviewed it and new commits landed, or they were asked again), " +
-        'Review (asked, not reviewed yet) and Waiting on author (their comments stand, nothing pushed). One line per PR with its URL.',
+        'Review (asked by name, not reviewed yet), Team request (asked only through a team they are on, which the line names) ' +
+        'and Waiting on author (their comments stand, nothing pushed). One line per PR with its URL.',
       inputSchema: {
         type: 'object',
         properties: { refresh: { type: 'boolean', description: `Fetch from GitHub now instead of reading the last poll (at most ${s.pollMs / 60_000} minutes old)` } },
