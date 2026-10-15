@@ -1,0 +1,83 @@
+{
+  "name": "review-queue",
+  "version": "0.3.0",
+  "description": "PRs waiting on your review or re-review, polled from GitHub once for every session, shown in the dock or a pane of their own",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "account": {
+      "type": "string",
+      "title": "GitHub account",
+      "description": "The gh account whose reviews to track (gh auth status lists them).",
+      "default": "hatched-DavidMichon"
+    },
+    "org": {
+      "type": "string",
+      "title": "Organization",
+      "description": "Only PRs in this GitHub org. Empty for every repo the account sees.",
+      "default": "giant-eagle"
+    },
+    "staleDays": {
+      "type": "number",
+      "title": "Stale after (days)",
+      "description": "PRs with no activity for longer than this are left out and counted as stale.",
+      "default": 30
+    },
+    "pollMinutes": {
+      "type": "number",
+      "title": "Check every (minutes)",
+      "description": "How often GitHub is asked. One GraphQL request per check.",
+      "default": 5
+    },
+    "skipAuthors": {
+      "type": "string",
+      "title": "Skip authors (regex)",
+      "description": "PRs by matching logins are left out: service accounts and bots. Drafts are always left out.",
+      "default": "^ge-svc-|\\[bot\\]$"
+    },
+    "toast": {
+      "type": "string",
+      "title": "Toast",
+      "description": "The in-terminal toast. always: new re-reviews and new review requests. rereview: only PRs ready for re-review. off: none.",
+      "default": "always",
+      "options": [
+        "always",
+        "rereview",
+        "off"
+      ]
+    },
+    "notify": {
+      "type": "string",
+      "title": "Desktop notification",
+      "description": "always: new re-reviews and new review requests. rereview: only PRs ready for re-review. off: none.",
+      "default": "rereview",
+      "options": [
+        "always",
+        "rereview",
+        "off"
+      ]
+    },
+    "sound": {
+      "type": "string",
+      "title": "Sound",
+      "description": "A short double tone. always, rereview (only PRs ready for re-review) or off.",
+      "default": "rereview",
+      "options": [
+        "always",
+        "rereview",
+        "off"
+      ]
+    },
+    "toastSeconds": {
+      "type": "number",
+      "title": "Toast duration (seconds)",
+      "description": "How long the in-terminal toast stays up.",
+      "default": 10
+    },
+    "openPane": {
+      "type": "boolean",
+      "title": "Open the pane on a new re-review",
+      "description": "Without the dock: open the review-queue pane by itself when a PR becomes ready for re-review. Off: use /review-queue to open it.",
+      "default": true
+    }
+  }
+}
