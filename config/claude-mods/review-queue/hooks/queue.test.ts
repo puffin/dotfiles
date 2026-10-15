@@ -492,15 +492,16 @@ describe('without the dock', () => {
     await ui.press({ key: 'fold:waiting' })
     expect(await ui.find({ key: 'row:https://github.com/giant-eagle/repo/pull/13' })).toBeTruthy()
 
-    // Enter opens the details, with the link.
-    expect(await ui.find({ type: 'Link' })).toBeFalsy()
+    // Enter opens the details, with an open button a plain click presses.
+    expect(await ui.find({ key: `open:${URL_12}` })).toBeFalsy()
     await ui.press({ key: `row:${URL_12}` })
-    expect((await ui.find({ type: 'Link' }))?.props).toMatchObject({ href: URL_12 })
     expect((await ui.find({ key: `more:${URL_12}` }))?.text).toContain('you last reviewed old')
+    await ui.press({ key: `open:${URL_12}` })
+    expect(saw.argv).toContainEqual(['open', URL_12])
 
     // Nothing picked: refresh and close only. Picked: open and ask Claude too.
     expect(await ui.find({ key: 'act-ask' })).toBeFalsy()
-    await pick($, 'review-queue', `row:${URL_12}`)
+    await pick($, 'review-queue', `open:${URL_12}`)
     expect(await ui.find({ key: 'act-open' })).toBeTruthy()
     await ui.press({ key: 'act-ask' })
     expect(saw.prompts[0]).toContain(`Re-review ${URL_12}`)

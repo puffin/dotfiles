@@ -85,12 +85,16 @@ describe('sections', () => {
   })
 })
 
-type Seen = { statuses: (string | undefined)[]; opened: number; isShown: boolean; toasts: string[] }
+type Seen = { statuses: (string | undefined)[]; opened: number; isShown: boolean; toasts: string[]; ran?: string[][] }
 
 function host(on: On, saw: Seen) {
   on('session.start', () => ({ cwd: '/repo' }) as never)
   on('command.register', () => ({ value: undefined }) as never)
   on('ui.focus', () => ({}) as never)
+  on('process.run', ($, e) => {
+    saw.ran?.push((e as { argv: string[] }).argv)
+    return { value: { exitCode: 0, stdout: '', stderr: '' } } as never
+  })
   on('ui.open', () => {
     saw.opened++
     return { value: { isPlaced: false, reason: 'test' } } as never
@@ -127,7 +131,7 @@ const publish = ($: { command: { run: (input: never) => Promise<unknown> } }, se
 
 describe('the pane', () => {
   test('rows in columns, details on Enter, folds on a heading', { plugins: [feature] }, async ($, on) => {
-    const saw: Seen = { statuses: [], opened: 0, isShown: false, toasts: [] }
+    const saw: Seen & { ran: string[][] } = { statuses: [], opened: 0, isShown: false, toasts: [], ran: [] }
     host(on, saw)
     await $.session.start({ source: 'startup', cwd: '/repo' } as never)
     await publish($, reviews)
@@ -147,13 +151,17 @@ describe('the pane', () => {
       expect((await ui.find({ key: 'row:runs:tk:1' }))?.text).toContain('tk  job 1')
       expect((await ui.find({ key: 'row:runs:tk:1' }))?.text).toContain('━━━━━━')
 
-      // Enter opens the details, with the link; again closes them.
-      expect(await ui.find({ type: 'Link' })).toBeFalsy()
+      // Enter opens the details, with an open button a plain click presses; again closes them.
+      const open = { key: `open:reviews:${URL_1}` }
+      expect(await ui.find(open)).toBeFalsy()
       await ui.press({ key: `row:reviews:${URL_1}` })
-      expect((await ui.find({ type: 'Link' }))?.props).toMatchObject({ href: URL_1 })
+      expect((await ui.find(open))?.text).toContain('open ↗')
       expect((await ui.find({ key: `more:reviews:${URL_1}` }))?.text).toContain('new commits 2h ago')
+      const ran = saw.ran.length
+      await ui.press(open)
+      expect(saw.ran.slice(ran)).toEqual([['open', URL_1]])
       await ui.press({ key: `row:reviews:${URL_1}` })
-      expect(await ui.find({ type: 'Link' })).toBeFalsy()
+      expect(await ui.find(open)).toBeFalsy()
 
       // Waiting is folded by its section's say: a heading and a count, no rows.
       expect((await ui.find({ key: 'fold:reviews/waiting' }))?.text).toContain('WAITING ON AUTHOR 1')
@@ -184,6 +192,9 @@ describe('the pane', () => {
     expect(await ui.find({ key: 'act-open' })).toBeTruthy()
     await ui.press({ key: 'act-reviews-ask' })
     expect(saw.toasts.at(-1)).toBe(`pressed {"section":"reviews","action":"ask","row":"${URL_1}"}`)
+    // The details' open button keeps its row picked.
+    await $.ui.focus({ component: 'Pane', requestId: 'dock', element: `open:reviews:${URL_1}`, origin: { kind: 'person' } } as never)
+    expect(await ui.find({ key: 'act-reviews-ask' })).toBeTruthy()
 
     // Moving onto the bar keeps the pick; a section action carries no row.
     await $.ui.focus({ component: 'Pane', requestId: 'dock', element: 'act-reviews-refresh', origin: { kind: 'person' } } as never)

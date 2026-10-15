@@ -256,7 +256,7 @@ export const register: Register = (on, options) => {
   // The focus ring's row is the one the buttons act on; moving onto a button keeps it.
   on('ui.focus', { requestId: PANE }, async ($, e, next) => {
     const key = e.element
-    if (!key?.startsWith('act-')) await update($, selected, () => (key?.startsWith('row:') ? key.slice(4) : null))
+    if (!key?.startsWith('act-')) await update($, selected, () => key?.match(/^(?:row|open):(.*)$/s)?.[1] ?? null)
     return next(e)
   }).catch(($, e, next) => next(e))
 
@@ -264,8 +264,8 @@ export const register: Register = (on, options) => {
   // the pane's are. A press of one of them is this mod's to answer.
   on('ui.focus', { requestId: DOCK }, async ($, e, next) => {
     const key = e.element
-    const prefix = `row:${SECTION}:`
-    if (!key?.startsWith('act-')) await update($, selected, () => (key?.startsWith(prefix) ? key.slice(prefix.length) : null))
+    const prefix = new RegExp(`^(?:row|open):${SECTION}:(.*)$`, 's')
+    if (!key?.startsWith('act-')) await update($, selected, () => key?.match(prefix)?.[1] ?? null)
     return next(e)
   }).catch(($, e, next) => next(e))
 
@@ -283,7 +283,7 @@ export const register: Register = (on, options) => {
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
-    const { Box, Button, Link, Text } = $.ui.resolve(e)
+    const { Box, Button, Text } = $.ui.resolve(e)
     const list = await read($, queue)
     const open = await read($, expanded)
     const flipped = await read($, toggled)
@@ -317,7 +317,7 @@ export const register: Register = (on, options) => {
                   {item.title}
                 </Text>
               )}
-              {item.href && <Link key={`open:${item.key}`} href={item.href} label="open ↗" />}
+              {item.href && <Button key={`open:${item.key}`} label="open ↗" plain onPress={() => openUrl($, item.href!)} />}
               {(item.lines ?? []).map((line, i) => (
                 <Text key={`${item.key}-l${i}`} color={line.color ?? MUTED} wrap="truncate-end">
                   {line.text}

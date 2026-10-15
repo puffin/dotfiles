@@ -1,6 +1,6 @@
 {
   "name": "dock",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "One side pane that other mods fill with sections (reviews, runs, ...) through $.dock.publish",
   "types": "./types/index.d.ts",
   "userConfig": {
