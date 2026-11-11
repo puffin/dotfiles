@@ -3,7 +3,7 @@ import type { EngineInterface, Register } from 'claude-code'
 
 import type { Pending } from '../types'
 import { classify, type Context, decide, describeShell, NO_CONTEXT, REJECT } from './gate'
-import { transitionName } from './mcp'
+import { transitionId, transitionName } from './mcp'
 import { parseShell, repoFromUrl, resolveDir, type Write } from './shell'
 
 const PANE = 'write-gate'
@@ -61,9 +61,14 @@ async function explain($: EngineInterface, gate: Pending): Promise<Pending> {
 // raises a second dialog; the question says so when the name is not found.
 async function lookUp($: EngineInterface, e: { tool: string; [key: string]: unknown }, gate: Pending): Promise<Pending> {
   if (!e.tool.endsWith('__transitionJiraIssue')) return gate
-  const id = String((e.transition as { id?: unknown } | undefined)?.id ?? '')
-  const tool = e.tool.replace(/transitionJiraIssue$/, 'getTransitionsForJiraIssue')
-  const input = { cloudId: e.cloudId, issueIdOrKey: e.issueIdOrKey }
+  const id = transitionId(e)
+  if (!id) return gate
+  const server = e.tool.slice(0, -'transitionJiraIssue'.length)
+  // v1 has its own transitions tool; v2 runs the read through executeRead.
+  const { tool, input } =
+    e.transition !== undefined
+      ? { tool: `${server}getTransitionsForJiraIssue`, input: { cloudId: e.cloudId, issueIdOrKey: e.issueIdOrKey } as Record<string, unknown> }
+      : { tool: `${server}executeRead`, input: { name: 'listJiraIssueTransitions', cloudId: e.cloudId, inputs: { issueIdOrKey: e.issueIdOrKey } } as Record<string, unknown> }
   const { decision } = await $.tool.check({ tool, input })
   if (decision !== 'allow') return gate
   const answer = await Promise.race([$.tool.call({ tool, ...input } as never), $.clock.sleep(8000).then(() => null)])

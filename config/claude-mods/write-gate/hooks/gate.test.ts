@@ -8,7 +8,7 @@ const COMMENT = 'mcp__atlassian__addCommentToJiraIssue'
 
 describe('classify', () => {
   test('gates Jira writes under any server spelling', () => {
-    for (const tool of [COMMENT, 'mcp__claude_ai_Atlassian_Rovo__addCommentToJiraIssue']) {
+    for (const tool of [COMMENT, 'mcp__claude_ai_Atlassian_Rovo__addCommentToJiraIssue', 'mcp__claude_ai_Atlassian_MCP__addOrEditJiraIssueComment']) {
       const gate = classify({ tool, tool_use_id: 't', cloudId: 'c', issueIdOrKey: 'CE-1234', commentBody: 'Done.' })
       expect(gate).toMatchObject({ tool, action: 'Jira comment', question: 'Post a Jira comment on CE-1234?', approve: 'Post comment', target: 'CE-1234', body: 'Done.' })
       expect(gate?.meta).not.toContain('cloudId')
@@ -18,6 +18,7 @@ describe('classify', () => {
   test('lets reads, Confluence and Lucid through', () => {
     expect(classify({ tool: 'mcp__atlassian__getJiraIssue', issueIdOrKey: 'CE-1' })).toBeNull()
     expect(classify({ tool: 'mcp__atlassian__createConfluencePage', spaceId: '42', title: 'T' })).toBeNull()
+    expect(classify({ tool: 'mcp__claude_ai_Atlassian_MCP__updateConfluenceContent', contentId: '42' })).toBeNull()
     expect(classify({ tool: 'mcp__claude_ai_Lucid__post_document_thread_comment', document_id: 'd1' })).toBeNull()
     expect(classify({ tool: 'Read', file_path: '/x' })).toBeNull()
   })

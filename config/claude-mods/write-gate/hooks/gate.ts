@@ -6,7 +6,7 @@ const READY = /\bgh\s+pr\s+ready\b/
 
 // Keys the engine adds to a tool call's input, or that only set its format;
 // never shown as the write's own arguments.
-const RESERVED = new Set(['tool', 'tool_use_id', 'agentId', 'requestMeta', 'consent', 'cloudId', 'contentFormat', 'responseContentFormat', 'actionSource'])
+const RESERVED = new Set(['tool', 'tool_use_id', 'agentId', 'requestMeta', 'consent', 'cloudId', 'contentFormat', 'responseContentFormat', 'actionSource', 'responseFields', 'view'])
 
 // The write this call would make, or null when the call is not gated. A shell
 // command gets a plain question here; describeShell fills it in once the
@@ -22,10 +22,11 @@ export function classify(e: { tool: string; [key: string]: unknown }, lookup: Lo
     return { tool: e.tool, action, question: `Run this ${action}?`, approve: 'Run it', target: '', rows: [], body: '', meta: '', metaLabel: '', command }
   }
 
-  const found = mcpWrite(e.tool)
-  if (!found) return null
+  const call = mcpWrite(e.tool, e)
+  if (!call) return null
+  const found = call.write
 
-  const args = Object.fromEntries(Object.entries(e).filter(([key]) => !RESERVED.has(key)))
+  const args = Object.fromEntries(Object.entries(call.args).filter(([key]) => !RESERVED.has(key)))
   const described = found.describe(args, lookup)
   const rest = Object.fromEntries(Object.entries(args).filter(([key]) => !described.used.includes(key)))
 
