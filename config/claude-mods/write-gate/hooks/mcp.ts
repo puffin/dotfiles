@@ -50,92 +50,183 @@ function fieldRows(fields: unknown): { rows: Row[]; body: string } {
 
 const write = (action: string, approve: string, describe: McpWrite['describe']): McpWrite => ({ action, approve, describe })
 
+// v1 and v2 of the Atlassian server name some arguments differently; each
+// describer reads both spellings.
+
+const comment = write('Jira comment', 'Post comment', a => ({
+  question: a.commentId ? `Edit comment ${text(a.commentId)} on ${text(a.issueIdOrKey)}?` : `Post a Jira comment on ${text(a.issueIdOrKey)}?`,
+  target: text(a.issueIdOrKey),
+  rows: [['Visible to', text(a.commentVisibility)], ['JSM type', text(a.jsmCommentType)]],
+  body: body(a.commentBody),
+  used: ['issueIdOrKey', 'commentBody', 'commentId', 'commentVisibility', 'jsmCommentType'],
+}))
+
+const worklog = write('Jira worklog', 'Log work', a => ({
+  question: a.worklogId
+    ? `Change worklog ${text(a.worklogId)} on ${text(a.issueIdOrKey)} to ${text(a.timeSpent)}?`
+    : `Log ${text(a.timeSpent)} on ${text(a.issueIdOrKey)}?`,
+  target: text(a.issueIdOrKey),
+  rows: [['Started', text(a.started) || 'now'], ['Visible to', text(a.visibility)]],
+  body: body(a.commentBody ?? a.comment),
+  used: ['issueIdOrKey', 'timeSpent', 'worklogId', 'started', 'visibility', 'commentBody', 'comment'],
+}))
+
+// Which side reads "blocks" and which "is blocked by" is the link type's,
+// so the question names both issues and the type without a direction.
+const link = write('Jira issue link', 'Link them', a => {
+  const type = text(a.linkType ?? a.type)
+  return {
+    question: `Link ${text(a.inwardIssue)} and ${text(a.outwardIssue)}${type ? ` as "${type}"` : ''}?`,
+    target: text(a.inwardIssue),
+    rows: [['Inward', text(a.inwardIssue)], ['Outward', text(a.outwardIssue)], ['Type', type]],
+    body: body(a.comment),
+    used: ['inwardIssue', 'outwardIssue', 'type', 'linkType', 'comment'],
+  }
+})
+
 export const JIRA = new Map(Object.entries({
-  addCommentToJiraIssue: write('Jira comment', 'Post comment', a => ({
-    question: a.commentId ? `Edit comment ${text(a.commentId)} on ${text(a.issueIdOrKey)}?` : `Post a Jira comment on ${text(a.issueIdOrKey)}?`,
-    target: text(a.issueIdOrKey),
-    rows: a.commentVisibility ? [['Visible to', text(a.commentVisibility)]] : [],
-    body: body(a.commentBody),
-    used: ['issueIdOrKey', 'commentBody', 'commentId', 'commentVisibility'],
-  })),
+  addCommentToJiraIssue: comment,
+  addOrEditJiraIssueComment: comment,
+  addWorklogToJiraIssue: worklog,
+  createIssueLink: link,
 
-  addWorklogToJiraIssue: write('Jira worklog', 'Log work', a => ({
-    question: a.worklogId
-      ? `Change worklog ${text(a.worklogId)} on ${text(a.issueIdOrKey)} to ${text(a.timeSpent)}?`
-      : `Log ${text(a.timeSpent)} on ${text(a.issueIdOrKey)}?`,
-    target: text(a.issueIdOrKey),
-    rows: [['Started', text(a.started) || 'now'], ['Visible to', text(a.visibility)]],
-    body: body(a.commentBody),
-    used: ['issueIdOrKey', 'timeSpent', 'worklogId', 'started', 'visibility', 'commentBody'],
-  })),
-
-  createJiraIssue: write('new Jira issue', 'Create issue', a => ({
-    question: `Create a ${text(a.issueTypeName) || 'Jira issue'} in ${text(a.projectKey)}?`,
-    target: text(a.projectKey),
-    rows: [
-      ['Summary', text(a.summary)],
-      ['Type', text(a.issueTypeName)],
-      ['Parent', text(a.parent)],
-      ['Assignee', text(a.assignee_account_id)],
-      ['Transition', text(a.transition)],
-    ],
-    body: body(a.description),
-    used: ['projectKey', 'issueTypeName', 'summary', 'description', 'parent', 'assignee_account_id', 'transition'],
-  })),
+  createJiraIssue: write('new Jira issue', 'Create issue', a => {
+    const type = text(a.issueTypeName ?? a.issueType)
+    const extra = fieldRows(a.additional_fields)
+    return {
+      question: `Create a ${type || 'Jira issue'} in ${text(a.projectKey)}?`,
+      target: text(a.projectKey),
+      rows: [
+        ['Summary', text(a.summary)],
+        ['Type', type],
+        ['Parent', text(a.parent)],
+        ['Assignee', text(a.assignee_account_id ?? a.assignee)],
+        ['Priority', text(a.priority)],
+        ['Labels', text(a.labels)],
+        ['Sprint', text(a.assignToSprint)],
+        ['Transition', text(a.transition)],
+        ...extra.rows,
+      ],
+      body: body(a.description) || extra.body,
+      used: ['projectKey', 'issueTypeName', 'issueType', 'summary', 'description', 'parent', 'assignee_account_id', 'assignee', 'priority', 'labels', 'assignToSprint', 'transition', 'additional_fields'],
+    }
+  }),
 
   editJiraIssue: write('Jira edit', 'Save edit', a => {
     const fields = fieldRows(a.fields)
-    const names = Object.keys((a.fields as Args | undefined) ?? {})
+    const extra = fieldRows(a.additional_fields)
+    const names = [...Object.keys((a.fields as Args | undefined) ?? {}), ...Object.keys((a.additional_fields as Args | undefined) ?? {})]
     return {
       question: `Edit ${text(a.issueIdOrKey)}${names.length ? `: ${names.join(', ')}` : ''}?`,
       target: text(a.issueIdOrKey),
-      rows: fields.rows,
-      body: fields.body,
-      used: ['issueIdOrKey', 'fields'],
+      rows: [...fields.rows, ...extra.rows, ['Rank before', text(a.rankBeforeIssue)], ['Rank after', text(a.rankAfterIssue)]],
+      body: fields.body || extra.body,
+      used: ['issueIdOrKey', 'fields', 'additional_fields', 'rankBeforeIssue', 'rankAfterIssue'],
     }
   }),
 
+  // v1 passes `transition: { id }`; v2 passes `transitionId` or the
+  // transition's own `transitionName`, and can also move it to a sprint.
   transitionJiraIssue: write('Jira transition', 'Move it', (a, lookup) => {
     const fields = fieldRows(a.fields)
-    const id = text(a.transition)
+    const id = transitionId(a)
+    const own = text(a.transitionName)
+    const issue = text(a.issueIdOrKey)
+    const sprint = a.sprintId !== undefined ? `sprint ${text(a.sprintId)}` : a.assignToBacklog ? 'the backlog' : ''
+    const question = lookup.transitionName
+      ? `Move ${issue} to ${lookup.transitionName}?`
+      : own
+        ? `Move ${issue} by transition "${own}"?`
+        : id
+          ? `Move ${issue} (transition ${id}, name not found)?`
+          : `Move ${issue} to ${sprint || 'an unnamed place'}?`
+    const transition = lookup.transitionName ? `${lookup.transitionName} (id ${id})` : own ? own : id ? `id ${id}` : ''
     return {
-      question: lookup.transitionName
-        ? `Move ${text(a.issueIdOrKey)} to ${lookup.transitionName}?`
-        : `Move ${text(a.issueIdOrKey)} (transition ${id}, name not found)?`,
-      target: text(a.issueIdOrKey),
-      rows: [['Transition', lookup.transitionName ? `${lookup.transitionName} (id ${id})` : `id ${id}`], ...fields.rows],
+      question,
+      target: issue,
+      rows: [['Transition', transition], ['Sprint', sprint], ...fields.rows],
       body: fields.body,
-      used: ['issueIdOrKey', 'transition', 'fields'],
+      used: ['issueIdOrKey', 'transition', 'transitionId', 'transitionName', 'sprintId', 'assignToBacklog', 'fields'],
     }
   }),
+}))
 
-  // Which side reads "blocks" and which "is blocked by" is the link type's,
-  // so the question names both issues and the type without a direction.
-  createIssueLink: write('Jira issue link', 'Link them', a => ({
-    question: `Link ${text(a.inwardIssue)} and ${text(a.outwardIssue)}${a.type ? ` as "${text(a.type)}"` : ''}?`,
-    target: text(a.inwardIssue),
-    rows: [['Inward', text(a.inwardIssue)], ['Outward', text(a.outwardIssue)], ['Type', text(a.type)]],
-    body: body(a.comment),
-    used: ['inwardIssue', 'outwardIssue', 'type', 'comment'],
+// The transition id a call names, '' when it names one by name or none.
+export function transitionId(a: Args): string {
+  return text(a.transitionId) || text((a.transition as { id?: unknown } | undefined)?.id)
+}
+
+// Operations v2 runs through executeWrite, by the operation's name.
+const OPERATIONS = new Map(Object.entries({
+  createJiraIssueLink: link,
+  addOrEditJiraIssueWorklog: worklog,
+  createJiraIssueRemoteIssueLink: write('Jira web link', 'Add link', a => ({
+    question: `Add a web link to ${text(a.issueIdOrKey)}?`,
+    target: text(a.issueIdOrKey),
+    rows: [['URL', text(a.url)], ['Title', text(a.title)], ['Relation', text(a.relationship)]],
+    body: body(a.summary),
+    used: ['issueIdOrKey', 'url', 'title', 'relationship', 'summary'],
   })),
 }))
 
-// The write a tool name makes, or null for a tool that is not gated. The
-// server part varies (atlassian, claude_ai_Atlassian_Rovo, ...), so it is
-// matched loosely and the tool part exactly.
-export function mcpWrite(tool: string): McpWrite | null {
+// The text a generic operation carries: a Jira body, or Confluence's
+// `{ format, value }`.
+const payload = (a: Args) => {
+  for (const key of ['commentBody', 'comment', 'body', 'description']) {
+    const value = a[key]
+    if (value && typeof value === 'object' && typeof (value as Args).value === 'string') return { key, text: (value as Args).value as string }
+    if (value !== undefined) return { key, text: body(value) }
+  }
+  return { key: '', text: '' }
+}
+
+// Any other operation run through executeWrite or executeDestructive: its
+// name and inputs as they are.
+function generic(op: string, isDestructive: boolean): McpWrite {
+  const kind = isDestructive ? 'destructive Atlassian operation' : 'Atlassian write'
+  return write(kind, isDestructive ? 'Run destructive' : 'Run it', a => {
+    const { key, text: shown } = payload(a)
+    const scalars = Object.entries(a).filter(([name, value]) => name !== key && (value === null || typeof value !== 'object'))
+    return {
+      question: `${isDestructive ? 'Run destructive' : 'Run'} ${op || 'an unnamed operation'} on Atlassian?`,
+      target: text(a.issueIdOrKey ?? a.contentId ?? a.pageId ?? a.projectKey),
+      rows: [['Operation', op], ...scalars.map(([name, value]): Row => [name, text(value)])],
+      body: shown,
+      used: [key, ...scalars.map(([name]) => name)],
+    }
+  })
+}
+
+const EXECUTE = new Set(['executeWrite', 'executeDestructive'])
+
+// The write a tool call makes and the arguments that describe it, or null
+// for a call that is not gated. The server part varies (atlassian,
+// claude_ai_Atlassian_MCP, ...), so it is matched loosely and the tool part
+// exactly. v2's generic runners are gated by the operation they run, every
+// one of them, so nothing reaches Atlassian through them unasked.
+export function mcpWrite(tool: string, args: Args = {}): { write: McpWrite; args: Args } | null {
   const match = /^mcp__(.+)__([^_].*)$/.exec(tool)
   if (!match) return null
   const [, server = '', name = ''] = match
-  return /atlassian|rovo/i.test(server) ? (JIRA.get(name) ?? null) : null
+  if (!/atlassian|rovo/i.test(server)) return null
+  if (EXECUTE.has(name)) {
+    const op = text(args.name)
+    const inputs = args.inputs && typeof args.inputs === 'object' ? (args.inputs as Args) : {}
+    const known = name === 'executeWrite' ? OPERATIONS.get(op) : undefined
+    return { write: known ?? generic(op, name === 'executeDestructive'), args: inputs }
+  }
+  const found = JIRA.get(name)
+  return found ? { write: found, args } : null
 }
 
-// The transition's status name in a getTransitionsForJiraIssue answer: Jira's
-// JSON, `{ transitions: [{ id, name, to: { name } }] }`, or that list alone.
+// The transition's status name in a transitions answer: Jira's JSON,
+// `{ transitions: [{ id, name, to: { name } }] }`, v2's `{ data: { transitions } }`,
+// or that list alone.
 export function transitionName(answer: string, id: string): string {
   try {
     const parsed = JSON.parse(answer) as unknown
-    const list = Array.isArray(parsed) ? parsed : ((parsed as { transitions?: unknown[] } | null)?.transitions ?? [])
+    const root = (parsed as { data?: unknown } | null)?.data ?? parsed
+    const list = Array.isArray(root) ? root : ((root as { transitions?: unknown[] } | null)?.transitions ?? [])
     const found = (list as { id?: unknown; name?: unknown; to?: { name?: unknown } }[]).find(t => String(t.id) === id)
     const name = found?.to?.name ?? found?.name
     return typeof name === 'string' ? name : ''
