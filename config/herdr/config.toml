@@ -114,3 +114,6 @@ command = "persiyanov.reviewr.toggle"
 key = "prefix+shift+s"
 type = "plugin_action"
 command = "sessionizer.open"
+
+[ui.toast]
+delivery = "herdr"
