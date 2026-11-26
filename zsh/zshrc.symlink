@@ -226,7 +226,6 @@ $HOME/.local/bin:\
 $DOTFILES/bin:\
 $PYENV_ROOT/bin:$PYENV_ROOT/shims:\
 ${GOPATH}/bin:${GOROOT}/bin:\
-$BREW_PREFIX/opt/mysql@8.0/bin:\
 $BREW_PREFIX/opt/openjdk/bin:\
 $BREW_PREFIX/opt/libpq/bin:\
 $HOME/.tf-helper/tfh/bin:\
